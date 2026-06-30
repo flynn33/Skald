@@ -1,0 +1,6 @@
+*.swift text diff=swift
+*.pbxproj merge=union
+*.json text
+*.md text
+*.yml text
+*.sh text eol=lf

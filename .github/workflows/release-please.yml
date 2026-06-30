@@ -1,0 +1,90 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+      major: ${{ steps.release.outputs.major }}
+      minor: ${{ steps.release.outputs.minor }}
+      patch: ${{ steps.release.outputs.patch }}
+
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  sync-versions:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Sync version to project files
+        env:
+          NEW_VERSION: ${{ needs.release-please.outputs.version }}
+          NEW_MAJOR: ${{ needs.release-please.outputs.major }}
+          NEW_MINOR: ${{ needs.release-please.outputs.minor }}
+          NEW_PATCH: ${{ needs.release-please.outputs.patch }}
+        run: |
+          echo "Syncing version ${NEW_VERSION} (${NEW_MAJOR}.${NEW_MINOR}.${NEW_PATCH}) to project files..."
+
+          # ── 1. Xcode project: MARKETING_VERSION ──
+          MARKETING="${NEW_MAJOR}.${NEW_MINOR}"
+          sed -i "s/MARKETING_VERSION = [0-9]*\.[0-9]*/MARKETING_VERSION = ${MARKETING}/g" \
+            Skald.xcodeproj/project.pbxproj
+
+          # ── 2. Xcode project: CURRENT_PROJECT_VERSION (increment build number) ──
+          CURRENT_BUILD=$(grep -m1 'CURRENT_PROJECT_VERSION' Skald.xcodeproj/project.pbxproj \
+            | sed 's/.*= \([0-9]*\).*/\1/')
+          NEW_BUILD=$((CURRENT_BUILD + 1))
+          sed -i "s/CURRENT_PROJECT_VERSION = [0-9]*/CURRENT_PROJECT_VERSION = ${NEW_BUILD}/g" \
+            Skald.xcodeproj/project.pbxproj
+
+          # ── 3. Forsetti module manifest: moduleVersion only (not minForsettiVersion) ──
+          jq --argjson major "$NEW_MAJOR" --argjson minor "$NEW_MINOR" --argjson patch "$NEW_PATCH" \
+            '.moduleVersion.major = $major | .moduleVersion.minor = $minor | .moduleVersion.patch = $patch' \
+            Skald/Resources/ForsettiManifests/SkaldAppModuleManifest.json > tmp_manifest.json \
+            && mv tmp_manifest.json Skald/Resources/ForsettiManifests/SkaldAppModuleManifest.json
+
+          # ── 4. Swift module source: SemVer on moduleVersion lines only ──
+          sed -i "/moduleVersion:/s/SemVer(major: [0-9]*, minor: [0-9]*, patch: [0-9]*)/SemVer(major: ${NEW_MAJOR}, minor: ${NEW_MINOR}, patch: ${NEW_PATCH})/g" \
+            Skald/AppModule/SkaldAppModule.swift
+
+          # ── 5. README.md: documented build settings in Requirements section ──
+          sed -i "s/MARKETING_VERSION = [0-9]*\.[0-9]*/MARKETING_VERSION = ${MARKETING}/g" README.md
+          sed -i "s/CURRENT_PROJECT_VERSION = [0-9]*/CURRENT_PROJECT_VERSION = ${NEW_BUILD}/g" README.md
+
+          echo "Version sync complete."
+
+      - name: Commit version sync
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Skald.xcodeproj/project.pbxproj \
+                  Skald/Resources/ForsettiManifests/SkaldAppModuleManifest.json \
+                  Skald/AppModule/SkaldAppModule.swift \
+                  README.md
+          git diff --staged --quiet || git commit -m "chore: sync version ${NEW_VERSION} to project files [skip ci]"
+          git push
+        env:
+          NEW_VERSION: ${{ needs.release-please.outputs.version }}

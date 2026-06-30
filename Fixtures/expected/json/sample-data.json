@@ -1,0 +1,30 @@
+{
+  "content": {
+    "data": {
+      "library": {
+        "book": [
+          {
+            "@id": "b1",
+            "author": "Ada",
+            "title": "Readable Outputs"
+          },
+          {
+            "@id": "b2",
+            "author": "Linus",
+            "title": "Structured Data"
+          }
+        ]
+      }
+    }
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "xml",
+    "fileName": "sample-data.xml"
+  },
+  "summary": {
+    "blockCount": 0,
+    "dataPresent": true
+  },
+  "version": "1.1"
+}

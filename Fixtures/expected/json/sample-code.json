@@ -1,0 +1,20 @@
+{
+  "content": {
+    "blocks": [
+      {
+        "order": 1,
+        "text": "import Foundation\n\nfunc greet(_ name: String) -> String {\n    return \"Hello, \\(name)!\"\n}\n\nprint(greet(\"Skald\"))",
+        "type": "code"
+      }
+    ]
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "swift",
+    "fileName": "sample-code.swift"
+  },
+  "summary": {
+    "blockCount": 1
+  },
+  "version": "1.1"
+}

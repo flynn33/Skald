@@ -1,0 +1,48 @@
+{
+  "content": {
+    "data": [
+      {
+        "Location": "Austin",
+        "Name": "Ava",
+        "Role": "Engineer"
+      },
+      {
+        "Location": "Chicago",
+        "Name": "Miles",
+        "Role": "Designer"
+      }
+    ],
+    "tables": [
+      {
+        "columns": [
+          "Name",
+          "Role",
+          "Location"
+        ],
+        "rows": [
+          [
+            "Ava",
+            "Engineer",
+            "Austin"
+          ],
+          [
+            "Miles",
+            "Designer",
+            "Chicago"
+          ]
+        ]
+      }
+    ]
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "csv",
+    "fileName": "sample-table.csv"
+  },
+  "summary": {
+    "blockCount": 0,
+    "dataPresent": true,
+    "tableCount": 1
+  },
+  "version": "1.1"
+}

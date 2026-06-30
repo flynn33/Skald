@@ -1,0 +1,27 @@
+{
+  "content": {
+    "data": {
+      "enabled": true,
+      "formats": [
+        "markdown",
+        "json"
+      ],
+      "limits": {
+        "maxPages": 100,
+        "timeout": null
+      },
+      "name": "Skald",
+      "version": 2
+    }
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "json",
+    "fileName": "sample-config.json"
+  },
+  "summary": {
+    "blockCount": 0,
+    "dataPresent": true
+  },
+  "version": "1.1"
+}

@@ -1,0 +1,122 @@
+{
+  "content" : {
+    "pages" : [
+      {
+        "blockCount" : 13,
+        "blocks" : [
+          {
+            "headingLevel" : 1,
+            "order" : 1,
+            "text" : "Quarterly Overview",
+            "type" : "heading"
+          },
+          {
+            "order" : 2,
+            "text" : "Skald converts documents into readable Markdown and JSON so teams can review content without wrestling with raw text streams or broken layouts. This sentence is intentionally long so that it wraps across several lines and helps push the document onto a second page to exercise multi-page extraction and the running header and footer detection logic.",
+            "type" : "paragraph"
+          },
+          {
+            "headingLevel" : 3,
+            "order" : 3,
+            "text" : "Key Points",
+            "type" : "heading"
+          },
+          {
+            "listDepth" : 0,
+            "listStyle" : "unordered",
+            "order" : 4,
+            "text" : "First bullet item describing an important detail worth noting.",
+            "type" : "listItem"
+          },
+          {
+            "listDepth" : 0,
+            "listStyle" : "unordered",
+            "order" : 5,
+            "text" : "Second bullet item with more information that should also wrap cleanly across lines.",
+            "type" : "listItem"
+          },
+          {
+            "listDepth" : 0,
+            "listStyle" : "unordered",
+            "order" : 6,
+            "text" : "Third bullet item.",
+            "type" : "listItem"
+          },
+          {
+            "headingLevel" : 3,
+            "order" : 7,
+            "text" : "Background",
+            "type" : "heading"
+          },
+          {
+            "order" : 8,
+            "text" : "Paragraph number 1: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 9,
+            "text" : "Paragraph number 2: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 10,
+            "text" : "Paragraph number 3: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 11,
+            "text" : "Paragraph number 4: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 12,
+            "text" : "Paragraph number 5: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 13,
+            "text" : "Paragraph number 6: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          }
+        ],
+        "page" : 1
+      },
+      {
+        "blockCount" : 4,
+        "blocks" : [
+          {
+            "order" : 1,
+            "text" : "Paragraph number 7: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 2,
+            "text" : "Paragraph number 8: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 3,
+            "text" : "Paragraph number 9: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          },
+          {
+            "order" : 4,
+            "text" : "Paragraph number 10: additional narrative content to fill the page and ensure the document spans at least two pages so the running header and footer appear on every page and can be detected as repeated common lines by the parser.",
+            "type" : "paragraph"
+          }
+        ],
+        "page" : 2
+      }
+    ]
+  },
+  "source" : {
+    "convertedAt" : "REDACTED",
+    "fileExtension" : "pdf",
+    "fileName" : "sample-digital.pdf"
+  },
+  "summary" : {
+    "blockCount" : 17,
+    "pageCount" : 2
+  },
+  "version" : "1.1"
+}
