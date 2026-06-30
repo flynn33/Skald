@@ -48,30 +48,34 @@ jobs:
         run: |
           echo "Syncing version ${NEW_VERSION} (${NEW_MAJOR}.${NEW_MINOR}.${NEW_PATCH}) to project files..."
 
-          # ── 1. Xcode project: MARKETING_VERSION ──
-          MARKETING="${NEW_MAJOR}.${NEW_MINOR}"
-          sed -i "s/MARKETING_VERSION = [0-9]*\.[0-9]*/MARKETING_VERSION = ${MARKETING}/g" \
+          # ── 1. Repository version: release.feature.patch ──
+          VERSION="${NEW_MAJOR}.${NEW_MINOR}.${NEW_PATCH}"
+          echo "${VERSION}" > VERSION
+
+          # ── 2. Xcode project: MARKETING_VERSION ──
+          MARKETING="${VERSION}"
+          sed -E -i "s/MARKETING_VERSION = [0-9]+\.[0-9]+(\.[0-9]+)?/MARKETING_VERSION = ${MARKETING}/g" \
             Skald.xcodeproj/project.pbxproj
 
-          # ── 2. Xcode project: CURRENT_PROJECT_VERSION (increment build number) ──
+          # ── 3. Xcode project: CURRENT_PROJECT_VERSION (increment build number) ──
           CURRENT_BUILD=$(grep -m1 'CURRENT_PROJECT_VERSION' Skald.xcodeproj/project.pbxproj \
             | sed 's/.*= \([0-9]*\).*/\1/')
           NEW_BUILD=$((CURRENT_BUILD + 1))
           sed -i "s/CURRENT_PROJECT_VERSION = [0-9]*/CURRENT_PROJECT_VERSION = ${NEW_BUILD}/g" \
             Skald.xcodeproj/project.pbxproj
 
-          # ── 3. Forsetti module manifest: moduleVersion only (not minForsettiVersion) ──
+          # ── 4. Forsetti module manifest: moduleVersion only (not minForsettiVersion) ──
           jq --argjson major "$NEW_MAJOR" --argjson minor "$NEW_MINOR" --argjson patch "$NEW_PATCH" \
             '.moduleVersion.major = $major | .moduleVersion.minor = $minor | .moduleVersion.patch = $patch' \
             Skald/Resources/ForsettiManifests/SkaldAppModuleManifest.json > tmp_manifest.json \
             && mv tmp_manifest.json Skald/Resources/ForsettiManifests/SkaldAppModuleManifest.json
 
-          # ── 4. Swift module source: SemVer on moduleVersion lines only ──
+          # ── 5. Swift module source: moduleVersion lines only ──
           sed -i "/moduleVersion:/s/SemVer(major: [0-9]*, minor: [0-9]*, patch: [0-9]*)/SemVer(major: ${NEW_MAJOR}, minor: ${NEW_MINOR}, patch: ${NEW_PATCH})/g" \
             Skald/AppModule/SkaldAppModule.swift
 
-          # ── 5. README.md: documented build settings in Requirements section ──
-          sed -i "s/MARKETING_VERSION = [0-9]*\.[0-9]*/MARKETING_VERSION = ${MARKETING}/g" README.md
+          # ── 6. README.md: documented build settings in Requirements section ──
+          sed -E -i "s/MARKETING_VERSION = [0-9]+\.[0-9]+(\.[0-9]+)?/MARKETING_VERSION = ${MARKETING}/g" README.md
           sed -i "s/CURRENT_PROJECT_VERSION = [0-9]*/CURRENT_PROJECT_VERSION = ${NEW_BUILD}/g" README.md
 
           echo "Version sync complete."
@@ -80,7 +84,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Skald.xcodeproj/project.pbxproj \
+          git add VERSION \
+                  Skald.xcodeproj/project.pbxproj \
                   Skald/Resources/ForsettiManifests/SkaldAppModuleManifest.json \
                   Skald/AppModule/SkaldAppModule.swift \
                   README.md

@@ -110,6 +110,3 @@ Temporary Items
 *.swp
 *~
 Fixtures/output/
-
-# Local Claude Code agent memory (not part of the project)
-.claude/agent-memory-local/

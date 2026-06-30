@@ -1,6 +1,6 @@
 # Skald
 
-**Current Version: 2.0.0** <!-- x-release-please-version -->
+**Current Version: 1.0.0** <!-- x-release-please-version -->
 
 Skald is a macOS SwiftUI app that batch-converts documents from a source folder into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
 
@@ -14,6 +14,7 @@ Built with the [Forsetti Framework](https://github.com/jdaley/Forsetti-Framework
 - [Output Design](#output-design)
 - [Architecture](#architecture)
 - [Requirements](#requirements)
+- [Versioning](#versioning)
 - [Quick Start](#quick-start)
 - [How to Use](#how-to-use)
 - [Build From Terminal](#build-from-terminal)
@@ -121,8 +122,16 @@ Skald follows the Forsetti Framework's modular architecture:
 - No third-party package dependencies.
 
 Current project settings in `Skald.xcodeproj`:
-- `MARKETING_VERSION = 2.0`
+- `MARKETING_VERSION = 1.0.0`
 - `CURRENT_PROJECT_VERSION = 1`
+
+## Versioning
+
+Skald uses `release.feature.patch` versioning. The initial public repository version is `1.0.0`.
+
+- `release`: major release line.
+- `feature`: feature-level increment within a release line.
+- `patch`: bug fix or maintenance increment.
 
 ## Quick Start
 

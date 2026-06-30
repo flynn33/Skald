@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "bootstrap-sha": "61c50ea76ff8b74a3e03dcc28241c195eae1231a",
+  "bootstrap-sha": "9b91c30a054865c7b3ad0153ebf341165cef5b0b",
   "packages": {
     ".": {
       "release-type": "simple",
@@ -9,6 +9,7 @@
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
+        { "type": "generic", "path": "VERSION" },
         { "type": "generic", "path": "README.md" },
         { "type": "generic", "path": "wiki.md" }
       ]

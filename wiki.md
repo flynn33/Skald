@@ -110,4 +110,4 @@ The module is discovered at runtime via its JSON manifest at `Resources/Forsetti
 - **Developer**: Jim Daley
 - **Framework**: Built with the Forsetti Framework v0.1.0 by James Daley
 - **License**: Proprietary (see LICENSE.md)
-- **Version**: 2.0.0 <!-- x-release-please-version -->
+- **Version**: 1.0.0 <!-- x-release-please-version -->
