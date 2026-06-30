@@ -1,0 +1,24 @@
+strict: true
+
+disabled_rules:
+  - for_where
+
+opt_in_rules:
+  - non_overridable_class_declaration
+  - force_cast
+  - force_try
+  - force_unwrapping
+  - private_over_fileprivate
+
+excluded:
+  - Packages/
+  - .build/
+  - DerivedData/
+
+line_length:
+  warning: 160
+  error: 200
+
+function_body_length:
+  warning: 60
+  error: 100

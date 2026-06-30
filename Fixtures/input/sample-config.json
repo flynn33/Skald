@@ -1,0 +1,7 @@
+{
+  "name": "Skald",
+  "version": 2,
+  "enabled": true,
+  "formats": ["markdown", "json"],
+  "limits": { "maxPages": 100, "timeout": null }
+}

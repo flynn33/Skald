@@ -1,0 +1,54 @@
+{
+  "blockedTerms": [
+    "ChatGPT",
+    "Codex",
+    "OpenAI",
+    "Claude",
+    "Anthropic",
+    "Gemini",
+    "Copilot",
+    "AI assistant"
+  ],
+  "docSectionHeaders": [
+    "tools",
+    "tooling",
+    "contributors",
+    "credits",
+    "acknowledgements",
+    "acknowledgments",
+    "reviewer",
+    "reviewers",
+    "reviewed by",
+    "authored by",
+    "generated with"
+  ],
+  "docExtensions": [
+    ".md",
+    ".mdx",
+    ".markdown",
+    ".rst",
+    ".adoc",
+    ".txt"
+  ],
+  "assetExtensions": [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".svg"
+  ],
+  "assetMetadataTerms": [
+    "ChatGPT",
+    "Codex",
+    "OpenAI",
+    "Claude",
+    "Anthropic",
+    "Gemini",
+    "Copilot",
+    "Responsible AI Image Provenance",
+    "trainedAlgorithmicMedia",
+    "algorithmicMedia"
+  ],
+  "excludedPathPrefixes": []
+}

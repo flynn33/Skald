@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+  <book id="b1">
+    <title>Readable Outputs</title>
+    <author>Ada</author>
+  </book>
+  <book id="b2">
+    <title>Structured Data</title>
+    <author>Linus</author>
+  </book>
+</library>

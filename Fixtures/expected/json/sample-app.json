@@ -1,0 +1,22 @@
+{
+  "content": {
+    "data": {
+      "appName": "Skald",
+      "debug": "false",
+      "network": {
+        "host": "localhost",
+        "port": "8080"
+      }
+    }
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "ini",
+    "fileName": "sample-app.ini"
+  },
+  "summary": {
+    "blockCount": 0,
+    "dataPresent": true
+  },
+  "version": "1.1"
+}

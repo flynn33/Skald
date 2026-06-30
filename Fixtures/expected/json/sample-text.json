@@ -1,0 +1,40 @@
+{
+  "content": {
+    "blocks": [
+      {
+        "headingLevel": 1,
+        "order": 1,
+        "text": "Sample Document",
+        "type": "heading"
+      },
+      {
+        "order": 2,
+        "text": "Skald converts documents into readable Markdown and JSON so teams can review content without wrestling with raw text streams or broken layouts.",
+        "type": "paragraph"
+      },
+      {
+        "listDepth": 0,
+        "listStyle": "unordered",
+        "order": 3,
+        "text": "First list item should wrap cleanly into the next line when it crosses the ninety character limit in Markdown output.",
+        "type": "listItem"
+      },
+      {
+        "listDepth": 0,
+        "listStyle": "unordered",
+        "order": 4,
+        "text": "Second list item.",
+        "type": "listItem"
+      }
+    ]
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "txt",
+    "fileName": "sample-text.txt"
+  },
+  "summary": {
+    "blockCount": 4
+  },
+  "version": "1.1"
+}

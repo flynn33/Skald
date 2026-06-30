@@ -1,0 +1,23 @@
+{
+  "content": {
+    "data": {
+      "Enabled": true,
+      "Name": "Skald",
+      "Tags": [
+        "swift",
+        "macOS"
+      ],
+      "Threshold": 0.75
+    }
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "plist",
+    "fileName": "sample-settings.plist"
+  },
+  "summary": {
+    "blockCount": 0,
+    "dataPresent": true
+  },
+  "version": "1.1"
+}

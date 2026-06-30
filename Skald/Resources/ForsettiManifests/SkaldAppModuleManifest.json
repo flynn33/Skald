@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.1",
+  "manifestTemplateVersion": "1.1",
+  "moduleID": "com.daley.jim.skald.app-module",
+  "displayName": "Skald",
+  "moduleVersion": {
+    "major": 2,
+    "minor": 0,
+    "patch": 0,
+    "prerelease": null
+  },
+  "moduleType": "app",
+  "supportedPlatforms": ["macOS"],
+  "minForsettiVersion": {
+    "major": 0,
+    "minor": 1,
+    "patch": 0,
+    "prerelease": null
+  },
+  "maxForsettiVersion": null,
+  "capabilitiesRequested": ["storage", "file_export", "view_injection"],
+  "iapProductID": null,
+  "entryPoint": "SkaldAppModule",
+  "defaultModuleRole": "ui",
+  "runtimeRequirements": {
+    "io": [
+      {
+        "requirementID": "com.daley.jim.skald.read-source-folder",
+        "kind": "storage",
+        "access": "read",
+        "required": true
+      },
+      {
+        "requirementID": "com.daley.jim.skald.write-target-folder",
+        "kind": "file_export",
+        "access": "write",
+        "required": true
+      }
+    ],
+    "ui": {
+      "viewIDs": [
+        "com.daley.jim.skald.app-module.workspace"
+      ],
+      "slotIDs": [
+        "module.workspace"
+      ]
+    },
+    "dataIsolation": {
+      "mode": "private_to_module",
+      "ownedStoreIDs": [],
+      "requiredDefaultRoles": []
+    }
+  }
+}
