@@ -12,9 +12,9 @@ Skald keeps repository attribution human-owned.
 
 - Do not use AI system identities as commit authors, committers, or `Co-authored-by` trailers.
 - Do not list AI systems under documentation sections such as `Tools`, `Tooling`, `Contributors`, `Credits`, `Acknowledgements`, or reviewer metadata.
-- Do not commit AI-generated visual assets or files that carry AI provenance metadata.
+- Do not commit synthetic visual assets or files that carry AI provenance metadata.
 
-The `No-AI Contributor Agent` enforces this policy on pushes and pull requests. On direct pushes to `main`, the workflow may remove clearly attributable AI tool lines from docs automatically when the match is unambiguous. Other violations fail the workflow until a human-authored replacement is provided.
+The `No AI Attribution` workflow enforces this policy on pushes, tags, and pull requests. It rejects matching commit messages, author or committer identities, changed file content, branch names, and changed file paths until a human-authored replacement is provided.
 
 ## Forsetti Framework Guidelines
 

@@ -1,0 +1,197 @@
+name: No AI Attribution
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  check-ai-attribution:
+    name: Check for AI Attribution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check commit messages for AI attribution
+        run: |
+          set -euo pipefail
+
+          echo "Scanning commit messages for AI attribution..."
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+              RANGE="${{ github.sha }}"
+            else
+              RANGE="${{ github.event.before }}..${{ github.sha }}"
+            fi
+          fi
+
+          PATTERN='(?i)(co-authored-by:\s*.*(claude|anthropic|chatgpt|openai|copilot|gemini|bard|gpt-4|gpt-3|ai assistant|codewhisperer|tabnine|cursor|windsurf|devin))|(\b(generated|written|authored|created|produced|assisted)\s+(by|with|using)\s+(ai|artificial intelligence|claude|chatgpt|gpt|copilot|gemini|llm|large language model|machine learning|ml model))|(\bai[- ](generated|assisted|authored|written|created|produced)\b)|(noreply@anthropic\.com|noreply@openai\.com)'
+
+          FAILED=0
+          COMMITS="$(git log --format="%H" "$RANGE")"
+          for COMMIT in $COMMITS; do
+            MSG="$(git log --format="%B" -1 "$COMMIT")"
+            if echo "$MSG" | grep -qPi "$PATTERN"; then
+              echo "::error::AI attribution found in commit $COMMIT"
+              echo "Commit message:"
+              echo "$MSG"
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "=========================================="
+            echo "REJECTED: Commits contain AI attribution."
+            echo "Remove AI co-author lines and attribution"
+            echo "before pushing."
+            echo "=========================================="
+            exit 1
+          fi
+
+          echo "No AI attribution found in commit messages."
+
+      - name: Check commit authors for AI attribution
+        run: |
+          set -euo pipefail
+
+          echo "Scanning commit authors..."
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+              RANGE="${{ github.sha }}"
+            else
+              RANGE="${{ github.event.before }}..${{ github.sha }}"
+            fi
+          fi
+
+          AUTHOR_PATTERN='(?i)(claude|anthropic|chatgpt|openai|copilot|gemini|bard|codewhisperer|tabnine|devin|cursor-ai|windsurf)'
+
+          FAILED=0
+          COMMITS="$(git log --format="%H" "$RANGE")"
+          for COMMIT in $COMMITS; do
+            AUTHOR="$(git log --format="%an <%ae>" -1 "$COMMIT")"
+            COMMITTER="$(git log --format="%cn <%ce>" -1 "$COMMIT")"
+
+            if echo "$AUTHOR" | grep -qPi "$AUTHOR_PATTERN"; then
+              echo "::error::AI-associated author on commit $COMMIT: $AUTHOR"
+              FAILED=1
+            fi
+            if echo "$COMMITTER" | grep -qPi "$AUTHOR_PATTERN"; then
+              echo "::error::AI-associated committer on commit $COMMIT: $COMMITTER"
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "=========================================="
+            echo "REJECTED: AI-associated author/committer"
+            echo "detected. Use a human identity for commits."
+            echo "=========================================="
+            exit 1
+          fi
+
+          echo "No AI-associated authors found."
+
+      - name: Check file contents for AI attribution markers
+        run: |
+          set -euo pipefail
+
+          echo "Scanning changed files for AI attribution markers..."
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")"
+          elif [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            FILES="$(git diff --name-only --diff-filter=A HEAD)"
+          else
+            FILES="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")"
+          fi
+
+          PATTERN='(?i)(generated\s+by\s+(claude|chatgpt|copilot|gemini|ai)|co-authored-by:\s*.*(claude|anthropic|chatgpt|openai|copilot|gemini|noreply@anthropic\.com|noreply@openai\.com)|\bai[- ](generated|assisted|authored)\b|this\s+(code|file)\s+(was\s+)?(generated|written|created)\s+(by|with|using)\s+(ai|claude|chatgpt|copilot|gemini|an?\s+llm))'
+
+          FAILED=0
+          for FILE in $FILES; do
+            case "$FILE" in
+              .github/workflows/no-ai-attribution.yml)
+                continue
+                ;;
+            esac
+            if [ -f "$FILE" ]; then
+              if grep -qPi "$PATTERN" "$FILE" 2>/dev/null; then
+                echo "::error file=$FILE::AI attribution marker found in $FILE"
+                grep -nPi "$PATTERN" "$FILE"
+                FAILED=1
+              fi
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "=========================================="
+            echo "REJECTED: Files contain AI attribution"
+            echo "markers. Remove them before pushing."
+            echo "=========================================="
+            exit 1
+          fi
+
+          echo "No AI attribution markers found in files."
+
+      - name: Check ref and path names for AI attribution
+        run: |
+          set -euo pipefail
+
+          echo "Scanning ref and changed-path names for AI attribution..."
+
+          TOKEN_PATTERN='(^|[/_.-])(ai|assistant|claude|codex|chatgpt|gpt|openai|anthropic|copilot|gemini|llm)($|[/_.-])'
+          FAILED=0
+
+          if echo "${{ github.ref_name }}" | grep -qPi "$TOKEN_PATTERN"; then
+            echo "::error::AI attribution token found in ref name: ${{ github.ref_name }}"
+            FAILED=1
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")"
+          elif [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            FILES="$(git diff --name-only --diff-filter=A HEAD)"
+          else
+            FILES="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")"
+          fi
+
+          for FILE in $FILES; do
+            case "$FILE" in
+              .github/workflows/no-ai-attribution.yml|.github/workflows/no-ai-contributor-agent.yml|.github/no_ai_contributor_policy.json|scripts/github/Test-NoAIContributors.ps1)
+                continue
+                ;;
+            esac
+            if echo "$FILE" | grep -qPi "$TOKEN_PATTERN"; then
+              echo "::error file=$FILE::AI attribution token found in changed path"
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "=========================================="
+            echo "REJECTED: Ref or path contains AI attribution."
+            echo "Rename it before pushing."
+            echo "=========================================="
+            exit 1
+          fi
+
+          echo "No AI attribution tokens found in ref or changed-path names."
