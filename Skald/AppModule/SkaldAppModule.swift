@@ -12,7 +12,7 @@ final class SkaldAppModule: ForsettiAppModule {
     let descriptor = ModuleDescriptor(
         moduleID: Constants.moduleID,
         displayName: "Skald",
-        moduleVersion: SemVer(major: 2, minor: 0, patch: 0),
+        moduleVersion: SemVer(major: 1, minor: 0, patch: 0),
         moduleType: .app
     )
 
@@ -21,7 +21,7 @@ final class SkaldAppModule: ForsettiAppModule {
         manifestTemplateVersion: .current,
         moduleID: Constants.moduleID,
         displayName: "Skald",
-        moduleVersion: SemVer(major: 2, minor: 0, patch: 0),
+        moduleVersion: SemVer(major: 1, minor: 0, patch: 0),
         moduleType: .app,
         supportedPlatforms: [.macOS],
         minForsettiVersion: SemVer(major: 0, minor: 1, patch: 0),

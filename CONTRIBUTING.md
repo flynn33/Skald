@@ -68,6 +68,8 @@ xcodebuild -project "Skald.xcodeproj" \
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/) to automate versioning and changelog generation via [release-please](https://github.com/googleapis/release-please).
 
+Skald versions use `release.feature.patch` numbering. The repository baseline starts at `1.0.0`.
+
 All commits to `main` must follow this format:
 
 ```
@@ -78,8 +80,8 @@ All commits to `main` must follow this format:
 
 | Type | Purpose | Version Bump |
 |------|---------|-------------|
-| `feat:` | A new feature | Minor (e.g., 2.1.0) |
-| `fix:` | A bug fix | Patch (e.g., 2.0.1) |
+| `feat:` | A new feature | Feature (e.g., 1.1.0) |
+| `fix:` | A bug fix | Patch (e.g., 1.0.1) |
 | `docs:` | Documentation only | No release |
 | `chore:` | Maintenance tasks | No release |
 | `refactor:` | Code restructuring | No release |
@@ -88,7 +90,7 @@ All commits to `main` must follow this format:
 
 ### Breaking Changes
 
-Append `!` after the type for breaking changes. This triggers a major version bump.
+Append `!` after the type for breaking changes. This triggers a release-line version bump.
 
 ```
 feat!: redesign conversion pipeline API
