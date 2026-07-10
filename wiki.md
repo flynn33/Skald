@@ -2,59 +2,56 @@
 
 ## Overview
 
-Skald is a macOS document conversion utility built on the Forsetti Framework. It batch-converts documents from a source folder into human-readable Markdown or structured JSON output.
+Skald is a macOS document conversion utility with Forsetti-guided module boundaries. It batch-converts documents from a source folder into human-readable Markdown or structured JSON output.
 
-This wiki covers the application architecture, Forsetti Framework integration, and development guidelines.
+This wiki covers the application architecture, Forsetti reference alignment, and development guidelines.
 
-## Forsetti Framework Integration
+## Forsetti Reference Alignment
 
-Skald uses the [Forsetti Framework v0.1.0](https://github.com/jdaley/Forsetti-Framework), a proprietary modular Swift runtime framework for native Apple applications created by James Daley. The framework provides modular architecture, runtime lifecycle management, and protocol-based service abstraction.
+Skald uses the Forsetti Mac/iOS repository as reference material for modular architecture, manifest structure, and app-owned boundaries. The reference repository is not linked, vendored, or resolved as a package dependency.
 
-### Deployment Pattern
+### Deployment Shape
 
-Skald uses **Forsetti Deployment Pattern A (Single-Module App)**:
+Skald follows the single-module app shape:
 
-- The entire application (UI and business logic) is encapsulated in a single `ForsettiAppModule`.
-- The Forsetti Framework runs silently in the background.
+- The primary application UI is contained in `SkaldAppModuleView`.
+- Conversion behavior is separated into view models, services, converters, parsers, and formatters.
 - End users interact only with the Skald conversion interface.
-- Framework developer controls are hidden (`showDeveloperControls: false`).
+- The app does not expose framework controls or require framework runtime activation.
 
 ### Module Architecture
 
 ```
 SkaldApp (Entry Point)
-  └── ContentView (Forsetti host wrapper)
-        ├── SkaldForsettiBootstrap
-        ├── ModuleRegistry
-        │     └── SkaldAppModule (ForsettiAppModule)
-        ├── ForsettiHostController
-        │     └── ForsettiRuntime
-        └── ForsettiViewInjectionRegistry
-              └── "com.daley.jim.skald.app-module.workspace" → SkaldAppModuleView
+  └── ContentView
+        └── SkaldAppModuleView
+              └── ConversionViewModel
+                    └── ConversionManager
+                          └── DocumentConverter implementations
+
+SkaldAppModule
+  └── App-owned module identity metadata aligned with SkaldAppModuleManifest.json
 ```
 
 ### Module Manifest
 
-The module is discovered at runtime via its JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManifest.json`:
+Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManifest.json` for reference-aligned architecture review:
 
 - **Module ID**: `com.daley.jim.skald.app-module`
-- **Type**: `app` (ForsettiAppModule)
+- **Type**: `app`
 - **Platform**: macOS
 - **Capabilities**: `storage`, `file_export`, `view_injection`
 - **Entry Point**: `SkaldAppModule`
 - **Default Role**: `ui`
 
-### Bootstrap Flow
+### App Flow
 
 1. `SkaldApp` renders `ContentView`.
-2. `ContentView` creates `SkaldForsettiBootstrap`.
-3. The bootstrap registers the `SkaldAppModule` factory in a `ModuleRegistry`.
-3. `ForsettiHostTemplateBootstrap.makeController()` assembles the runtime with platform services, entitlement provider, and the module registry.
-4. View injections are registered — `SkaldAppModuleView` is mapped to the module workspace view ID.
-5. In production mode, the bootstrap boots the runtime and activates only `com.daley.jim.skald.app-module`.
-6. In development mode, `ForsettiHostRootView` can be used with developer controls enabled.
-7. On boot, the runtime discovers the module manifest from `Bundle.main`, validates compatibility, and activates the module.
-8. The activated module renders `SkaldAppModuleView` in the `module.workspace` slot.
+2. `ContentView` renders `SkaldAppModuleView`.
+3. `SkaldAppModuleView` owns screen state through `ConversionViewModel`.
+4. `ConversionViewModel` delegates conversion work to `ConversionManager`.
+5. `ConversionManager` routes each supported file to a matching converter.
+6. Output is written as Markdown or JSON in the selected target folder.
 
 ## Conversion Pipeline
 
@@ -90,9 +87,11 @@ The module is discovered at runtime via its JSON manifest at `Resources/Forsetti
 
 ## Development Guidelines
 
-### Forsetti Rules
+### Forsetti-Informed Rules
 
-- Forsetti is a **sealed external dependency** — use only public APIs and do not copy or modify the Forsetti repository inside Skald.
+- Treat the Forsetti repository as external reference material only.
+- Do not add Forsetti package products to the Xcode project.
+- Do not copy or modify the Forsetti repository inside Skald.
 - All classes must be marked `final` unless extension is intentional and documented.
 - Use constructor dependency injection; avoid hidden globals.
 - Use native Apple technologies only (Swift, SwiftUI, Apple frameworks).
@@ -108,6 +107,6 @@ The module is discovered at runtime via its JSON manifest at `Resources/Forsetti
 ## About
 
 - **Developer**: Jim Daley
-- **Framework**: Built with the Forsetti Framework v0.1.0 by James Daley
+- **Architecture**: Forsetti-guided native macOS module boundaries
 - **License**: Proprietary (see LICENSE.md)
 - **Version**: 1.0.0 <!-- x-release-please-version -->
