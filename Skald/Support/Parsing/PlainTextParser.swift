@@ -16,8 +16,8 @@ nonisolated final class PlainTextParser {
         var lines: [String]
     }
 
-    private let markdownHeadingRegex = try! NSRegularExpression(pattern: "^(#{1,6})\\s+(.+)$")
-    private let listItemRegex = try! NSRegularExpression(pattern: "^(\\s*)([-*]|\\d+[.)]|[A-Za-z][.)])\\s+(.+)$")
+    private let markdownHeadingRegex = try? NSRegularExpression(pattern: "^(#{1,6})\\s+(.+)$")
+    private let listItemRegex = try? NSRegularExpression(pattern: "^(\\s*)([-*]|\\d+[.)]|[A-Za-z][.)])\\s+(.+)$")
 
     func parse(_ text: String) -> [ReadableBlock] {
         let normalized = text
@@ -149,7 +149,7 @@ nonisolated final class PlainTextParser {
 
     private func parseMarkdownHeading(in line: String) -> (level: Int, text: String)? {
         let range = NSRange(location: 0, length: line.utf16.count)
-        guard let match = markdownHeadingRegex.firstMatch(in: line, options: [], range: range),
+        guard let match = markdownHeadingRegex?.firstMatch(in: line, options: [], range: range),
               match.numberOfRanges > 2,
               let levelRange = Range(match.range(at: 1), in: line),
               let textRange = Range(match.range(at: 2), in: line) else {
@@ -179,7 +179,7 @@ nonisolated final class PlainTextParser {
 
     private func parseListItem(in line: String) -> ListMatch? {
         let range = NSRange(location: 0, length: line.utf16.count)
-        guard let match = listItemRegex.firstMatch(in: line, options: [], range: range),
+        guard let match = listItemRegex?.firstMatch(in: line, options: [], range: range),
               match.numberOfRanges > 3,
               let indentRange = Range(match.range(at: 1), in: line),
               let markerRange = Range(match.range(at: 2), in: line),

@@ -19,7 +19,7 @@ nonisolated final class AttributedDocumentConverter: DocumentConverter {
     }
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
-        let sourceExtension = url.pathExtension.lowercased()
+        let sourceExtension = SourceFileDescriptor(url: url).fileExtension
         guard let docType = documentType(for: sourceExtension) else {
             throw ConversionError.unsupportedFormat
         }

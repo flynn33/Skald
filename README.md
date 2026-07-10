@@ -15,6 +15,7 @@ Built with the [Forsetti Framework](https://github.com/jdaley/Forsetti-Framework
 - [Architecture](#architecture)
 - [Requirements](#requirements)
 - [Versioning](#versioning)
+- [Alpha Testing](#alpha-testing)
 - [Quick Start](#quick-start)
 - [How to Use](#how-to-use)
 - [Build From Terminal](#build-from-terminal)
@@ -116,8 +117,8 @@ Skald follows the Forsetti Framework's modular architecture:
 
 ## Requirements
 
-- macOS 14+ (AppKit and PDFKit are used directly).
-- Xcode 16+ (project uses Swift 5 settings with an external Forsetti Framework local package).
+- macOS 26.2+ (the Xcode project deployment target is 26.2).
+- Xcode 26.2+ (project uses Swift 5 language mode with an external Forsetti Framework local package).
 - The sibling framework checkout at `../Forsetti-Framework-Mac-iOS-main/`.
 - No third-party package dependencies.
 
@@ -132,6 +133,10 @@ Skald uses `release.feature.patch` versioning. The initial public repository ver
 - `release`: major release line.
 - `feature`: feature-level increment within a release line.
 - `patch`: bug fix or maintenance increment.
+
+## Alpha Testing
+
+Use [ALPHA_TESTING.md](ALPHA_TESTING.md) for the automated release gates, manual smoke-test matrix, data-integrity cases, and Alpha pass criteria.
 
 ## Quick Start
 
@@ -153,11 +158,16 @@ Skald uses `release.feature.patch` versioning. The initial public repository ver
 
 Behavior notes:
 
-- Unsupported file extensions are skipped silently.
-- Output filename preserves the original base name and changes only the extension:
+- Unsupported file extensions are skipped with a per-file reason in the conversion report.
+- Skald never overwrites a source file or a pre-existing target file. When a name is already occupied, the source extension and, when necessary, a numeric suffix are added.
+- The preferred output filename preserves the original base name and changes only the extension:
   - `example.pdf` -> `example.md` or `example.json`
+  - A collision may produce `example-pdf.md`, `example-pdf-2.md`, and so on.
+- Extension-only dotfiles such as `.env` are recognized and use a visible output base name such as `env.md`.
 
 ## Build From Terminal
+
+The sibling Forsetti checkout must be present before running the build.
 
 ```bash
 xcodebuild -project "Skald.xcodeproj" \
@@ -212,6 +222,7 @@ Skald/
 
 ## Known Limitations
 
+- Source-folder traversal is not recursive.
 - Formatting is heuristic-based, not layout-faithful.
 - PDF extraction requires a selectable text layer; scanned image-only PDFs need OCR, which is **not** applied to PDFs (OCR runs only on standalone image files via `ImageOCRConverter`). A paragraph that spans a page boundary is reported under the page where each part appears.
 - `yaml`/`yml`/`toml` and other source/config formats are preserved verbatim as code blocks, not parsed into structured data (no native parser; avoids adding third-party dependencies).

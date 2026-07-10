@@ -20,12 +20,16 @@ final class SkaldForsettiBootstrap: ObservableObject {
     let injectionRegistry: ForsettiViewInjectionRegistry
     @Published private(set) var productionState: SkaldProductionBootState = .idle
 
+    private let registrationFailureMessage: String?
+
     init() {
         let registry = ModuleRegistry()
+        var registrationFailureMessage: String?
+
         do {
             try SkaldModuleRegistry.registerAll(into: registry)
         } catch {
-            assertionFailure("Failed to register Skald module: \(error.localizedDescription)")
+            registrationFailureMessage = "Module registration failed: \(error.localizedDescription)"
         }
 
         controller = ForsettiHostTemplateBootstrap.makeController(
@@ -39,10 +43,17 @@ final class SkaldForsettiBootstrap: ObservableObject {
         injectionRegistry.register(viewID: SkaldAppModule.Constants.primaryViewID) {
             SkaldAppModuleView()
         }
+
+        self.registrationFailureMessage = registrationFailureMessage
     }
 
     func bootForProduction() async {
         guard productionState != .ready, productionState != .booting else {
+            return
+        }
+
+        if let registrationFailureMessage {
+            productionState = .failed(registrationFailureMessage)
             return
         }
 
@@ -56,7 +67,7 @@ final class SkaldForsettiBootstrap: ObservableObject {
             return
         }
 
-        productionState = .failed(controller.errorMessage ?? "Activation failed.")
+        productionState = .failed(controller.errorMessage ?? "Forsetti module activation failed without an error message.")
     }
 }
 #else

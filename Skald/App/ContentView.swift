@@ -42,15 +42,18 @@ private struct SkaldProductionRootView: View {
                     .frame(minWidth: 560, minHeight: 360)
             case .ready:
                 SkaldAppModuleView()
-            case .failed:
+            case .failed(let message):
                 VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 32))
                         .foregroundStyle(.orange)
                     Text("Unable to start Skald")
                         .font(.headline)
-                    Text("Forsetti could not activate the Skald app module.")
+                    Text(message)
+                        .font(.callout)
                         .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .textSelection(.enabled)
                 }
                 .padding(24)
                 .frame(minWidth: 560, minHeight: 360)
