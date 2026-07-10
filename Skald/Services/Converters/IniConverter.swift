@@ -20,7 +20,7 @@ nonisolated final class IniConverter: DocumentConverter {
             do {
                 return try ReadableOutputFormatter.jsonDocument(
                     fileName: url.lastPathComponent,
-                    sourceExtension: url.pathExtension,
+                    sourceExtension: SourceFileDescriptor(url: url).fileExtension,
                     blocks: [],
                     data: value
                 )

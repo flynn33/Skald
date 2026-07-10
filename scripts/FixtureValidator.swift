@@ -50,7 +50,8 @@ private final class FixtureValidator {
 
             for fixture in fixtures {
                 let fileName = fixture.inputURL.lastPathComponent
-                guard let converter = converters.first(where: { $0.supportedExtensions.contains(fixture.inputURL.pathExtension.lowercased()) }) else {
+                let source = SourceFileDescriptor(url: fixture.inputURL)
+                guard let converter = converters.first(where: { $0.supportedExtensions.contains(source.fileExtension) }) else {
                     failures.append(FixtureFailure(fileName: fileName, format: "all", message: "No converter registered for extension."))
                     continue
                 }
@@ -97,7 +98,7 @@ private final class FixtureValidator {
         let sortedFiles = files.sorted { $0.lastPathComponent.localizedCaseInsensitiveCompare($1.lastPathComponent) == .orderedAscending }
 
         return sortedFiles.compactMap { fileURL in
-            let baseName = fileURL.deletingPathExtension().lastPathComponent
+            let baseName = SourceFileDescriptor(url: fileURL).baseName
             guard !baseName.isEmpty else { return nil }
             let expectedMarkdown = expectedMarkdownURL.appendingPathComponent(baseName).appendingPathExtension("md")
             let expectedJSON = expectedJSONURL.appendingPathComponent(baseName).appendingPathExtension("json")

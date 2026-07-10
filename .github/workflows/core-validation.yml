@@ -1,0 +1,34 @@
+name: Core Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-core:
+    name: Validate Conversion Core
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Validate conversion fixtures
+        run: bash scripts/validate_fixtures.sh
+
+      - name: Validate output safety
+        run: bash scripts/validate_output_file_planner.sh

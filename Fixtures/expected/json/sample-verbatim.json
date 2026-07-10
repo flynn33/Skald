@@ -3,15 +3,15 @@
     "blocks": [
       {
         "order": 1,
-        "text": "import Foundation\n\nfunc greet(_ name: String) -> String {\n    return \"Hello, \\(name)!\"\n}\n\nprint(greet(\"Skald\"))\n",
+        "text": "first line\n```embedded\n    indented\nlast line\n\n",
         "type": "code"
       }
     ]
   },
   "source": {
     "convertedAt": "REDACTED",
-    "fileExtension": "swift",
-    "fileName": "sample-code.swift"
+    "fileExtension": "log",
+    "fileName": "sample-verbatim.log"
   },
   "summary": {
     "blockCount": 1

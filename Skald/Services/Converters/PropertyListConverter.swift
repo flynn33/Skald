@@ -1,4 +1,5 @@
 import Foundation
+import CoreFoundation
 
 nonisolated final class PropertyListConverter: DocumentConverter {
     let supportedExtensions = ["plist"]
@@ -8,6 +9,7 @@ nonisolated final class PropertyListConverter: DocumentConverter {
         var plistFormat = PropertyListSerialization.PropertyListFormat.xml
         let plist = try PropertyListSerialization.propertyList(from: data, options: [], format: &plistFormat)
         let readableValue = normalize(plist)
+        let source = SourceFileDescriptor(url: url)
 
         switch format {
         case .markdown:
@@ -20,7 +22,7 @@ nonisolated final class PropertyListConverter: DocumentConverter {
             do {
                 return try ReadableOutputFormatter.jsonDocument(
                     fileName: url.lastPathComponent,
-                    sourceExtension: url.pathExtension,
+                    sourceExtension: source.fileExtension,
                     blocks: [],
                     data: readableValue
                 )
@@ -51,7 +53,12 @@ nonisolated final class PropertyListConverter: DocumentConverter {
             if CFGetTypeID(numberValue) == CFBooleanGetTypeID() {
                 return .bool(numberValue.boolValue)
             }
-            return .number(numberValue.doubleValue)
+
+            let numberText = numberValue.stringValue
+            if let decimalValue = Decimal(string: numberText, locale: Locale(identifier: "en_US_POSIX")) {
+                return .number(decimalValue)
+            }
+            return .string(numberText)
         }
 
         if let dateValue = value as? Date {

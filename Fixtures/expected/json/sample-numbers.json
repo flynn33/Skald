@@ -1,0 +1,19 @@
+{
+  "content" : {
+    "data" : {
+      "decimal" : 1234567890.123456789012345678,
+      "large" : 9007199254740993,
+      "small" : 42
+    }
+  },
+  "source" : {
+    "convertedAt" : "REDACTED",
+    "fileExtension" : "json",
+    "fileName" : "sample-numbers.json"
+  },
+  "summary" : {
+    "blockCount" : 0,
+    "dataPresent" : true
+  },
+  "version" : "1.1"
+}

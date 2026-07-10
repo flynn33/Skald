@@ -1,4 +1,5 @@
 import Foundation
+import CoreFoundation
 
 /// Converts JSON documents into the shared readable model. The parsed value is
 /// preserved structurally (objects, arrays, scalars) so JSON output round-trips
@@ -15,6 +16,7 @@ nonisolated final class JSONConverter: DocumentConverter {
             throw ConversionError.invalidDocument
         }
         let value = normalize(object)
+        let source = SourceFileDescriptor(url: url)
 
         switch format {
         case .markdown:
@@ -26,7 +28,7 @@ nonisolated final class JSONConverter: DocumentConverter {
             do {
                 return try ReadableOutputFormatter.jsonDocument(
                     fileName: url.lastPathComponent,
-                    sourceExtension: url.pathExtension,
+                    sourceExtension: source.fileExtension,
                     blocks: [],
                     data: value
                 )
@@ -57,7 +59,12 @@ nonisolated final class JSONConverter: DocumentConverter {
             if CFGetTypeID(numberValue) == CFBooleanGetTypeID() {
                 return .bool(numberValue.boolValue)
             }
-            return .number(numberValue.doubleValue)
+
+            let numberText = numberValue.stringValue
+            if let decimalValue = Decimal(string: numberText, locale: Locale(identifier: "en_US_POSIX")) {
+                return .number(decimalValue)
+            }
+            return .string(numberText)
         }
 
         if let stringValue = value as? String {

@@ -65,7 +65,7 @@ nonisolated indirect enum ReadableValue: Codable {
     case object([String: ReadableValue])
     case array([ReadableValue])
     case string(String)
-    case number(Double)
+    case number(Decimal)
     case bool(Bool)
     case null
 
@@ -82,7 +82,7 @@ nonisolated indirect enum ReadableValue: Codable {
             return
         }
 
-        if let value = try? container.decode(Double.self) {
+        if let value = try? container.decode(Decimal.self) {
             self = .number(value)
             return
         }
