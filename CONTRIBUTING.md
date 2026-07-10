@@ -43,6 +43,9 @@ If reference material identifies a missing Skald-owned boundary or manifest requ
 Before submitting a pull request, run:
 
 ```bash
+bash scripts/validate_fixtures.sh
+bash scripts/validate_output_file_planner.sh
+
 xcodebuild -project "Skald.xcodeproj" \
   -scheme "Skald" \
   -configuration Debug \
@@ -121,7 +124,7 @@ When commits are pushed to `main`, release-please automatically:
 
 ## Development Setup
 
-- macOS with Xcode 16+.
+- macOS 26.2 or later with Xcode 26.2 or later.
 - No third-party dependencies; uses Apple frameworks only.
 
 ## Review Process

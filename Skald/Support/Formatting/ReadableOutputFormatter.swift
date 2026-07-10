@@ -270,11 +270,15 @@ nonisolated enum ReadableOutputFormatter {
                 if !lines.isEmpty && lines.last != "" {
                     lines.append("")
                 }
-                lines.append("```")
-                for codeLine in block.text.components(separatedBy: "\n") {
-                    lines.append(codeLine)
+                let fence = markdownFence(for: block.text)
+                var codeLines = block.text.components(separatedBy: "\n")
+                if block.text.hasSuffix("\n") {
+                    codeLines.removeLast()
                 }
-                lines.append("```")
+
+                lines.append(fence)
+                lines.append(contentsOf: codeLines)
+                lines.append(fence)
                 lines.append("")
                 previousBlockWasList = false
             }
@@ -303,14 +307,17 @@ nonisolated enum ReadableOutputFormatter {
     }
 
     private static func renderMarkdownTable(_ table: ReadableTable) -> [String] {
-        let columns = table.columns
+        let columns = table.columns.map(escapeMarkdownTableCell)
+        let rows = table.rows.map { row in
+            row.map(escapeMarkdownTableCell)
+        }
         let columnCount = columns.count
         guard columnCount > 0 else {
             return []
         }
 
         var widths = columns.map { $0.count }
-        for row in table.rows {
+        for row in rows {
             for index in 0..<columnCount {
                 let cell = index < row.count ? row[index] : ""
                 widths[index] = max(widths[index], cell.count)
@@ -321,7 +328,7 @@ nonisolated enum ReadableOutputFormatter {
         let separator = "| " + widths.map { String(repeating: "-", count: max(3, $0)) }.joined(separator: " | ") + " |"
 
         var lines: [String] = [header, separator]
-        for row in table.rows {
+        for row in rows {
             let rowCells = (0..<columnCount).map { index -> String in
                 let cell = index < row.count ? row[index] : ""
                 return pad(cell, width: widths[index])
@@ -387,6 +394,31 @@ nonisolated enum ReadableOutputFormatter {
         return trimmed
     }
 
+    private static func markdownFence(for text: String) -> String {
+        var longestRun = 0
+        var currentRun = 0
+
+        for character in text {
+            if character == "`" {
+                currentRun += 1
+                longestRun = max(longestRun, currentRun)
+            } else {
+                currentRun = 0
+            }
+        }
+
+        return String(repeating: "`", count: max(3, longestRun + 1))
+    }
+
+    private static func escapeMarkdownTableCell(_ text: String) -> String {
+        text
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "|", with: "\\|")
+            .replacingOccurrences(of: "\n", with: "<br>")
+    }
+
     private static func pad(_ text: String, width: Int) -> String {
         if text.count >= width {
             return text
@@ -422,10 +454,7 @@ nonisolated enum ReadableOutputFormatter {
         return word.prefix(1).uppercased() + word.dropFirst().lowercased()
     }
 
-    private static func formatNumber(_ value: Double) -> String {
-        if value.rounded(.towardZero) == value {
-            return String(format: "%.0f", value)
-        }
-        return String(value)
+    private static func formatNumber(_ value: Decimal) -> String {
+        NSDecimalNumber(decimal: value).stringValue
     }
 }

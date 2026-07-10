@@ -23,7 +23,7 @@ nonisolated final class PDFConverter: DocumentConverter {
             do {
                 return try ReadableOutputFormatter.jsonDocument(
                     fileName: url.lastPathComponent,
-                    sourceExtension: url.pathExtension,
+                    sourceExtension: SourceFileDescriptor(url: url).fileExtension,
                     pages: pages
                 )
             } catch {

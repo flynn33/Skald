@@ -1,0 +1,43 @@
+{
+  "content": {
+    "data": [
+      {
+        "Name": "Alpha",
+        "Notes": "left|right"
+      },
+      {
+        "Name": "Beta",
+        "Notes": "line one\nline two"
+      }
+    ],
+    "tables": [
+      {
+        "columns": [
+          "Name",
+          "Notes"
+        ],
+        "rows": [
+          [
+            "Alpha",
+            "left|right"
+          ],
+          [
+            "Beta",
+            "line one\nline two"
+          ]
+        ]
+      }
+    ]
+  },
+  "source": {
+    "convertedAt": "REDACTED",
+    "fileExtension": "csv",
+    "fileName": "sample-table-edge.csv"
+  },
+  "summary": {
+    "blockCount": 0,
+    "dataPresent": true,
+    "tableCount": 1
+  },
+  "version": "1.1"
+}

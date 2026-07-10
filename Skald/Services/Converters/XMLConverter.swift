@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationXML)
+import FoundationXML
+#endif
 
 /// Converts XML into the shared readable model using Foundation's streaming
 /// `XMLParser`. Elements become objects; attributes are keyed with an `@` prefix;
@@ -26,7 +29,7 @@ nonisolated final class XMLConverter: DocumentConverter {
             do {
                 return try ReadableOutputFormatter.jsonDocument(
                     fileName: url.lastPathComponent,
-                    sourceExtension: url.pathExtension,
+                    sourceExtension: SourceFileDescriptor(url: url).fileExtension,
                     blocks: [],
                     data: value
                 )

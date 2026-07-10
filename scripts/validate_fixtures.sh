@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,10 +8,12 @@ BIN_PATH="${BUILD_DIR}/validate_fixtures"
 mkdir -p "${BUILD_DIR}"
 
 swiftc \
+  -warnings-as-errors \
   "${ROOT_DIR}/scripts/FixtureValidator.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/DocumentConverter.swift" \
   "${ROOT_DIR}/Skald/Models/OutputFormat.swift" \
   "${ROOT_DIR}/Skald/Models/ConversionError.swift" \
+  "${ROOT_DIR}/Skald/Models/SourceFileDescriptor.swift" \
   "${ROOT_DIR}/Skald/Models/ReadableModels.swift" \
   "${ROOT_DIR}/Skald/Support/Formatting/ReadableOutputFormatter.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/PlainTextParser.swift" \

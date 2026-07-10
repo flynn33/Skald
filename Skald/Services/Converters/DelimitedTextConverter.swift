@@ -6,11 +6,12 @@ nonisolated final class DelimitedTextConverter: DocumentConverter {
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
         let text = try String(contentsOf: url, encoding: .utf8)
-        let delimiter: Character = url.pathExtension.lowercased() == "tsv" ? "\t" : ","
+        let sourceExtension = SourceFileDescriptor(url: url).fileExtension
+        let delimiter: Character = sourceExtension == "tsv" ? "\t" : ","
         let rows = parser.parse(text, delimiter: delimiter)
 
         guard !rows.isEmpty else {
-            return emptyOutput(for: url, format: format)
+            return try emptyOutput(for: url, format: format)
         }
 
         let headerRow = rows[0]
@@ -34,7 +35,7 @@ nonisolated final class DelimitedTextConverter: DocumentConverter {
             do {
                 return try ReadableOutputFormatter.jsonDocument(
                     fileName: url.lastPathComponent,
-                    sourceExtension: url.pathExtension,
+                    sourceExtension: sourceExtension,
                     blocks: [],
                     tables: [table],
                     data: dataValue
@@ -45,7 +46,7 @@ nonisolated final class DelimitedTextConverter: DocumentConverter {
         }
     }
 
-    private func emptyOutput(for url: URL, format: OutputFormat) -> String {
+    private func emptyOutput(for url: URL, format: OutputFormat) throws -> String {
         switch format {
         case .markdown:
             return ReadableOutputFormatter.markdownDocument(
@@ -53,11 +54,15 @@ nonisolated final class DelimitedTextConverter: DocumentConverter {
                 blocks: []
             )
         case .json:
-            return (try? ReadableOutputFormatter.jsonDocument(
-                fileName: url.lastPathComponent,
-                sourceExtension: url.pathExtension,
-                blocks: []
-            )) ?? "{}"
+            do {
+                return try ReadableOutputFormatter.jsonDocument(
+                    fileName: url.lastPathComponent,
+                    sourceExtension: SourceFileDescriptor(url: url).fileExtension,
+                    blocks: []
+                )
+            } catch {
+                throw ConversionError.jsonSerializationFailed
+            }
         }
     }
 

@@ -18,7 +18,7 @@ nonisolated final class SourceTextConverter: DocumentConverter {
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
         let raw = try TextFileReader.read(url)
-        let content = raw.trimmingCharacters(in: CharacterSet(charactersIn: "\n"))
+        let content = raw
         let block = ReadableBlock(
             order: 1,
             type: .code,
@@ -39,7 +39,7 @@ nonisolated final class SourceTextConverter: DocumentConverter {
             do {
                 return try ReadableOutputFormatter.jsonDocument(
                     fileName: url.lastPathComponent,
-                    sourceExtension: url.pathExtension,
+                    sourceExtension: SourceFileDescriptor(url: url).fileExtension,
                     blocks: [block]
                 )
             } catch {

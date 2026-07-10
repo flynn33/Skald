@@ -2,11 +2,11 @@ import Foundation
 import AppKit
 
 nonisolated final class AttributedTextParser {
-    private let markdownHeadingRegex = try! NSRegularExpression(pattern: "^(#{1,6})\\s+(.+)$")
+    private let markdownHeadingRegex = try? NSRegularExpression(pattern: "^(#{1,6})\\s+(.+)$")
     // Recognizes "-"/"*" plus the unambiguous bullet glyphs Word and other
     // editors emit (•, ◦, ▪, ‣), as well as numbered/lettered markers. The
     // middle dot (·) is intentionally excluded — it appears in running text.
-    private let listItemRegex = try! NSRegularExpression(pattern: "^\\s*([-*•◦▪‣]|\\d+[.)]|[A-Za-z][.)])\\s+(.+)$")
+    private let listItemRegex = try? NSRegularExpression(pattern: "^\\s*([-*•◦▪‣]|\\d+[.)]|[A-Za-z][.)])\\s+(.+)$")
 
     func parse(_ attributedString: NSAttributedString) -> [ReadableBlock] {
         let paragraphRanges = self.paragraphRanges(in: attributedString)
@@ -178,7 +178,7 @@ nonisolated final class AttributedTextParser {
         }
 
         let range = NSRange(location: 0, length: text.utf16.count)
-        guard let match = listItemRegex.firstMatch(in: text, options: [], range: range),
+        guard let match = listItemRegex?.firstMatch(in: text, options: [], range: range),
               match.numberOfRanges > 2,
               let markerRange = Range(match.range(at: 1), in: text),
               let textRange = Range(match.range(at: 2), in: text) else {
@@ -197,7 +197,7 @@ nonisolated final class AttributedTextParser {
 
     private func stripListPrefix(from text: String) -> String {
         let range = NSRange(location: 0, length: text.utf16.count)
-        guard let match = listItemRegex.firstMatch(in: text, options: [], range: range),
+        guard let match = listItemRegex?.firstMatch(in: text, options: [], range: range),
               match.numberOfRanges > 2,
               let itemRange = Range(match.range(at: 2), in: text) else {
             return collapseWhitespace(in: text)
@@ -208,7 +208,7 @@ nonisolated final class AttributedTextParser {
 
     private func parseMarkdownHeading(in line: String) -> (level: Int, text: String)? {
         let range = NSRange(location: 0, length: line.utf16.count)
-        guard let match = markdownHeadingRegex.firstMatch(in: line, options: [], range: range),
+        guard let match = markdownHeadingRegex?.firstMatch(in: line, options: [], range: range),
               match.numberOfRanges > 2,
               let levelRange = Range(match.range(at: 1), in: line),
               let textRange = Range(match.range(at: 2), in: line) else {
