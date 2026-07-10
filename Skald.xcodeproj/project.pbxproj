@@ -65,9 +65,6 @@
 			);
 			name = Skald;
 			packageProductDependencies = (
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* ForsettiCore */,
-				A1B2C3D4E5F6A7B8C9D0E1F3 /* ForsettiPlatform */,
-				A1B2C3D4E5F6A7B8C9D0E1F4 /* ForsettiHostTemplate */,
 			);
 			productName = Skald;
 			productReference = 7DF043712EF5CB3E00CCDF1C /* Skald.app */;
@@ -98,7 +95,6 @@
 			mainGroup = 7DF043682EF5CB3D00CCDF1C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A1B2C3D4E5F6A7B8C9D0E1F1 /* XCLocalSwiftPackageReference "../Forsetti-Framework-Mac-iOS-main" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7DF043722EF5CB3E00CCDF1C /* Products */;
@@ -343,28 +339,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		A1B2C3D4E5F6A7B8C9D0E1F1 /* XCLocalSwiftPackageReference "../Forsetti-Framework-Mac-iOS-main" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../Forsetti-Framework-Mac-iOS-main";
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* ForsettiCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ForsettiCore;
-		};
-		A1B2C3D4E5F6A7B8C9D0E1F3 /* ForsettiPlatform */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ForsettiPlatform;
-		};
-		A1B2C3D4E5F6A7B8C9D0E1F4 /* ForsettiHostTemplate */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ForsettiHostTemplate;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7DF043692EF5CB3D00CCDF1C /* Project object */;
 }

@@ -40,8 +40,8 @@ nonisolated final class XMLConverter: DocumentConverter {
     }
 }
 
-private final class XMLTreeBuilder: NSObject, XMLParserDelegate {
-    private final class Node {
+private nonisolated final class XMLTreeBuilder: NSObject, XMLParserDelegate {
+    private nonisolated final class Node {
         var attributes: [String: String]
         var children: [(name: String, node: Node)] = []
         var text: String = ""

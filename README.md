@@ -4,12 +4,12 @@
 
 Skald is a macOS SwiftUI app that batch-converts documents from a source folder into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
 
-Built with the [Forsetti Framework](https://github.com/jdaley/Forsetti-Framework) — a proprietary modular Swift runtime framework for native Apple applications.
+The app follows Forsetti Mac architecture guidance while remaining a standalone native macOS project. The Forsetti repository is used as implementation reference material only; it is not vendored, linked, or resolved as a package dependency.
 
 ## Table of Contents
 
 - [What It Does](#what-it-does)
-- [Built with the Forsetti Framework](#built-with-the-forsetti-framework)
+- [Forsetti-Guided Architecture](#forsetti-guided-architecture)
 - [Supported Formats](#supported-formats)
 - [Output Design](#output-design)
 - [Architecture](#architecture)
@@ -32,23 +32,23 @@ Built with the [Forsetti Framework](https://github.com/jdaley/Forsetti-Framework
 - Converts supported files from one folder to another in bulk.
 - Supports two output formats:
   - Markdown for direct reading/editing.
-  - JSON for downstream automation/LLM/data pipelines.
+  - JSON for downstream automation and data pipelines.
 - Produces readable output:
   - Paragraph normalization.
   - Heading/list detection.
   - Page segmentation for PDFs.
   - Pretty-printed, sorted JSON.
 
-## Built with the Forsetti Framework
+## Forsetti-Guided Architecture
 
-Skald is built on the **Forsetti Framework v0.1.0**, a proprietary modular runtime framework for iOS and macOS applications created by James Daley. Forsetti provides:
+Skald follows the Forsetti Mac/iOS repository as architecture guidance:
 
-- **Module-based architecture**: Skald is implemented as a `ForsettiAppModule` — a single-module app where the entire application (UI + logic) lives in one module and the framework runs silently in the background.
-- **Runtime lifecycle management**: Module discovery, compatibility validation, and activation are handled by the Forsetti runtime.
-- **Service abstraction**: Platform services (storage, file export) are accessed through Forsetti's protocol-based service container.
-- **Deployment Pattern A**: Single-module production deployment where end users interact only with the Skald UI; framework controls are hidden.
+- **App-owned module boundary**: Skald keeps its primary interface in `SkaldAppModuleView`, with conversion behavior delegated into models, view models, services, converters, and formatting/parsing support.
+- **Manifest contract**: `SkaldAppModuleManifest.json` records the app module identity, platform, requested capabilities, and runtime requirements for Forsetti-aligned review.
+- **Native macOS implementation**: Skald uses SwiftUI, AppKit, PDFKit, Vision, Foundation, and Xcode project settings directly.
+- **No framework dependency**: Skald does not link Forsetti package products and does not include Forsetti source.
 
-The Forsetti Framework is resolved as an external local Swift Package at `../Forsetti-Framework-Mac-iOS-main/` during development. The framework repository is not vendored into Skald.
+The Forsetti repository may sit near the project as reference documentation, templates, and examples, but it is not required to build Skald.
 
 ## Supported Formats
 
@@ -87,22 +87,18 @@ JSON is emitted as a readable document model (`version: "1.1"`) with:
 
 ## Architecture
 
-Skald follows the Forsetti Framework's modular architecture:
+Skald uses a module-oriented macOS architecture:
 
-- **`SkaldAppModule`** (`ForsettiAppModule`):
-  - The complete application module containing all conversion logic and UI.
-  - Registered via `SkaldModuleRegistry` and discovered at runtime from `SkaldAppModuleManifest.json`.
-  - Provides UI contributions (view injection) to the Forsetti host.
-- **`SkaldForsettiBootstrap`**:
-  - Initializes the Forsetti runtime, module registry, and view injection registry.
-  - Boots the app module directly in production mode through Forsetti's launch activation strategy.
 - **`ContentView`**:
-  - Hosts the Forsetti root view in development mode.
-  - Hosts the Skald module UI after production runtime activation.
+  - Hosts the Skald module UI as the app's root view.
+- **`SkaldAppModule`**:
+  - Defines app-owned module identity metadata that aligns with `SkaldAppModuleManifest.json`.
 - **`SkaldAppModuleView`** (SwiftUI):
   - Collects source/target folder paths.
   - Selects output format.
   - Triggers conversion.
+- **`SkaldAppModuleManifest.json`**:
+  - Captures the app-owned module identity and runtime expectations used for architecture review.
 - **`ConversionViewModel`**:
   - Owns UI state and delegates file conversion to `ConversionManager`.
 - **`ConversionManager`**:
@@ -118,9 +114,9 @@ Skald follows the Forsetti Framework's modular architecture:
 ## Requirements
 
 - macOS 26.2+ (the Xcode project deployment target is 26.2).
-- Xcode 26.2+ (project uses Swift 5 language mode with an external Forsetti Framework local package).
-- The sibling framework checkout at `../Forsetti-Framework-Mac-iOS-main/`.
+- Xcode 26.2+ (the project uses Swift 5 language mode).
 - No third-party package dependencies.
+- No local Forsetti package checkout is required for build.
 
 Current project settings in `Skald.xcodeproj`:
 - `MARKETING_VERSION = 1.0.0`
@@ -142,10 +138,8 @@ Use [ALPHA_TESTING.md](ALPHA_TESTING.md) for the automated release gates, manual
 
 1. Clone the repository.
 2. Open `Skald.xcodeproj` in Xcode.
-3. Ensure the Forsetti Framework checkout exists next to this repository at `../Forsetti-Framework-Mac-iOS-main/`.
-4. Xcode will automatically resolve the external local Forsetti Framework package.
-5. Select the `Skald` scheme.
-6. Build and run the app.
+3. Select the `Skald` scheme.
+4. Build and run the app.
 
 ## How to Use
 
@@ -167,8 +161,6 @@ Behavior notes:
 
 ## Build From Terminal
 
-The sibling Forsetti checkout must be present before running the build.
-
 ```bash
 xcodebuild -project "Skald.xcodeproj" \
   -scheme "Skald" \
@@ -184,12 +176,9 @@ Skald/
 ├── Skald/
 │   ├── App/
 │   │   ├── SkaldApp.swift              # App entry point
-│   │   ├── ContentView.swift           # Forsetti host wrapper
-│   │   ├── SkaldDeploymentMode.swift   # Development/production switch
-│   │   ├── SkaldForsettiBootstrap.swift
-│   │   └── SkaldModuleRegistry.swift
+│   │   └── ContentView.swift           # Root app view
 │   ├── AppModule/
-│   │   ├── SkaldAppModule.swift        # ForsettiAppModule implementation
+│   │   ├── SkaldAppModule.swift        # App module identity metadata
 │   │   └── SkaldAppModuleView.swift    # Main conversion UI
 │   ├── Models/
 │   ├── Services/
@@ -218,7 +207,7 @@ Skald/
 3. Implement `convert(at:to:)`.
 4. Prefer `ReadableOutputFormatter` for consistent Markdown/JSON output.
 5. Register the converter in `ConversionManager` initializer.
-6. Mark the class as `final` per Forsetti OOP guidelines.
+6. Mark the class as `final` unless inheritance is intentionally required.
 
 ## Known Limitations
 
@@ -235,9 +224,8 @@ Skald/
 - Build fails with SDK/deployment mismatch:
   - Align installed Xcode/macOS SDK with project deployment target.
   - Or lower deployment target in Build Settings and re-run.
-- Forsetti package resolution fails:
-  - Ensure `../Forsetti-Framework-Mac-iOS-main/Package.swift` exists relative to this repository.
-  - In Xcode, go to File > Packages > Reset Package Caches.
+- Xcode reports missing Forsetti package products:
+  - Confirm the project file has no Forsetti package dependency; Skald does not link Forsetti.
 - Empty or sparse output from PDF:
   - Confirm the PDF contains selectable text (not just images).
 - Output not appearing:
@@ -251,7 +239,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## License
 
 See [LICENSE.md](LICENSE.md).
-This project is distributed under a proprietary internal-use license. The external Forsetti Framework dependency is separately licensed proprietary software owned by James Daley.
+This project is distributed under a proprietary internal-use license.
 
 ## Changelog
 

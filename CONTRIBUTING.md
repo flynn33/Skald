@@ -6,28 +6,28 @@ Thank you for considering contributing to Skald. This project is developed and m
 
 Be respectful, inclusive, and professional in all interactions.
 
-## No AI Contributor Policy
+## Contributor Attribution Policy
 
 Skald keeps repository attribution human-owned.
 
-- Do not use AI system identities as commit authors, committers, or `Co-authored-by` trailers.
-- Do not list AI systems under documentation sections such as `Tools`, `Tooling`, `Contributors`, `Credits`, `Acknowledgements`, or reviewer metadata.
-- Do not commit synthetic visual assets or files that carry AI provenance metadata.
+- Do not use tool or service identities as commit authors, committers, or `Co-authored-by` trailers.
+- Do not list tool or service identities under documentation sections such as `Tools`, `Tooling`, `Contributors`, `Credits`, `Acknowledgements`, or reviewer metadata.
+- Do not commit synthetic visual assets or files that carry provenance metadata.
 
-The `No AI Attribution` workflow enforces this policy on pushes, tags, and pull requests. It rejects matching commit messages, author or committer identities, changed file content, branch names, and changed file paths until a human-authored replacement is provided.
+The attribution guard workflow enforces this policy on pushes, tags, and pull requests. It rejects matching commit messages, author or committer identities, changed file content, branch names, and changed file paths until a human-authored replacement is provided.
 
-## Forsetti Framework Guidelines
+## Forsetti Reference Guidelines
 
-Skald is built on the Forsetti Framework. Contributors must follow these rules:
+Skald follows the Mac architecture guidance from the Forsetti reference repository. Forsetti is not linked, vendored, or resolved as a package dependency in Skald.
 
-### Sealed Framework Constraint
+### Reference Boundary
 
-Forsetti is resolved as an external local Swift Package from `../Forsetti-Framework-Mac-iOS-main/`. It must be treated as a sealed dependency and must not be copied into the Skald repository:
+The Forsetti repository may be read for templates, examples, module-boundary rules, and manifest expectations, but it must remain outside the Skald repository:
 
-- **Allowed**: Use Forsetti through its public APIs. Implement modules using `ForsettiAppModule`, `ForsettiUIModule`, or `ForsettiModule`. Use the service container and protocol-based contracts.
-- **Not allowed**: Modifying, copying, forking, or patching Forsetti internals. Adding reverse dependencies from app targets into Forsetti internals. Bypassing entitlement or capability checks.
+- **Allowed**: Follow the module-boundary, manifest, and object-oriented design guidance in app-owned Skald code.
+- **Not allowed**: Adding Forsetti package products to the Xcode project, copying Forsetti source into Skald, or patching Forsetti internals for app behavior.
 
-If a required extension point is missing, request a framework enhancement rather than patching internals.
+If reference material identifies a missing Skald-owned boundary or manifest requirement, implement that requirement in Skald without linking the reference repository.
 
 ### OOP and Architecture Rules
 
@@ -125,13 +125,13 @@ When commits are pushed to `main`, release-please automatically:
 ## Development Setup
 
 - macOS 26.2 or later with Xcode 26.2 or later.
-- No third-party dependencies; uses Apple frameworks and the external local Forsetti Framework package.
+- No third-party dependencies; uses Apple frameworks only.
 
 ## Review Process
 
 Pull requests will be reviewed by Jim Daley or designated maintainers. Changes must:
 - Align with the project's goals and maintain code quality.
-- Follow Forsetti architecture rules (sealed framework, final classes, DI).
+- Follow Forsetti-informed architecture rules for module boundaries, final classes, and dependency injection.
 - Pass build verification.
 
 For questions, contact Jim Daley via repository issues.
