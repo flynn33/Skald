@@ -195,7 +195,7 @@ Skald/
 ├── Skald.xcodeproj/
 ├── README.md
 ├── CONTRIBUTING.md
-├── LICENSE.md
+├── LICENSE
 ├── CHANGELOG.md
 └── wiki.md
 ```
@@ -238,8 +238,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-See [LICENSE.md](LICENSE.md).
-This project is distributed under a proprietary internal-use license.
+Copyright 2026 James Daley
+
+This project is licensed under the Apache License, Version 2.0.
+See the [LICENSE](LICENSE) file for the full terms.
 
 ## Changelog
 
