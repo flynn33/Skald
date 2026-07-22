@@ -1,6 +1,6 @@
 # Skald
 
-**Current Version: 1.0.0** <!-- x-release-please-version -->
+**Current Version: 1.0.1** <!-- x-release-please-version -->
 
 Skald is a macOS SwiftUI app that batch-converts documents from a source folder into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
 

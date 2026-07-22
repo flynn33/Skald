@@ -109,4 +109,4 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 - **Developer**: Jim Daley
 - **Architecture**: Forsetti-guided native macOS module boundaries
 - **License**: Proprietary (see LICENSE.md)
-- **Version**: 1.0.0 <!-- x-release-please-version -->
+- **Version**: 1.0.1 <!-- x-release-please-version -->

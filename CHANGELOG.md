@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project uses `release.feature.patch` versioning.
 
+## [1.0.1](https://github.com/flynn33/Skald/compare/v1.0.0...v1.0.1) (2026-07-22)
+
+
+### Bug Fixes
+
+* keep Skald standalone from Forsetti reference ([335fa41](https://github.com/flynn33/Skald/commit/335fa414408815c69b2ff832989472539780e257))
+* keep Skald standalone from Forsetti reference ([611c626](https://github.com/flynn33/Skald/commit/611c6264637e7c865946d81852bb63a261211b6a))
+* prepare alpha conversion safeguards ([3bd2361](https://github.com/flynn33/Skald/commit/3bd2361c4a8c91d4456fa7f7871d28e700bc641f))
+* prepare Skald for Alpha testing ([aad2e20](https://github.com/flynn33/Skald/commit/aad2e20c20e8b02d6a0dd32634d44bdd1014c1d1))
+
 ## [1.0.0] - 2026-06-30
 ### Added
 - Initial Skald macOS document conversion app.
