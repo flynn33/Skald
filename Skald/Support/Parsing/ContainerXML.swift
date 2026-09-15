@@ -41,14 +41,15 @@ nonisolated final class ContainerXMLNode {
     }
 
     var text: String {
-        var value = String()
+        var parts: [String] = []
+        parts.reserveCapacity(contents.count)
         for content in contents {
             switch content {
-            case .text(let segment): value += segment
-            case .element(let node): value += node.text
+            case .text(let segment): parts.append(segment)
+            case .element(let node): parts.append(node.text)
             }
         }
-        return value
+        return parts.joined()
     }
 }
 

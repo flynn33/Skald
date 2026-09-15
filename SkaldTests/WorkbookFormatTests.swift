@@ -133,6 +133,7 @@ final class WorkbookFormatTests: XCTestCase {
             ("repeated-column-limit.ods", "spreadsheetColumnLimitExceeded"),
             ("encrypted.xls", "encryptedXLSUnsupported"),
             ("biff4.xls", "biffVariantUnsupported"),
+            ("cross-sheet-eof.xls", "invalidXLS"),
             ("cfb-chain-loop.xls", "cfbChainInvalid")
         ]
         let target = FileManager.default.temporaryDirectory.appendingPathComponent("Skald-Workbook-Negative-\(UUID().uuidString)")

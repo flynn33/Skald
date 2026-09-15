@@ -5,7 +5,8 @@ struct SkaldAppModuleView: View {
     @StateObject private var viewModel = ConversionViewModel()
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        ScrollView {
+          VStack(alignment: .leading, spacing: 18) {
             header
 
             VStack(alignment: .leading, spacing: 12) {
@@ -13,7 +14,7 @@ struct SkaldAppModuleView: View {
                     FolderSelectionRow(
                         title: "Sources",
                         url: viewModel.sourceFolderURL,
-                        action: viewModel.selectSourceFolder
+                        action: { Task { @MainActor in viewModel.selectSourceFolder() } }
                     )
                     Text("\(viewModel.sourceURLs.count) selected. Drop source files or folders here.")
                         .font(.caption)
@@ -33,12 +34,15 @@ struct SkaldAppModuleView: View {
                 FolderSelectionRow(
                     title: "Target",
                     url: viewModel.targetFolderURL,
-                    action: viewModel.selectTargetFolder
+                    action: { Task { @MainActor in viewModel.selectTargetFolder() } }
                 )
             }
 
             HStack(spacing: 12) {
-                Picker("Output", selection: $viewModel.outputFormat) {
+                Picker("Output", selection: Binding(
+                    get: { viewModel.outputFormat },
+                    set: { format in Task { @MainActor in viewModel.outputFormat = format } }
+                )) {
                     ForEach(OutputFormat.allCases) { format in
                         Text(format.label).tag(format)
                     }
@@ -49,14 +53,14 @@ struct SkaldAppModuleView: View {
                 Spacer()
 
                 Button {
-                    viewModel.convertFiles()
+                    Task { @MainActor in viewModel.convertFiles() }
                 } label: {
                     Label(viewModel.isConverting ? "Converting" : "Convert", systemImage: "arrow.triangle.2.circlepath")
                 }
                 .disabled(!viewModel.canConvert)
                 .keyboardShortcut(.defaultAction)
                 if viewModel.isConverting {
-                    Button("Cancel") { viewModel.cancelConversion() }
+                    Button("Cancel") { Task { @MainActor in viewModel.cancelConversion() } }
                 }
             }
 
@@ -96,8 +100,10 @@ struct SkaldAppModuleView: View {
             } else {
                 Spacer(minLength: 0)
             }
+          }
+          .padding(20)
+          .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(20)
         .frame(minWidth: 780, minHeight: 500)
     }
 

@@ -111,7 +111,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             progress?(position, worklist.items.count)
             let fileURL = item.url
             let source = SourceFileDescriptor(url: fileURL)
-            logger.debug("Inspecting source \(fileURL.path, privacy: .private)")
+            logger.debug("Inspecting source input")
 
             if !item.isConvertible {
                 let denied = item.message?.hasPrefix("Cannot") == true
@@ -137,7 +137,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     inspectedInputBytes += size
                 }
             } catch {
-                logFailure(error, at: fileURL, stage: "intake")
+                logFailure(error, stage: "intake")
                 entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension,
                                                status: .failed, message: safeFailureMessage(error, stage: "intake"), outputURL: nil))
                 failedCount += 1
@@ -161,7 +161,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     continue
                 }
             } catch {
-                logFailure(error, at: fileURL, stage: "probe")
+                logFailure(error, stage: "probe")
                 entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension, status: .failed, message: safeFailureMessage(error, stage: "probe"), outputURL: nil))
                 failedCount += 1
                 continue
@@ -241,7 +241,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                 wasCancelled = true
                 break
             } catch {
-                logFailure(error, at: fileURL, stage: "convert")
+                logFailure(error, stage: "convert")
                 entries.append(
                     ConversionEntry(
                         fileName: source.reportBaseName,
@@ -274,9 +274,9 @@ nonisolated final class ConversionManager: @unchecked Sendable {
         url.standardizedFileURL.path.lowercased()
     }
 
-    private func logFailure(_ error: Error, at url: URL, stage: String) {
+    private func logFailure(_ error: Error, stage: String) {
         let code = (error as? InputDiagnostic)?.code ?? (error as? DelimitedInputError)?.code ?? "conversionFailure"
-        logger.error("File failed at \(stage, privacy: .public) with \(code, privacy: .public); source \(url.path, privacy: .private)")
+        logger.error("File failed at \(stage, privacy: .public) with \(code, privacy: .public)")
     }
 
     private func safeFailureMessage(_ error: Error, stage: String) -> String {

@@ -65,6 +65,7 @@ nonisolated final class BIFF8WorkbookReader {
             throw InputDiagnostic(code: "invalidXLS", stage: "parse", summary: "XLS globals or worksheet list is missing or exceeds the sheet limit.")
         }
         var seenOffsets = Set<Int>()
+        let physicalOffsets = boundSheets.map(\.offset).sorted()
         var sheets: [WorkbookSheet] = []
         var warnings: Set<String> = ["biff8Subset"]
         var totalCells = 0
@@ -73,7 +74,11 @@ nonisolated final class BIFF8WorkbookReader {
                   seenOffsets.insert(bound.offset).inserted else {
                 throw invalid("XLS BoundSheet8 worksheet pointer is invalid or duplicated.")
             }
-            sheets.append(try worksheet(bytes, at: bound.offset, name: bound.name, index: index + 1,
+            guard let physicalIndex = physicalOffsets.firstIndex(of: bound.offset) else {
+                throw invalid("XLS BoundSheet8 worksheet pointer is outside the worksheet list.")
+            }
+            let end = physicalIndex + 1 < physicalOffsets.count ? physicalOffsets[physicalIndex + 1] : bytes.count
+            sheets.append(try worksheet(bytes, at: bound.offset, before: end, name: bound.name, index: index + 1,
                                         strings: strings, formats: formatIDs, date1904: date1904,
                                         totalCells: &totalCells, warnings: &warnings))
         }
@@ -92,10 +97,13 @@ nonisolated final class BIFF8WorkbookReader {
                       next: position + 4 + length)
     }
 
-    private func worksheet(_ bytes: Data, at start: Int, name: String, index: Int, strings: [String],
+    private func worksheet(_ bytes: Data, at start: Int, before end: Int, name: String, index: Int, strings: [String],
                            formats: [Int], date1904: Bool, totalCells: inout Int,
                            warnings: inout Set<String>) throws -> WorkbookSheet {
         let bof = try record(bytes, at: start)
+        guard start < end, bof.next <= end else {
+            throw invalid("XLS worksheet BOF crosses into the next substream.")
+        }
         guard bof.id == 0x0809, bof.length >= 4, u16(bytes, bof.body) == 0x0600,
               u16(bytes, bof.body + 2) == 0x0010 else {
             throw InputDiagnostic(code: "biffVariantUnsupported", stage: "parse", summary: "XLS worksheet is not a BIFF8 worksheet substream.")
@@ -119,9 +127,10 @@ nonisolated final class BIFF8WorkbookReader {
             totalCells += 1
             cells.append(cell)
         }
-        while position < bytes.count {
+        while position < end {
             if Task.isCancelled { throw OutputPublicationError.cancelled }
             let item = try record(bytes, at: position)
+            guard item.next <= end else { throw invalid("XLS worksheet record crosses into the next substream.") }
             recordCount += 1
             guard recordCount <= limits.valueNodes else {
                 throw InputDiagnostic(code: "biffRecordLimitExceeded", stage: "parse", summary: "XLS worksheet has too many BIFF records.")
@@ -224,7 +233,7 @@ nonisolated final class BIFF8WorkbookReader {
             }
             position = item.next
         }
-        guard ended else { throw invalid("XLS worksheet has no BIFF EOF record.") }
+        guard ended else { throw invalid("XLS worksheet has no BIFF EOF before the next substream.") }
         return WorkbookSheet(index: index, name: name, cells: cells, mergedRanges: merges)
     }
 

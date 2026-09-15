@@ -158,7 +158,7 @@ def biff_cell(row, column, style=0):
     return pack("<HHH", row, column, style)
 
 
-def biff_workbook(version=0x0600, filepass=False):
+def biff_workbook(version=0x0600, filepass=False, missing_first_eof=False):
     bof = biff_record(0x0809, pack("<HH", version, 0x0005))
     strings = [b"00123", b"Second sheet"]
     sst = biff_record(0x00FC, pack("<II", 2, 2) + b"".join(pack("<HB", len(item), 0) + item for item in strings))
@@ -181,7 +181,9 @@ def biff_workbook(version=0x0600, filepass=False):
         biff_record(0x00E5, pack("<H4H", 1, 0, 0, 0, 1)),
         biff_record(0x000A),
     ])
-    second = sheet_bof + biff_record(0x00FD, biff_cell(0, 0) + pack("<I", 1)) + biff_record(0x000A)
+    if missing_first_eof:
+        first = first[:-4] + biff_record(0x9999)
+    second = sheet_bof + biff_record(0x00FD, biff_cell(0, 1 if missing_first_eof else 0) + pack("<I", 1)) + biff_record(0x000A)
     placeholders = biff_sheet_name("Data", 0) + biff_sheet_name("Second", 0)
     first_offset = len(bof) + len(placeholders) + len(globals_tail)
     second_offset = first_offset + len(first)
@@ -221,6 +223,7 @@ def compound_file(workbook):
 (ROOT / "semantic.xls").write_bytes(compound_file(biff_workbook()))
 (ROOT / "encrypted.xls").write_bytes(compound_file(biff_workbook(filepass=True)))
 (ROOT / "biff4.xls").write_bytes(compound_file(biff_workbook(version=0x0400)))
+(ROOT / "cross-sheet-eof.xls").write_bytes(compound_file(biff_workbook(missing_first_eof=True)))
 loop = bytearray(compound_file(biff_workbook()))
 loop[512 + 3 * 4:512 + 4 * 4] = pack("<I", 2)
 (ROOT / "cfb-chain-loop.xls").write_bytes(loop)

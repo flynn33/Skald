@@ -10,7 +10,7 @@ This guide defines the release gate and manual test matrix for the first externa
 - A writable source folder containing test documents.
 - A writable target folder for generated Markdown and JSON.
 
-The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, canonical table consistency, source intake, and PDF/image/XML/HTML extraction pass native coverage. XLSX, BIFF8 XLS, ODS, and ZIP have focused native format coverage; the final full matrix, IDE qualification, and release gates must still pass before an Alpha pass is claimed.
+The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, canonical table consistency, source intake, and PDF/image/XML/HTML extraction pass native coverage. XLSX, BIFF8 XLS, ODS, and ZIP have focused native format coverage. The pinned macOS CI workflow runs Debug/Release builds and tests, analysis, and fixture validators; inspect its actual run and retained artifacts before counting it as a gate. Signed Debug/Release UI behavior, IDE Product Build/Test/Run, separate sanitizers, and the source-bound final matrix are recorded in the remediation completion evidence when verified.
 
 ## Automated Gates
 
@@ -18,14 +18,17 @@ Run these commands from the repository root before every Alpha build:
 
 ```bash
 bash scripts/validate_fixtures.sh
+bash scripts/validate_pdf_fixture.sh
 bash scripts/validate_output_file_planner.sh
-xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -destination 'platform=macOS' test
+xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -configuration Debug -destination 'platform=macOS' test
+xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -configuration Release -destination 'platform=macOS' test
 
 xcodebuild -project "Skald.xcodeproj" \
   -scheme "Skald" \
   -configuration Debug \
   -sdk macosx \
   build
+xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -configuration Release -destination 'platform=macOS' build
 ```
 
 Expected result:

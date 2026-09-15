@@ -179,7 +179,12 @@ xcodebuild -project "Skald.xcodeproj" \
   -configuration Debug \
   -sdk macosx \
   build
+xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -configuration Release -destination 'platform=macOS' build
+xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -configuration Debug -destination 'platform=macOS' test
+xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -configuration Release -destination 'platform=macOS' test
 ```
+
+The pinned [macOS native workflow](.github/workflows/macos-native.yml) runs both configurations, static analysis, and the fixture validators on a macOS 26 runner with Xcode 26.6. It rejects zero, skipped, or missing required tests and retains the native logs and result bundles. Actual Xcode IDE interaction and signed sandboxed UI behavior are local qualification gates described in [ALPHA_TESTING.md](ALPHA_TESTING.md).
 
 ## Project Structure
 
