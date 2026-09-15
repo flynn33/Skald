@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 // Dependencies are immutable after initialization. The only mutable run state
 // is protected by runLock; conversions never overlap on one manager instance.
@@ -7,6 +8,8 @@ nonisolated final class ConversionManager: @unchecked Sendable {
     private let converters: [DocumentConverter]
     private let outputFilePlanner: OutputFilePlanning
     private let outputWriter: OutputWriting
+    private let limits: ResourceLimits
+    private let logger = Logger(subsystem: "com.daley.jim.Skald", category: "conversion")
     private let worklistBuilder = SourceWorklistBuilder()
     private let runLock = NSLock()
     private var runActive = false
@@ -17,23 +20,34 @@ nonisolated final class ConversionManager: @unchecked Sendable {
     // must stay last so it never shadows json/csv/md and friends.
     init(
         fileManager: FileManager = .default,
-        converters: [DocumentConverter] = [
-            PDFConverter(),
-            AttributedDocumentConverter(),
-            DelimitedTextConverter(),
-            JSONConverter(),
-            XMLConverter(),
-            PropertyListConverter(),
-            IniConverter(),
-            ImageOCRConverter(),
-            TextConverter(),
-            SourceTextConverter()
-        ],
+        converters: [DocumentConverter]? = nil,
+        limits: ResourceLimits = ResourceLimits(),
         outputFilePlanner: OutputFilePlanning? = nil,
         outputWriter: OutputWriting? = nil
     ) {
         self.fileManager = fileManager
-        self.converters = converters
+        self.limits = limits
+        self.converters = converters ?? [
+            PDFConverter(maximumInputBytes: limits.documentInputBytes),
+            AttributedDocumentConverter(maximumHTMLBytes: min(limits.textInputBytes, 8 * 1_024 * 1_024),
+                                        maximumDocumentBytes: limits.documentInputBytes,
+                                        maximumPackageEntries: limits.archiveEntries),
+            DelimitedTextConverter(decoder: TextDecoder(maximumInputBytes: limits.delimitedInputBytes),
+                                   parser: DelimitedTextParser(maximumRecords: limits.delimitedRecords,
+                                   maximumColumns: limits.delimitedColumns, maximumCells: limits.delimitedCells,
+                                   maximumFieldScalars: limits.delimitedFieldScalars)),
+            JSONConverter(maximumInputBytes: limits.structuredInputBytes, maximumNodes: limits.valueNodes,
+                          maximumDepth: limits.nestingDepth),
+            XMLConverter(maximumInputBytes: limits.structuredInputBytes, maximumNodes: min(limits.valueNodes, 10_000),
+                         maximumDepth: limits.nestingDepth),
+            PropertyListConverter(maximumInputBytes: limits.structuredInputBytes, maximumNodes: limits.valueNodes,
+                                  maximumDepth: limits.nestingDepth),
+            IniConverter(maximumInputBytes: limits.textInputBytes, maximumRecords: limits.delimitedRecords,
+                         maximumFieldScalars: limits.delimitedFieldScalars),
+            ImageOCRConverter(maximumSourcePixels: limits.imageSourcePixels, maximumInputBytes: limits.imageInputBytes),
+            TextConverter(maximumInputBytes: limits.textInputBytes),
+            SourceTextConverter(maximumInputBytes: limits.textInputBytes)
+        ]
         self.outputFilePlanner = outputFilePlanner ?? OutputFilePlanner(fileManager: fileManager)
         self.outputWriter = outputWriter ?? OutputWriter(planner: self.outputFilePlanner)
     }
@@ -56,6 +70,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             runLock.unlock()
         }
         let startedAt = Date()
+        try limits.validate()
 
         // Conversion runs off the main queue, so explicitly hold security-scoped
         // access to the user-selected source and target folders for the whole
@@ -69,7 +84,10 @@ nonisolated final class ConversionManager: @unchecked Sendable {
 
         // Freeze source identities before the first publication; generated
         // outputs cannot enter this run even when source and target are equal.
-        let worklist = try worklistBuilder.snapshot(selections: selections, target: targetURL, options: intakeOptions)
+        let boundedIntake = IntakeOptions(recursive: intakeOptions.recursive, includeHidden: intakeOptions.includeHidden,
+                                          maximumItems: min(intakeOptions.maximumItems, limits.workItems),
+                                          maximumDepth: min(intakeOptions.maximumDepth, limits.nestingDepth))
+        let worklist = try worklistBuilder.snapshot(selections: selections, target: targetURL, options: boundedIntake)
 
         var entries: [ConversionEntry] = []
         var convertedCount = 0
@@ -79,12 +97,14 @@ nonisolated final class ConversionManager: @unchecked Sendable {
         var failedCount = 0
         var wasCancelled = false
         var reservedOutputPaths = Set<String>()
+        var inspectedInputBytes = 0
 
         for (position, item) in worklist.items.enumerated() {
             if Task.isCancelled || isCancelled?() == true { wasCancelled = true; break }
             progress?(position, worklist.items.count)
             let fileURL = item.url
             let source = SourceFileDescriptor(url: fileURL)
+            logger.debug("Inspecting source \(fileURL.path, privacy: .private)")
 
             if !item.isConvertible {
                 let denied = item.message?.hasPrefix("Cannot") == true
@@ -98,6 +118,22 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     )
                 )
                 if denied { failedCount += 1 } else { skippedCount += 1 }
+                continue
+            }
+
+            do {
+                if let size = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+                    guard size >= 0, size <= limits.totalWorkBytes - inspectedInputBytes else {
+                        throw InputDiagnostic(code: "totalWorkLimitExceeded", stage: "intake", fileName: fileURL.lastPathComponent,
+                                              summary: "Batch input exceeds the configured total-work byte limit.")
+                    }
+                    inspectedInputBytes += size
+                }
+            } catch {
+                logFailure(error, at: fileURL, stage: "intake")
+                entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension,
+                                               status: .failed, message: safeFailureMessage(error, stage: "intake"), outputURL: nil))
+                failedCount += 1
                 continue
             }
 
@@ -118,7 +154,8 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     continue
                 }
             } catch {
-                entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension, status: .failed, message: "Cannot probe input: \(error.localizedDescription)", outputURL: nil))
+                logFailure(error, at: fileURL, stage: "probe")
+                entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension, status: .failed, message: safeFailureMessage(error, stage: "probe"), outputURL: nil))
                 failedCount += 1
                 continue
             }
@@ -160,6 +197,10 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     extractorWarnings = result.warnings
                 }
                 if Task.isCancelled || isCancelled?() == true { wasCancelled = true; break }
+                guard output.utf8.count <= limits.outputBytes else {
+                    throw InputDiagnostic(code: "outputLimitExceeded", stage: "render", fileName: fileURL.lastPathComponent,
+                                          summary: "Rendered output exceeds the configured byte limit.")
+                }
                 let outputExtension = format == .markdown ? "md" : "json"
                 let outputPlan = try outputWriter.publish(
                     Data(output.utf8),
@@ -193,12 +234,13 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                 wasCancelled = true
                 break
             } catch {
+                logFailure(error, at: fileURL, stage: "convert")
                 entries.append(
                     ConversionEntry(
                         fileName: source.reportBaseName,
                         fileExtension: source.fileExtension,
                         status: .failed,
-                        message: error.localizedDescription,
+                        message: safeFailureMessage(error, stage: "convert"),
                         outputURL: nil
                     )
                 )
@@ -223,5 +265,19 @@ nonisolated final class ConversionManager: @unchecked Sendable {
 
     private func normalizedPath(for url: URL) -> String {
         url.standardizedFileURL.path.lowercased()
+    }
+
+    private func logFailure(_ error: Error, at url: URL, stage: String) {
+        let code = (error as? InputDiagnostic)?.code ?? (error as? DelimitedInputError)?.code ?? "conversionFailure"
+        logger.error("File failed at \(stage, privacy: .public) with \(code, privacy: .public); source \(url.path, privacy: .private)")
+    }
+
+    private func safeFailureMessage(_ error: Error, stage: String) -> String {
+        if error is InputDiagnostic || error is DelimitedInputError || error is PDFExtractionError ||
+           error is ImageInputError || error is AttributedInputError {
+            return error.localizedDescription
+        }
+        return InputDiagnostic(code: "conversionFailure", stage: stage,
+                               summary: "Input could not be processed.", underlying: error).localizedDescription
     }
 }

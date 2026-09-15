@@ -27,13 +27,7 @@ nonisolated final class XMLConverter: DocumentConverter {
     }
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
-        if let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size > maximumInputBytes {
-            throw XMLInputError(code: "inputLimitExceeded", stage: "read", summary: "XML input exceeds the configured byte limit.")
-        }
-        let data = try Data(contentsOf: url)
-        guard data.count <= maximumInputBytes else {
-            throw XMLInputError(code: "inputLimitExceeded", stage: "read", summary: "XML input exceeds the configured byte limit.")
-        }
+        let data = try BoundedInputReader.read(url, maximumBytes: maximumInputBytes)
         guard !containsForbiddenDeclaration(data) else {
             throw XMLInputError(code: "externalEntityDenied", stage: "preflight", summary: "DTD and entity declarations are not accepted.")
         }

@@ -49,15 +49,15 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G06-T08 | HTML background and external-resource denial | `HTMLAndAttributedTests/testSafeHTMLExtractsOnBackgroundTaskAndTableIsPartial`, `testResourceBearingHTMLIsDeniedWithoutNetworkRequest` | registered; unsandboxed local TCP request count zero; signed IDE denial observed; P05 Debug/Release/IDE passed |
 | G06-T09 | Attributed tables/attachments and RTFD | `HTMLAndAttributedTests/testRTFAttachmentAndTableWarningsArePartial`, `testRealRTFAndContainerDocumentsReportTheirLimits`; `IntakeTraversalTests/testPackageSymlinkAndSpecialFileDoNotDescendOrBlock` | registered; P05 Debug/Release passed |
 | G07-T01 | Padding amplification upper bound | `CanonicalTableTests/testPaddingCorpusPreservesAllRecordsUnderOneMegabyte` | registered; P03 Debug passed |
-| G07-T02 | Documented large batch memory | `G07ContractTests/testDocumentedLargeBatchMemory` | planned |
-| G07-T03 | Limits at all stages | `G07ContractTests/testLimitsAtAllStages` | planned |
-| G07-T04 | Cancellation latency and cleanup measured | `G07ContractTests/testCancellationLatencyAndCleanupMeasured` | planned |
+| G07-T02 | Documented large batch memory | `ResourceBoundsTests/testSustainedBatchHasBoundedProgressAndNoTemporaryArtifacts`, `test2000RecordCorpusThroughputAndPeakRSS` | registered; P06 100-file/2,000-record measurements passed; process peak includes test host |
+| G07-T03 | Limits at all stages | `ResourceBoundsTests/testReaderRejectsBeforeLoadingAndExactLimitIsAccepted`, `testDelimitedRecordColumnAndFieldLimitsIdentifyBoundary`, `testJSONNodeAndDepthLimitsAreTyped`, `testBatchAndOutputLimitsFailExplicitlyWithoutArtifacts`; P05 PDF/image/XML/HTML limits | registered; P06 native passed; container limits remain P07 |
+| G07-T04 | Cancellation latency and cleanup measured | `ResourceBoundsTests/testReadCancellationStopsBeforeFullFileLoad`, `IntakeTraversalTests/testCancellationPreservesCommittedFirstOutputAndStopsNewWork`, `OutputWriterRegressionTests/testCancellationAfterCommitPreservesPublishedArtifact` | registered; native pass; manual IDE latency observation remains P08 |
 | G08-T01 | XML DTD/entity restrictions | `OrderedXMLTests/testMalformedAndDTDInputsFailWithoutNormalOutput` | registered; UTF-8 and UTF-16 DTD denial passed; adverse entity matrix remains P06 |
-| G08-T02 | HTML local/network denial | `HTMLAndAttributedTests/testResourceBearingHTMLIsDeniedWithoutNetworkRequest` | registered; independent unsandboxed TCP request count zero and signed IDE preflight denial passed; local-file matrix remains P06 |
+| G08-T02 | HTML local/network denial | `HTMLAndAttributedTests/testResourceBearingHTMLIsDeniedWithoutNetworkRequest`, `ResourceBoundsTests/testResourceBearingHTMLAndMarkdownMarkupRemainInert` | registered; independent unsandboxed TCP request count zero, signed IDE preflight denial, and local-file denial passed |
 | G08-T03 | Archive traversal and symlink | `G08ContractTests/testArchiveTraversalAndSymlink` | planned |
 | G08-T04 | Archive expanded bytes and nesting | `G08ContractTests/testArchiveExpandedBytesAndNesting` | planned |
-| G08-T05 | Private logging with synthetic secrets | `G08ContractTests/testPrivateLoggingWithSyntheticSecrets` | planned |
-| G08-T06 | No executable content or external conversions | `G08ContractTests/testNoExecutableContentOrExternalConversions` | planned |
+| G08-T05 | Private logging with synthetic secrets | `ResourceBoundsTests/testMalformedJSONPreservesCauseWithoutEchoingContent`, `ConversionManager.logFailure` source inspection | registered; P06 synthetic visible-summary test and private-path OSLog source inspection passed; final runtime log inspection remains P08 |
+| G08-T06 | No executable content or external conversions | `ResourceBoundsTests/testResourceBearingHTMLAndMarkdownMarkupRemainInert`; production registry/source inspection | registered; P06 HTML/Markdown negative passed; container-member negatives remain P07 |
 | G09-T01 | Actual Xcode Product Build | `G09ContractTests/testActualXcodeProductBuild` | planned |
 | G09-T02 | Actual Xcode Product Test | `G09ContractTests/testActualXcodeProductTest` | planned |
 | G09-T03 | Actual Xcode Product Run | `G09ContractTests/testActualXcodeProductRun` | planned |

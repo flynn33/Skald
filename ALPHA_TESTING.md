@@ -60,6 +60,8 @@ Convert the complete `Fixtures/input` folder to both formats and verify:
 - Invalid files are reported as failed without stopping the remaining batch.
 - Generated JSON parses successfully with `JSONSerialization` or another standards-compliant parser.
 - Generated Markdown renders without broken tables or prematurely closed code fences.
+- A known oversized input fails with a limit code and leaves no partial output; cancelling a batch stops before the next file and leaves committed artifacts intact.
+- Source text containing `<img>` or Markdown image syntax appears as display text rather than an active resource reference.
 
 ### 4. Data-Integrity Cases
 

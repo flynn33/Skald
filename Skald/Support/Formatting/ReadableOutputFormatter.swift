@@ -30,7 +30,7 @@ nonisolated enum ReadableOutputFormatter {
             sections.append(renderMarkdownBody(blocks: dataBlocks, headingBaseLevel: headingBaseLevel))
         }
 
-        var lines: [String] = documentHasOwnTitle ? [] : ["# \(title)"]
+        var lines: [String] = documentHasOwnTitle ? [] : ["# \(escapeMarkdownText(title))"]
         for section in sections where !section.isEmpty {
             if !lines.isEmpty {
                 lines.append("")
@@ -281,7 +281,7 @@ nonisolated enum ReadableOutputFormatter {
                 }
                 let headingLevel = max(1, min(6, headingBaseLevel + (block.headingLevel ?? 1) - 1))
                 let prefix = String(repeating: "#", count: headingLevel)
-                lines.append("\(prefix) \(block.text)")
+                lines.append("\(prefix) \(escapeMarkdownText(block.text))")
                 lines.append("")
                 previousBlockWasList = false
 
@@ -289,7 +289,7 @@ nonisolated enum ReadableOutputFormatter {
                 if !lines.isEmpty && lines.last != "" {
                     lines.append("")
                 }
-                lines.append(contentsOf: wrapText(block.text, width: markdownWrapWidth, initialIndent: "", subsequentIndent: ""))
+                lines.append(contentsOf: wrapText(escapeMarkdownText(block.text), width: markdownWrapWidth, initialIndent: "", subsequentIndent: ""))
                 previousBlockWasList = false
 
             case .listItem:
@@ -301,7 +301,7 @@ nonisolated enum ReadableOutputFormatter {
                 let marker = listMarker(for: block)
                 let prefix = indent + marker
                 let subsequentIndent = String(repeating: " ", count: prefix.count)
-                lines.append(contentsOf: wrapText(block.text, width: markdownWrapWidth, initialIndent: prefix, subsequentIndent: subsequentIndent))
+                lines.append(contentsOf: wrapText(escapeMarkdownText(block.text), width: markdownWrapWidth, initialIndent: prefix, subsequentIndent: subsequentIndent))
                 previousBlockWasList = true
 
             case .code:
@@ -335,7 +335,7 @@ nonisolated enum ReadableOutputFormatter {
                     lines.append("")
                 }
                 let prefix = String(repeating: "#", count: max(1, min(6, headingBaseLevel)))
-                lines.append("\(prefix) \(title)")
+                lines.append("\(prefix) \(escapeMarkdownText(title))")
                 lines.append("")
             } else if !lines.isEmpty {
                 lines.append("")
@@ -443,12 +443,29 @@ nonisolated enum ReadableOutputFormatter {
     }
 
     private static func escapeMarkdownTableCell(_ text: String) -> String {
-        text
+        escapeMarkdownText(text)
             .replacingOccurrences(of: "\r\n", with: "\n")
             .replacingOccurrences(of: "\r", with: "\n")
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "|", with: "\\|")
             .replacingOccurrences(of: "\n", with: "<br>")
+    }
+
+    private static func escapeMarkdownText(_ text: String) -> String {
+        var escaped = String()
+        escaped.reserveCapacity(text.utf8.count)
+        for scalar in text.unicodeScalars {
+            switch scalar {
+            case "&": escaped += "&amp;"
+            case "<": escaped += "&lt;"
+            case ">": escaped += "&gt;"
+            case "\\", "`", "*", "_", "{", "}", "[", "]", "#", "+", "-", "!":
+                escaped += "\\"
+                escaped.unicodeScalars.append(scalar)
+            default: escaped.unicodeScalars.append(scalar)
+            }
+        }
+        return escaped
     }
 
     private static func iso8601Now() -> String {

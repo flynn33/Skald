@@ -16,12 +16,14 @@ nonisolated final class PDFConverter: DocumentConverter {
     private let maximumPages: Int
     private let maximumRasterPixels: Int
     private let maximumRasterDimension: Int
+    private let maximumInputBytes: Int
 
-    init(ocr: OCRRecognizing = VisionOCRService(), maximumPages: Int = 64, maximumRasterPixels: Int = 4_000_000, maximumRasterDimension: Int = 2_048) {
+    init(ocr: OCRRecognizing = VisionOCRService(), maximumPages: Int = 64, maximumRasterPixels: Int = 4_000_000, maximumRasterDimension: Int = 2_048, maximumInputBytes: Int = 64 * 1_024 * 1_024) {
         self.ocr = ocr
         self.maximumPages = max(1, maximumPages)
         self.maximumRasterPixels = max(1, maximumRasterPixels)
         self.maximumRasterDimension = max(1, maximumRasterDimension)
+        self.maximumInputBytes = maximumInputBytes
     }
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
@@ -29,6 +31,7 @@ nonisolated final class PDFConverter: DocumentConverter {
     }
 
     func convertDetailed(at url: URL, to format: OutputFormat) throws -> ConverterOutcome {
+        try BoundedInputReader.preflight(url, maximumBytes: maximumInputBytes)
         guard let document = PDFDocument(url: url) else {
             throw PDFExtractionError(code: "invalidPDF", summary: "The PDF could not be opened.")
         }

@@ -5,10 +5,19 @@ import Foundation
 /// (or `key: value`) lines become string entries; `;` and `#` start comments.
 nonisolated final class IniConverter: DocumentConverter {
     let supportedExtensions = ["ini", "cfg", "properties", "env"]
+    private let maximumInputBytes: Int
+    private let maximumRecords: Int
+    private let maximumFieldScalars: Int
+
+    init(maximumInputBytes: Int = 16 * 1_024 * 1_024, maximumRecords: Int = 100_000, maximumFieldScalars: Int = 1_000_000) {
+        self.maximumInputBytes = maximumInputBytes
+        self.maximumRecords = maximumRecords
+        self.maximumFieldScalars = maximumFieldScalars
+    }
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
-        let text = try TextFileReader.read(url)
-        let value = parse(text)
+        let text = try TextFileReader.read(url, maximumInputBytes: maximumInputBytes)
+        let value = try parse(text)
 
         switch format {
         case .markdown:
@@ -30,7 +39,10 @@ nonisolated final class IniConverter: DocumentConverter {
         }
     }
 
-    private func parse(_ text: String) -> ReadableValue {
+    private func parse(_ text: String) throws -> ReadableValue {
+        guard maximumRecords > 0, maximumFieldScalars > 0 else {
+            throw InputDiagnostic(code: "invalidLimitConfiguration", stage: "configure", summary: "INI limits must be positive.")
+        }
         var rootEntries: [String: ReadableValue] = [:]
         var sections: [String: [String: ReadableValue]] = [:]
         var sectionOrder: [String] = []
@@ -41,7 +53,16 @@ nonisolated final class IniConverter: DocumentConverter {
             .replacingOccurrences(of: "\r", with: "\n")
             .components(separatedBy: "\n")
 
-        for rawLine in lines {
+        for (index, rawLine) in lines.enumerated() {
+            if Task.isCancelled { throw OutputPublicationError.cancelled }
+            guard index < maximumRecords else {
+                throw InputDiagnostic(code: "recordLimitExceeded", stage: "parse", record: index + 1,
+                                      summary: "INI input exceeds the configured line limit.")
+            }
+            guard rawLine.unicodeScalars.count <= maximumFieldScalars else {
+                throw InputDiagnostic(code: "fieldLimitExceeded", stage: "parse", record: index + 1,
+                                      summary: "INI line exceeds the configured scalar limit.")
+            }
             let line = rawLine.trimmingCharacters(in: .whitespaces)
             if line.isEmpty || line.hasPrefix(";") || line.hasPrefix("#") {
                 continue

@@ -11,7 +11,7 @@ Sample Digital
 Skald converts documents into readable Markdown and JSON so teams can review content
 without wrestling with raw text streams or broken layouts. This sentence is intentionally
 long so that it wraps across several lines and helps push the document onto a second page
-to exercise multi-page extraction and the running header and footer detection logic.
+to exercise multi\-page extraction and the running header and footer detection logic.
 
 ##### Key Points
 

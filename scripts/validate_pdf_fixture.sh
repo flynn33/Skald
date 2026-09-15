@@ -19,6 +19,7 @@ swiftc \
   "${ROOT_DIR}/Skald/Models/OutputFormat.swift" \
   "${ROOT_DIR}/Skald/Models/ConversionError.swift" \
   "${ROOT_DIR}/Skald/Models/OutputPublicationError.swift" \
+  "${ROOT_DIR}/Skald/Models/InputDiagnostic.swift" \
   "${ROOT_DIR}/Skald/Models/DelimitedOptions.swift" \
   "${ROOT_DIR}/Skald/Models/SourceFileDescriptor.swift" \
   "${ROOT_DIR}/Skald/Models/ReadableModels.swift" \
@@ -27,6 +28,7 @@ swiftc \
   "${ROOT_DIR}/Skald/Support/Parsing/PlainTextParser.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/AttributedTextParser.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/PDFTextParser.swift" \
+  "${ROOT_DIR}/Skald/Support/Parsing/BoundedInputReader.swift" \
   "${ROOT_DIR}/Skald/Services/OCRService.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/PDFConverter.swift" \
   -o "${BIN_PATH}"

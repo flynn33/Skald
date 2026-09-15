@@ -14,10 +14,15 @@ nonisolated final class TextDecoder: TextDecoding {
     }
 
     func read(_ url: URL, choice: TextEncodingChoice) throws -> DecodedText {
+        if Task.isCancelled { throw OutputPublicationError.cancelled }
+        if let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size > maximumInputBytes {
+            throw DelimitedInputError(code: "inputLimitExceeded", stage: "read", summary: "Delimited input exceeds the configured byte limit.")
+        }
         let handle = try FileHandle(forReadingFrom: url)
         defer { try? handle.close() }
         var data = Data()
         while let chunk = try handle.read(upToCount: readChunkSize), !chunk.isEmpty {
+            if Task.isCancelled { throw OutputPublicationError.cancelled }
             guard chunk.count <= maximumInputBytes - data.count else {
                 throw DelimitedInputError(code: "inputLimitExceeded", stage: "read", summary: "Delimited input exceeds the configured byte limit.")
             }
@@ -30,7 +35,9 @@ nonisolated final class TextDecoder: TextDecoding {
         guard data.count <= maximumInputBytes else {
             throw DelimitedInputError(code: "inputLimitExceeded", stage: "decode", summary: "Delimited input exceeds the configured byte limit.")
         }
-        let bytes = [UInt8](data)
+        if Task.isCancelled { throw OutputPublicationError.cancelled }
+        return try data.withUnsafeBytes { rawBytes in
+        let bytes = rawBytes.bindMemory(to: UInt8.self)
         let marker: (TextEncodingChoice, Int)?
         if bytes.starts(with: [0x00, 0x00, 0xFE, 0xFF]) { marker = (.utf32BigEndian, 4) }
         else if bytes.starts(with: [0xFF, 0xFE, 0x00, 0x00]) { marker = (.utf32LittleEndian, 4) }
@@ -43,7 +50,8 @@ nonisolated final class TextDecoder: TextDecoding {
             throw DelimitedInputError(code: "invalidEncoding", stage: "decode", summary: "The encoding choice conflicts with the file's leading BOM.")
         }
         let selected = marker?.0 ?? (choice == .automatic ? .utf8 : choice)
-        let payload = Array(bytes.dropFirst(marker?.1 ?? 0))
+        let offset = marker?.1 ?? 0
+        let payload = UnsafeBufferPointer<UInt8>(start: bytes.baseAddress?.advanced(by: offset), count: bytes.count - offset)
         let text: String
         switch selected {
         case .utf8, .automatic:
@@ -72,9 +80,10 @@ nonisolated final class TextDecoder: TextDecoding {
         case .latin1: name = "iso-8859-1"
         }
         return DecodedText(text: text, encoding: name, provenance: marker == nil ? (choice == .automatic ? "automatic-utf8" : "explicit") : "bom")
+        }
     }
 
-    private func decodeUTF8(_ bytes: [UInt8]) throws -> String {
+    private func decodeUTF8(_ bytes: UnsafeBufferPointer<UInt8>) throws -> String {
         var offset = 0
         while offset < bytes.count {
             let first = bytes[offset]
@@ -96,11 +105,11 @@ nonisolated final class TextDecoder: TextDecoding {
             }
             offset += length
         }
-        guard let text = String(data: Data(bytes), encoding: .utf8) else { throw invalidByte(0) }
+        guard let text = String(bytes: bytes, encoding: .utf8) else { throw invalidByte(0) }
         return text
     }
 
-    private func decodeUTF16(_ bytes: [UInt8], littleEndian: Bool) throws -> String {
+    private func decodeUTF16(_ bytes: UnsafeBufferPointer<UInt8>, littleEndian: Bool) throws -> String {
         guard bytes.count.isMultiple(of: 2) else { throw invalidByte(bytes.count - 1) }
         var scalars = String.UnicodeScalarView()
         var offset = 0
@@ -121,7 +130,7 @@ nonisolated final class TextDecoder: TextDecoding {
         return String(scalars)
     }
 
-    private func decodeUTF32(_ bytes: [UInt8], littleEndian: Bool) throws -> String {
+    private func decodeUTF32(_ bytes: UnsafeBufferPointer<UInt8>, littleEndian: Bool) throws -> String {
         guard bytes.count.isMultiple(of: 4) else { throw invalidByte(bytes.count - bytes.count % 4) }
         var scalars = String.UnicodeScalarView()
         for offset in stride(from: 0, to: bytes.count, by: 4) {
@@ -137,7 +146,7 @@ nonisolated final class TextDecoder: TextDecoding {
         return String(scalars)
     }
 
-    private func decodeSingleByte(_ bytes: [UInt8], windows1252: Bool) throws -> String {
+    private func decodeSingleByte(_ bytes: UnsafeBufferPointer<UInt8>, windows1252: Bool) throws -> String {
         let map: [UInt8: UInt32] = [
             0x80: 0x20AC, 0x82: 0x201A, 0x83: 0x0192, 0x84: 0x201E, 0x85: 0x2026,
             0x86: 0x2020, 0x87: 0x2021, 0x88: 0x02C6, 0x89: 0x2030, 0x8A: 0x0160,
@@ -155,7 +164,7 @@ nonisolated final class TextDecoder: TextDecoding {
         return String(scalars)
     }
 
-    private func unit16(_ bytes: [UInt8], offset: Int, littleEndian: Bool) -> UInt16 {
+    private func unit16(_ bytes: UnsafeBufferPointer<UInt8>, offset: Int, littleEndian: Bool) -> UInt16 {
         littleEndian ? UInt16(bytes[offset]) | UInt16(bytes[offset + 1]) << 8 : UInt16(bytes[offset]) << 8 | UInt16(bytes[offset + 1])
     }
 

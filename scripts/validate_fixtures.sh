@@ -13,6 +13,8 @@ swiftc \
   "${ROOT_DIR}/Skald/Services/Converters/DocumentConverter.swift" \
   "${ROOT_DIR}/Skald/Models/OutputFormat.swift" \
   "${ROOT_DIR}/Skald/Models/ConversionError.swift" \
+  "${ROOT_DIR}/Skald/Models/InputDiagnostic.swift" \
+  "${ROOT_DIR}/Skald/Models/OutputPublicationError.swift" \
   "${ROOT_DIR}/Skald/Models/DelimitedInputError.swift" \
   "${ROOT_DIR}/Skald/Models/DelimitedOptions.swift" \
   "${ROOT_DIR}/Skald/Models/SourceFileDescriptor.swift" \
@@ -28,6 +30,7 @@ swiftc \
   "${ROOT_DIR}/Skald/Services/Converters/DelimitedTextConverter.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/PropertyListConverter.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/TextFileReader.swift" \
+  "${ROOT_DIR}/Skald/Support/Parsing/BoundedInputReader.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/JSONConverter.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/XMLConverter.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/IniConverter.swift" \

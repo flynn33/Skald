@@ -11,10 +11,14 @@ nonisolated final class AttributedDocumentConverter: DocumentConverter {
     let supportedExtensions = ["docx", "doc", "rtf", "rtfd", "odt", "html", "htm", "webarchive"]
     private let parser = AttributedTextParser()
     private let maximumHTMLBytes: Int
+    private let maximumDocumentBytes: Int
+    private let maximumPackageEntries: Int
     private let htmlTimeout: TimeInterval
 
-    init(maximumHTMLBytes: Int = 8 * 1_024 * 1_024, htmlTimeout: TimeInterval = 10) {
+    init(maximumHTMLBytes: Int = 8 * 1_024 * 1_024, maximumDocumentBytes: Int = 64 * 1_024 * 1_024, maximumPackageEntries: Int = 1_000, htmlTimeout: TimeInterval = 10) {
         self.maximumHTMLBytes = max(1, maximumHTMLBytes)
+        self.maximumDocumentBytes = maximumDocumentBytes
+        self.maximumPackageEntries = maximumPackageEntries
         self.htmlTimeout = max(1, htmlTimeout)
     }
 
@@ -46,6 +50,7 @@ nonisolated final class AttributedDocumentConverter: DocumentConverter {
             throw AttributedInputError(code: "externalResourceDenied", summary: "Web archives are not imported without a resource-isolated reader.")
         } else {
             guard let type = documentType(for: sourceExtension) else { throw ConversionError.unsupportedFormat }
+            try BoundedInputReader.preflight(url, maximumBytes: maximumDocumentBytes, maximumEntries: maximumPackageEntries)
             let attributed = try NSAttributedString(url: url, options: [.documentType: type], documentAttributes: nil)
             warnings.append(contentsOf: unextractedFeatures(in: attributed))
             if ["doc", "docx", "odt"].contains(sourceExtension) {
@@ -73,12 +78,9 @@ nonisolated final class AttributedDocumentConverter: DocumentConverter {
     }
 
     private func validatedHTML(at url: URL) throws -> (String, Bool) {
-        if let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size > maximumHTMLBytes {
-            throw AttributedInputError(code: "inputLimitExceeded", summary: "HTML exceeds the configured byte limit.")
-        }
-        let data = try Data(contentsOf: url)
-        guard data.count <= maximumHTMLBytes, let html = String(data: data, encoding: .utf8) else {
-            throw AttributedInputError(code: "invalidHTML", summary: "HTML is too large or is not strict UTF-8.")
+        let data = try BoundedInputReader.read(url, maximumBytes: maximumHTMLBytes)
+        guard let html = String(data: data, encoding: .utf8) else {
+            throw AttributedInputError(code: "invalidHTML", summary: "HTML is not strict UTF-8.")
         }
         let allowed = Set(["html", "head", "body", "title", "h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "span", "b", "strong", "i", "em", "u", "br", "ul", "ol", "li", "blockquote", "pre", "code", "table", "thead", "tbody", "tr", "td", "th"])
         let tagPattern = try NSRegularExpression(pattern: "<[^>]*>")

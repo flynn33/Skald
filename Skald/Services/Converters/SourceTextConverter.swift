@@ -15,9 +15,12 @@ nonisolated final class SourceTextConverter: DocumentConverter {
         "scala", "groovy", "gradle", "tex", "rst", "adoc", "org",
         "vue", "svelte"
     ]
+    private let maximumInputBytes: Int
+
+    init(maximumInputBytes: Int = 16 * 1_024 * 1_024) { self.maximumInputBytes = maximumInputBytes }
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
-        let raw = try TextFileReader.read(url)
+        let raw = try TextFileReader.read(url, maximumInputBytes: maximumInputBytes)
         let content = raw
         let block = ReadableBlock(
             order: 1,

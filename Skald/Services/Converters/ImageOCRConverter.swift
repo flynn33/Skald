@@ -14,12 +14,14 @@ nonisolated final class ImageOCRConverter: DocumentConverter {
     private let maximumFrames: Int
     private let maximumSourcePixels: UInt64
     private let maximumThumbnailDimension: Int
+    private let maximumInputBytes: Int
 
-    init(ocr: OCRRecognizing = VisionOCRService(), maximumFrames: Int = 64, maximumSourcePixels: UInt64 = 40_000_000, maximumThumbnailDimension: Int = 2_048) {
+    init(ocr: OCRRecognizing = VisionOCRService(), maximumFrames: Int = 64, maximumSourcePixels: UInt64 = 40_000_000, maximumThumbnailDimension: Int = 2_048, maximumInputBytes: Int = 64 * 1_024 * 1_024) {
         self.ocr = ocr
         self.maximumFrames = max(1, maximumFrames)
         self.maximumSourcePixels = max(1, maximumSourcePixels)
         self.maximumThumbnailDimension = max(1, maximumThumbnailDimension)
+        self.maximumInputBytes = maximumInputBytes
     }
 
     func convert(at url: URL, to format: OutputFormat) throws -> String {
@@ -27,6 +29,7 @@ nonisolated final class ImageOCRConverter: DocumentConverter {
     }
 
     func convertDetailed(at url: URL, to format: OutputFormat) throws -> ConverterOutcome {
+        try BoundedInputReader.preflight(url, maximumBytes: maximumInputBytes)
         guard let source = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary) else {
             throw ImageInputError(code: "invalidImage", summary: "The image source could not be opened.")
         }
