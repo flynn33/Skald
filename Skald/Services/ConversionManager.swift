@@ -27,8 +27,9 @@ nonisolated final class ConversionManager: @unchecked Sendable {
     ) {
         self.fileManager = fileManager
         self.limits = limits
-        self.converters = converters ?? [
+        let defaultConverters: [DocumentConverter] = [
             PDFConverter(maximumInputBytes: limits.documentInputBytes),
+            WorkbookConverter(limits: limits),
             AttributedDocumentConverter(maximumHTMLBytes: min(limits.textInputBytes, 8 * 1_024 * 1_024),
                                         maximumDocumentBytes: limits.documentInputBytes,
                                         maximumPackageEntries: limits.archiveEntries),
@@ -48,6 +49,12 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             TextConverter(maximumInputBytes: limits.textInputBytes),
             SourceTextConverter(maximumInputBytes: limits.textInputBytes)
         ]
+        var configuredConverters = defaultConverters
+        configuredConverters.insert(ZipCollectionConverter(memberConverters: defaultConverters,
+            maximumInputBytes: limits.documentInputBytes, maximumEntries: limits.archiveEntries,
+            maximumExpandedBytes: limits.archiveExpandedBytes, maximumMemberBytes: limits.documentInputBytes,
+            maximumArchiveDepth: limits.archiveDepth), at: configuredConverters.count - 2)
+        self.converters = converters ?? configuredConverters
         self.outputFilePlanner = outputFilePlanner ?? OutputFilePlanner(fileManager: fileManager)
         self.outputWriter = outputWriter ?? OutputWriter(planner: self.outputFilePlanner)
     }
@@ -273,7 +280,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
     }
 
     private func safeFailureMessage(_ error: Error, stage: String) -> String {
-        if error is InputDiagnostic || error is DelimitedInputError || error is PDFExtractionError ||
+        if error is InputDiagnostic || error is DelimitedInputError || error is ZipContainerError || error is PDFExtractionError ||
            error is ImageInputError || error is AttributedInputError {
             return error.localizedDescription
         }

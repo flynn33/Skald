@@ -50,26 +50,26 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G06-T09 | Attributed tables/attachments and RTFD | `HTMLAndAttributedTests/testRTFAttachmentAndTableWarningsArePartial`, `testRealRTFAndContainerDocumentsReportTheirLimits`; `IntakeTraversalTests/testPackageSymlinkAndSpecialFileDoNotDescendOrBlock` | registered; P05 Debug/Release passed |
 | G07-T01 | Padding amplification upper bound | `CanonicalTableTests/testPaddingCorpusPreservesAllRecordsUnderOneMegabyte` | registered; P03 Debug passed |
 | G07-T02 | Documented large batch memory | `ResourceBoundsTests/testSustainedBatchHasBoundedProgressAndNoTemporaryArtifacts`, `test2000RecordCorpusThroughputAndPeakRSS` | registered; P06 100-file/2,000-record measurements passed; process peak includes test host |
-| G07-T03 | Limits at all stages | `ResourceBoundsTests/testReaderRejectsBeforeLoadingAndExactLimitIsAccepted`, `testDelimitedRecordColumnAndFieldLimitsIdentifyBoundary`, `testJSONNodeAndDepthLimitsAreTyped`, `testBatchAndOutputLimitsFailExplicitlyWithoutArtifacts`; P05 PDF/image/XML/HTML limits | registered; P06 native passed; container limits remain P07 |
+| G07-T03 | Limits at all stages | `ResourceBoundsTests/testReaderRejectsBeforeLoadingAndExactLimitIsAccepted`, `testDelimitedRecordColumnAndFieldLimitsIdentifyBoundary`, `testJSONNodeAndDepthLimitsAreTyped`, `testBatchAndOutputLimitsFailExplicitlyWithoutArtifacts`; `WorkbookFormatTests/testNamedWorkbookExactByteCeilingAndOneByteBelow`, `ZipContainerTests/testZipExactInputByteLimitAndOneByteBelow` | registered; P06 and P07 native boundaries passed; full final rerun P08 |
 | G07-T04 | Cancellation latency and cleanup measured | `ResourceBoundsTests/testReadCancellationStopsBeforeFullFileLoad`, `IntakeTraversalTests/testCancellationPreservesCommittedFirstOutputAndStopsNewWork`, `OutputWriterRegressionTests/testCancellationAfterCommitPreservesPublishedArtifact` | registered; native pass; manual IDE latency observation remains P08 |
 | G08-T01 | XML DTD/entity restrictions | `OrderedXMLTests/testMalformedAndDTDInputsFailWithoutNormalOutput` | registered; UTF-8 and UTF-16 DTD denial passed; adverse entity matrix remains P06 |
 | G08-T02 | HTML local/network denial | `HTMLAndAttributedTests/testResourceBearingHTMLIsDeniedWithoutNetworkRequest`, `ResourceBoundsTests/testResourceBearingHTMLAndMarkdownMarkupRemainInert` | registered; independent unsandboxed TCP request count zero, signed IDE preflight denial, and local-file denial passed |
-| G08-T03 | Archive traversal and symlink | `G08ContractTests/testArchiveTraversalAndSymlink` | planned |
-| G08-T04 | Archive expanded bytes and nesting | `G08ContractTests/testArchiveExpandedBytesAndNesting` | planned |
+| G08-T03 | Archive traversal and symlink | `ZipContainerTests/testUnsafeAndUnsupportedVariantsFailBeforePublication` | P07 traversal, absolute/reserved/colliding paths, links, and local-header mismatch passed |
+| G08-T04 | Archive expanded bytes and nesting | `ZipContainerTests/testEntryExpansionAndDepthLimits`, `testZipExactInputByteLimitAndOneByteBelow` | P07 expansion ratio/byte/depth boundaries passed; full final rerun P08 |
 | G08-T05 | Private logging with synthetic secrets | `ResourceBoundsTests/testMalformedJSONPreservesCauseWithoutEchoingContent`, `ConversionManager.logFailure` source inspection | registered; P06 synthetic visible-summary test and private-path OSLog source inspection passed; final runtime log inspection remains P08 |
-| G08-T06 | No executable content or external conversions | `ResourceBoundsTests/testResourceBearingHTMLAndMarkdownMarkupRemainInert`; production registry/source inspection | registered; P06 HTML/Markdown negative passed; container-member negatives remain P07 |
+| G08-T06 | No executable content or external conversions | `ResourceBoundsTests/testResourceBearingHTMLAndMarkdownMarkupRemainInert`, `ZipContainerTests/testRealRegistryReportsCollectionMembersAndNestedProvenance`; production registry/source inspection | registered; P07 typed member routing and unknown-binary visibility passed; final review P08 |
 | G09-T01 | Actual Xcode Product Build | `G09ContractTests/testActualXcodeProductBuild` | planned |
 | G09-T02 | Actual Xcode Product Test | `G09ContractTests/testActualXcodeProductTest` | planned |
 | G09-T03 | Actual Xcode Product Run | `G09ContractTests/testActualXcodeProductRun` | planned |
 | G09-T04 | Native picker and options | `G09ContractTests/testNativePickerAndOptions` | planned |
 | G09-T05 | Release sandbox effective entitlements | `G09ContractTests/testReleaseSandboxEffectiveEntitlements` | planned |
 | G09-T06 | Cancel/restart and responsive UI | `G09ContractTests/testCancelRestartAndResponsiveUi` | planned |
-| G10-T01 | Valid XLSX semantic data both outputs | `G10ContractTests/testValidXlsxSemanticDataBothOutputs` | planned |
-| G10-T02 | Valid XLS semantic data both outputs | `G10ContractTests/testValidXlsSemanticDataBothOutputs` | planned |
-| G10-T03 | Valid ODS semantic data both outputs | `G10ContractTests/testValidOdsSemanticDataBothOutputs` | planned |
-| G10-T04 | ZIP collection through registry both outputs | `G10ContractTests/testZipCollectionThroughRegistryBothOutputs` | planned |
-| G10-T05 | Formula/cache/precision/date/sparse semantics | `G10ContractTests/testFormulaCachePrecisionDateSparseSemantics` | planned |
-| G10-T06 | Adverse encrypted/unsupported container outcomes | `G10ContractTests/testAdverseEncryptedUnsupportedContainerOutcomes` | planned |
+| G10-T01 | Valid XLSX semantic data both outputs | `WorkbookFormatTests/testXLSXPreservesOrderSparseTypesFormulaCacheDateAndMerge`, `testNamedWorkbooksRouteThroughRealManager` | P07 focused passed; full final rerun P08 |
+| G10-T02 | Valid XLS semantic data both outputs | `WorkbookFormatTests/testBIFF8XLSReadsCompoundWorkbookCellsFormulaCacheAndMerge`, `testNamedWorkbooksRouteThroughRealManager` | P07 real CFB/BIFF8 subset passed; full final rerun P08 |
+| G10-T03 | Valid ODS semantic data both outputs | `WorkbookFormatTests/testODSPreservesRepeatedSparseCellsPrecisionFormulaDateAndMerge`, `testNamedWorkbooksRouteThroughRealManager` | P07 focused passed; full final rerun P08 |
+| G10-T04 | ZIP collection through registry both outputs | `ZipContainerTests/testRealRegistryReportsCollectionMembersAndNestedProvenance`, `testWorkbookMembersUseNamedFormatReadersInsideCollection` | P07 focused passed; full final rerun P08 |
+| G10-T05 | Formula/cache/precision/date/sparse semantics | three positive `WorkbookFormatTests` methods | P07 focused passed; BIFF8 variants bounded |
+| G10-T06 | Adverse encrypted/unsupported container outcomes | `WorkbookFormatTests/testExternalEntityEncryptedAndRepeatedVariantsFailWithoutOutput`, `ZipContainerTests/testUnsafeAndUnsupportedVariantsFailBeforePublication` | P07 focused passed; full final rerun P08 |
 | G11-T01 | macOS CI build/test execution | `G11ContractTests/testMacosCiBuildTestExecution` | planned |
 | G11-T02 | Native artifact/test count inspection | `G11ContractTests/testNativeArtifactTestCountInspection` | planned |
 | G11-T03 | Capability README migration accuracy | `G11ContractTests/testCapabilityReadmeMigrationAccuracy` | planned |

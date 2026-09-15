@@ -10,7 +10,7 @@ This guide defines the release gate and manual test matrix for the first externa
 - A writable source folder containing test documents.
 - A writable target folder for generated Markdown and JSON.
 
-The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, canonical table consistency, and source intake now pass the current native Debug/Release suite. PDF/image/XML/HTML extraction now has focused native coverage; named spreadsheet/archive expansion, full IDE qualification, and release gates must still pass before an Alpha pass is claimed.
+The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, canonical table consistency, source intake, and PDF/image/XML/HTML extraction pass native coverage. XLSX, BIFF8 XLS, ODS, and ZIP have focused native format coverage; the final full matrix, IDE qualification, and release gates must still pass before an Alpha pass is claimed.
 
 ## Automated Gates
 
@@ -95,6 +95,8 @@ Exercise at least one real-world file from each Alpha category:
 - JSON, XML, plist, and INI/environment configuration.
 - PNG, JPEG, or HEIC OCR.
 - Source code, YAML/TOML, or log input.
+- XLSX, BIFF8 XLS, and ODS workbooks with formulas/caches and merged cells.
+- ZIP32 collection with stored/deflated members, including one unknown binary member and a nested ZIP.
 
 ## Alpha Pass Criteria
 
@@ -113,6 +115,7 @@ An Alpha build passes when all of the following are true:
 - Scanned PDF pages use bounded Vision OCR and disclose confidence; recognition may be partial or empty. HTML accepts only resource-free markup, and WebArchive import fails explicitly. DOC/DOCX/ODT container structures remain unverified and are reported partial.
 - Document formatting is heuristic and is not layout-faithful.
 - YAML, TOML, source code, and log files are preserved as verbatim code blocks rather than structurally parsed.
+- XLS support is limited to the documented BIFF8 worksheet subset. XLSX/ODS formula caches are not recalculated; ZIP64, encrypted archives, and unsafe member paths fail explicitly.
 - Existing outputs are preserved, so repeated conversions create suffixed files instead of replacing prior results.
 
 ## Reporting an Alpha Defect

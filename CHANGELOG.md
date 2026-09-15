@@ -7,6 +7,8 @@ and this project uses `release.feature.patch` versioning.
 
 ## [Unreleased]
 ### Added
+- Native ZIP32 collection and XLSX/ODS/BIFF8 XLS workbook readers with typed sparse cells, formula/cache/date/merge metadata, member provenance, and explicit unsupported-variant diagnostics.
+- Deterministic actual-format fixtures for stored/deflated ZIP, SpreadsheetML/ODF, and CFB/BIFF8, plus traversal, collision, expansion, entity, encryption, and chain-loop negatives.
 - Validated per-format byte, record, column, cell, field, nesting, pixel, worklist, batch, and output ceilings with typed safe failure diagnostics and private-path native logging.
 - Per-page PDF and per-frame image extraction provenance, status, OCR confidence, and warnings; scanned pages use bounded Vision OCR.
 - Ordered XML mixed-content schema 2.0 and resource-free offline HTML extraction on a background task, with partial-outcome reporting for attributed structures.
