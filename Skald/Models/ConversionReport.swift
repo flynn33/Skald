@@ -2,6 +2,7 @@ import Foundation
 
 nonisolated enum ConversionStatus: String, Sendable {
     case converted
+    case partial
     case empty
     case skipped
     case failed
@@ -26,6 +27,7 @@ nonisolated struct ConversionReport: Sendable {
     let entries: [ConversionEntry]
     let plannedCount: Int
     let convertedCount: Int
+    let partialCount: Int
     let emptyCount: Int
     let skippedCount: Int
     let failedCount: Int
@@ -41,6 +43,6 @@ nonisolated struct ConversionReport: Sendable {
 
     var summaryLine: String {
         let prefix = wasCancelled ? "Cancelled after" : "Converted"
-        return "\(prefix) \(convertedCount) of \(plannedCount) planned inputs (Empty \(emptyCount), Skipped \(skippedCount), Failed \(failedCount))."
+        return "\(prefix) \(convertedCount) of \(plannedCount) planned inputs (Partial \(partialCount), Empty \(emptyCount), Skipped \(skippedCount), Failed \(failedCount))."
     }
 }

@@ -61,6 +61,38 @@ nonisolated enum ReadableOutputFormatter {
         return outputLines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines) + "\n"
     }
 
+    static func markdownDocument(title: String, extractedPages: [ReadablePage]) -> String {
+        var lines = ["# \(title)"]
+        for page in extractedPages {
+            lines += ["", "## Page \(page.page)", ""]
+            let source = page.extractionSource ?? "unknown"
+            let status = page.status ?? "complete"
+            let warnings = page.warnings ?? []
+            let warningText = warnings.isEmpty ? "" : "; warnings: \(warnings.joined(separator: ", "))"
+            lines.append("_Extraction: \(source); status: \(status)\(warningText)._")
+            if page.blocks.isEmpty {
+                lines += ["", "_No extractable text on this page._"]
+            } else {
+                lines.append("")
+                lines.append(contentsOf: renderMarkdownBody(blocks: page.blocks, headingBaseLevel: 3))
+            }
+        }
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    static func jsonDocument(fileName: String, sourceExtension: String, extractedPages: [ReadablePage], schemaVersion: String = "2.0") throws -> String {
+        let status = extractedPages.contains(where: { $0.status == "partial" }) ? "partial" :
+            (extractedPages.allSatisfy { $0.status == "empty" } ? "empty" : "complete")
+        let warnings = extractedPages.flatMap { $0.warnings ?? [] }
+        let payload = ReadableDocument(
+            version: schemaVersion,
+            source: ReadableSource(fileName: fileName, fileExtension: sourceExtension, convertedAt: iso8601Now()),
+            summary: ReadableSummary(blockCount: extractedPages.reduce(0) { $0 + $1.blockCount }, pageCount: extractedPages.count, tableCount: nil, dataPresent: nil, extractionStatus: status),
+            content: ReadableContent(blocks: nil, pages: extractedPages, tables: nil, data: nil, extractionWarnings: warnings.isEmpty ? nil : Array(Set(warnings)).sorted())
+        )
+        return try encode(payload)
+    }
+
     static func jsonDocument(
         fileName: String,
         sourceExtension: String,
@@ -68,6 +100,7 @@ nonisolated enum ReadableOutputFormatter {
         tables: [ReadableTable] = [],
         data: ReadableValue? = nil,
         canonicalTable: CanonicalDelimitedTable? = nil,
+        extractionWarnings: [String]? = nil,
         importSettings: AppliedDelimitedSettings? = nil,
         schemaVersion: String = "1.1"
     ) throws -> String {
@@ -85,14 +118,16 @@ nonisolated enum ReadableOutputFormatter {
                 blockCount: blockCount,
                 pageCount: nil,
                 tableCount: tableCount,
-                dataPresent: data == nil ? nil : true
+                dataPresent: data == nil ? nil : true,
+                extractionStatus: extractionWarnings == nil ? nil : "partial"
             ),
             content: ReadableContent(
                 blocks: blocks.isEmpty ? nil : blocks,
                 pages: nil,
                 tables: tables.isEmpty ? nil : tables,
                 data: data,
-                canonicalTable: canonicalTable
+                canonicalTable: canonicalTable,
+                extractionWarnings: extractionWarnings
             )
         )
 

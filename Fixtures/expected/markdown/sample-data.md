@@ -1,12 +1,7 @@
-# Sample Data
+# XML data
 
-- library:
-  - book:
-    - Item 1:
-      - @id: b1
-      - author: Ada
-      - title: Readable Outputs
-    - Item 2:
-      - @id: b2
-      - author: Linus
-      - title: Structured Data
+Ordered XML nodes and text (JSON schema 2.0):
+
+~~~json
+{"$xml":{"attributes":[],"content":[{"kind":"text","text":"\n  "},{"element":{"attributes":[{"name":"id","namespaceURI":null,"value":"b1"}],"content":[{"kind":"text","text":"\n    "},{"element":{"attributes":[],"content":[{"kind":"text","text":"Readable Outputs"}],"name":"title","namespaceURI":null},"kind":"element"},{"kind":"text","text":"\n    "},{"element":{"attributes":[],"content":[{"kind":"text","text":"Ada"}],"name":"author","namespaceURI":null},"kind":"element"},{"kind":"text","text":"\n  "}],"name":"book","namespaceURI":null},"kind":"element"},{"kind":"text","text":"\n  "},{"element":{"attributes":[{"name":"id","namespaceURI":null,"value":"b2"}],"content":[{"kind":"text","text":"\n    "},{"element":{"attributes":[],"content":[{"kind":"text","text":"Structured Data"}],"name":"title","namespaceURI":null},"kind":"element"},{"kind":"text","text":"\n    "},{"element":{"attributes":[],"content":[{"kind":"text","text":"Linus"}],"name":"author","namespaceURI":null},"kind":"element"},{"kind":"text","text":"\n  "}],"name":"book","namespaceURI":null},"kind":"element"},{"kind":"text","text":"\n"}],"name":"library","namespaceURI":null}}
+~~~

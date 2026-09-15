@@ -59,18 +59,18 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 | Format | Converter | Method |
 |--------|-----------|--------|
-| PDF | `PDFConverter` | PDFKit page-by-page text extraction |
+| PDF | `PDFConverter` | PDFKit native pages and bounded Vision OCR for scanned pages |
 | DOCX | `AttributedDocumentConverter` | NSAttributedString officeOpenXML |
 | DOC | `AttributedDocumentConverter` | NSAttributedString docFormat |
 | RTF | `AttributedDocumentConverter` | NSAttributedString rtf |
 | RTFD | `AttributedDocumentConverter` | NSAttributedString rtfd |
 | ODT | `AttributedDocumentConverter` | NSAttributedString openDocument |
-| HTML/HTM | `AttributedDocumentConverter` | NSAttributedString html |
-| WebArchive | `AttributedDocumentConverter` | NSAttributedString webArchive |
+| HTML/HTM | `AttributedDocumentConverter` | resource-free Foundation text extraction on a background task |
+| WebArchive | `AttributedDocumentConverter` | recognized, resource-isolation failure |
 | TXT/MD | `TextConverter` | UTF-8 plain text with Markdown-aware parsing |
 | CSV/TSV | `DelimitedTextConverter` | Strict BOM-aware decoding and lossless syntactic records; header/delimiter/encoding choices, with canonical table projection in schema 2.0 |
 | PLIST | `PropertyListConverter` | PropertyListSerialization to JSON-safe output |
-| PNG/JPG/JPEG/HEIC/TIFF/TIF | `ImageOCRConverter` | Vision OCR |
+| PNG/JPG/JPEG/HEIC/TIFF/TIF | `ImageOCRConverter` | Vision OCR for all oriented frames/pages |
 
 ### Output Formats
 
@@ -113,4 +113,4 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 ## Native remediation checks
 
-The shared Xcode scheme includes `SkaldTests`. The writer, CSV/TSV parser, and canonical table passed the current native Debug/Release suite. Version 1.0.0 still has extraction, format-expansion, and release gates open. CSV/TSV JSON now uses canonical column IDs under schema version `2.0`. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/CSV_INTERPRETATION.md`, `docs/remediation/CANONICAL_TABLES.md`, `docs/remediation/INTAKE_AND_LIFECYCLE.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, and `docs/remediation/TASK_LEDGER.md` for evidence and limits.
+The shared Xcode scheme includes `SkaldTests`. The writer, CSV/TSV parser, and canonical table passed the current native Debug/Release suite. Version 1.0.0 has P05 extraction native tests passing; format expansion and release gates remain open. CSV/TSV uses canonical column IDs; PDF, image, and ordered XML outputs also use schema `2.0`, distinct from app version `1.0.0`. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/CSV_INTERPRETATION.md`, `docs/remediation/CANONICAL_TABLES.md`, `docs/remediation/INTAKE_AND_LIFECYCLE.md`, `docs/remediation/EXTRACTION_COMPLETENESS.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, and `docs/remediation/TASK_LEDGER.md` for evidence and limits.

@@ -7,6 +7,8 @@ and this project uses `release.feature.patch` versioning.
 
 ## [Unreleased]
 ### Added
+- Per-page PDF and per-frame image extraction provenance, status, OCR confidence, and warnings; scanned pages use bounded Vision OCR.
+- Ordered XML mixed-content schema 2.0 and resource-free offline HTML extraction on a background task, with partial-outcome reporting for attributed structures.
 - Shared Xcode scheme and native unit/integration test target for the ingestion remediation.
 - Isolated baseline writer-failure probe and parser regression corpus; the recorded failures remain open until the production path is repaired.
 ### Fixed

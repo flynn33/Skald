@@ -26,6 +26,15 @@ nonisolated struct ReadableSummary: Codable {
     let pageCount: Int?
     let tableCount: Int?
     let dataPresent: Bool?
+    let extractionStatus: String?
+
+    init(blockCount: Int, pageCount: Int?, tableCount: Int?, dataPresent: Bool?, extractionStatus: String? = nil) {
+        self.blockCount = blockCount
+        self.pageCount = pageCount
+        self.tableCount = tableCount
+        self.dataPresent = dataPresent
+        self.extractionStatus = extractionStatus
+    }
 }
 
 nonisolated struct ReadableContent: Codable {
@@ -34,13 +43,15 @@ nonisolated struct ReadableContent: Codable {
     let tables: [ReadableTable]?
     let data: ReadableValue?
     let canonicalTable: CanonicalDelimitedTable?
+    let extractionWarnings: [String]?
 
-    init(blocks: [ReadableBlock]?, pages: [ReadablePage]?, tables: [ReadableTable]?, data: ReadableValue?, canonicalTable: CanonicalDelimitedTable? = nil) {
+    init(blocks: [ReadableBlock]?, pages: [ReadablePage]?, tables: [ReadableTable]?, data: ReadableValue?, canonicalTable: CanonicalDelimitedTable? = nil, extractionWarnings: [String]? = nil) {
         self.blocks = blocks
         self.pages = pages
         self.tables = tables
         self.data = data
         self.canonicalTable = canonicalTable
+        self.extractionWarnings = extractionWarnings
     }
 }
 
@@ -48,6 +59,20 @@ nonisolated struct ReadablePage: Codable {
     let page: Int
     let blockCount: Int
     let blocks: [ReadableBlock]
+    let extractionSource: String?
+    let status: String?
+    let warnings: [String]?
+    let confidence: Double?
+
+    init(page: Int, blockCount: Int, blocks: [ReadableBlock], extractionSource: String? = nil, status: String? = nil, warnings: [String]? = nil, confidence: Double? = nil) {
+        self.page = page
+        self.blockCount = blockCount
+        self.blocks = blocks
+        self.extractionSource = extractionSource
+        self.status = status
+        self.warnings = warnings
+        self.confidence = confidence
+    }
 }
 
 nonisolated enum ReadableBlockType: String, Codable {

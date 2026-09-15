@@ -1,6 +1,10 @@
-# Sample Digital
+# PDF document
 
 ## Page 1
+
+_Extraction: native; status: complete._
+
+Sample Digital
 
 ### Quarterly Overview
 
@@ -41,11 +45,15 @@ Paragraph number 6: additional narrative content to fill the page and ensure the
 spans at least two pages so the running header and footer appear on every page and can be
 detected as repeated common lines by the parser.
 
+Page 1
+
 ## Page 2
 
-Paragraph number 7: additional narrative content to fill the page and ensure the document
-spans at least two pages so the running header and footer appear on every page and can be
-detected as repeated common lines by the parser.
+_Extraction: native; status: complete._
+
+Sample Digital Paragraph number 7: additional narrative content to fill the page and
+ensure the document spans at least two pages so the running header and footer appear on
+every page and can be detected as repeated common lines by the parser.
 
 Paragraph number 8: additional narrative content to fill the page and ensure the document
 spans at least two pages so the running header and footer appear on every page and can be
@@ -58,3 +66,5 @@ detected as repeated common lines by the parser.
 Paragraph number 10: additional narrative content to fill the page and ensure the document
 spans at least two pages so the running header and footer appear on every page and can be
 detected as repeated common lines by the parser.
+
+Page 2

@@ -10,7 +10,7 @@ This guide defines the release gate and manual test matrix for the first externa
 - A writable source folder containing test documents.
 - A writable target folder for generated Markdown and JSON.
 
-The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, canonical table consistency, and source intake now pass the current native Debug/Release suite. Document completeness, expansion formats, and complete release gates must still pass before an Alpha pass is claimed.
+The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, canonical table consistency, and source intake now pass the current native Debug/Release suite. PDF/image/XML/HTML extraction now has focused native coverage; named spreadsheet/archive expansion, full IDE qualification, and release gates must still pass before an Alpha pass is claimed.
 
 ## Automated Gates
 
@@ -108,7 +108,7 @@ An Alpha build passes when all of the following are true:
 ## Known Alpha Limitations
 
 - Nested-folder traversal is optional and off by default.
-- PDF extraction requires a selectable text layer; scanned PDFs do not use the image OCR converter.
+- Scanned PDF pages use bounded Vision OCR and disclose confidence; recognition may be partial or empty. HTML accepts only resource-free markup, and WebArchive import fails explicitly. DOC/DOCX/ODT container structures remain unverified and are reported partial.
 - Document formatting is heuristic and is not layout-faithful.
 - YAML, TOML, source code, and log files are preserved as verbatim code blocks rather than structurally parsed.
 - Existing outputs are preserved, so repeated conversions create suffixed files instead of replacing prior results.

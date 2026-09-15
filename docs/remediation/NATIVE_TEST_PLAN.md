@@ -39,21 +39,21 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G05-T06 | Duplicate/symlink aliases and loops | `IntakeTraversalTests/testAppBundleIsSkippedAndHardlinkAliasDeduplicated`, `testExplicitLinkCannotEscapeSelectedRoot` | registered; native passed |
 | G05-T07 | Scopes and permission denial | `IntakeTraversalTests/testUnreadableSourceReportsFailureWithoutPublishing` | registered; denial passed; successful sandbox scope balance IDE observation pending |
 | G05-T08 | Single-run guard and restart | `IntakeTraversalTests/testServiceRejectsConcurrentStartAndAllowsSecondRun`, `testCancellationPreservesCommittedFirstOutputAndStopsNewWork` | registered; native passed; responsive IDE observation pending |
-| G06-T01 | Scanned PDF | `G06ContractTests/testScannedPdf` | planned |
-| G06-T02 | Mixed PDF | `G06ContractTests/testMixedPdf` | planned |
-| G06-T03 | Locked PDF and partial pages | `G06ContractTests/testLockedPdfAndPartialPages` | planned |
-| G06-T04 | Meaningful PDF running text | `G06ContractTests/testMeaningfulPdfRunningText` | planned |
-| G06-T05 | Multipage TIFF with orientation | `G06ContractTests/testMultipageTiffWithOrientation` | planned |
-| G06-T06 | No OCR text and failure | `G06ContractTests/testNoOcrTextAndFailure` | planned |
-| G06-T07 | XML mixed/order/space/namespaces | `G06ContractTests/testXmlMixedOrderSpaceNamespaces` | planned |
-| G06-T08 | HTML background and external-resource denial | `G06ContractTests/testHtmlBackgroundAndExternalResourceDenial` | planned |
-| G06-T09 | Attributed tables/attachments and RTFD | `G06ContractTests/testAttributedTablesAttachmentsAndRtfd` | planned |
+| G06-T01 | Scanned PDF | `PDFExtractionTests/testProductionVisionReadsRasterOnlyPDF` | registered; P05 Debug/Release passed |
+| G06-T02 | Mixed PDF | `PDFExtractionTests/testNativeAndOCRPagesKeepIdentityWithoutDuplicatingNativeText` | registered; P05 Debug/Release passed |
+| G06-T03 | Locked PDF and partial pages | `PDFExtractionTests/testLockedPDFRequiresPasswordAndPublishesNoNormalArtifact`, `testNoTextAndOCRFailureAreDistinctOutcomes` | registered; P05 Debug/Release passed |
+| G06-T04 | Meaningful PDF running text | `PDFExtractionTests/testRepeatedMeaningfulNativeTextIsNotStripped` | registered; P05 Debug/Release passed |
+| G06-T05 | Multipage TIFF with orientation | `ImagePageTests/testMultipageTIFFKeepsBothFramesAndOrientation` | registered; P05 Debug/Release passed |
+| G06-T06 | No OCR text and failure | `ImagePageTests/testEmptyOCRAndFrameLimitAreExplicit`, `PDFExtractionTests/testNoTextAndOCRFailureAreDistinctOutcomes` | registered; P05 Debug/Release passed |
+| G06-T07 | XML mixed/order/space/namespaces | `OrderedXMLTests/testMixedTextChildTextOrder`, `testNamespaceIdentityAndCDATAStaySeparateFromChildOrder`, `testXMLSpacePreservesBeforeAndAfterWhitespace` | registered; P05 Debug/Release passed |
+| G06-T08 | HTML background and external-resource denial | `HTMLAndAttributedTests/testSafeHTMLExtractsOnBackgroundTaskAndTableIsPartial`, `testResourceBearingHTMLIsDeniedWithoutNetworkRequest` | registered; unsandboxed local TCP request count zero; signed IDE denial observed; P05 Debug/Release/IDE passed |
+| G06-T09 | Attributed tables/attachments and RTFD | `HTMLAndAttributedTests/testRTFAttachmentAndTableWarningsArePartial`, `testRealRTFAndContainerDocumentsReportTheirLimits`; `IntakeTraversalTests/testPackageSymlinkAndSpecialFileDoNotDescendOrBlock` | registered; P05 Debug/Release passed |
 | G07-T01 | Padding amplification upper bound | `CanonicalTableTests/testPaddingCorpusPreservesAllRecordsUnderOneMegabyte` | registered; P03 Debug passed |
 | G07-T02 | Documented large batch memory | `G07ContractTests/testDocumentedLargeBatchMemory` | planned |
 | G07-T03 | Limits at all stages | `G07ContractTests/testLimitsAtAllStages` | planned |
 | G07-T04 | Cancellation latency and cleanup measured | `G07ContractTests/testCancellationLatencyAndCleanupMeasured` | planned |
-| G08-T01 | XML DTD/entity restrictions | `G08ContractTests/testXmlDtdEntityRestrictions` | planned |
-| G08-T02 | HTML local/network denial | `G08ContractTests/testHtmlLocalNetworkDenial` | planned |
+| G08-T01 | XML DTD/entity restrictions | `OrderedXMLTests/testMalformedAndDTDInputsFailWithoutNormalOutput` | registered; UTF-8 and UTF-16 DTD denial passed; adverse entity matrix remains P06 |
+| G08-T02 | HTML local/network denial | `HTMLAndAttributedTests/testResourceBearingHTMLIsDeniedWithoutNetworkRequest` | registered; independent unsandboxed TCP request count zero and signed IDE preflight denial passed; local-file matrix remains P06 |
 | G08-T03 | Archive traversal and symlink | `G08ContractTests/testArchiveTraversalAndSymlink` | planned |
 | G08-T04 | Archive expanded bytes and nesting | `G08ContractTests/testArchiveExpandedBytesAndNesting` | planned |
 | G08-T05 | Private logging with synthetic secrets | `G08ContractTests/testPrivateLoggingWithSyntheticSecrets` | planned |

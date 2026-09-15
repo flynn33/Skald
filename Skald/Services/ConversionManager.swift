@@ -73,6 +73,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
 
         var entries: [ConversionEntry] = []
         var convertedCount = 0
+        var partialCount = 0
         var emptyCount = 0
         var skippedCount = 0
         var failedCount = 0
@@ -141,15 +142,22 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                 let output: String
                 let appliedSettings: AppliedDelimitedSettings?
                 let isEmpty: Bool
+                let isPartial: Bool
+                let extractorWarnings: [String]
                 if let delimited = converter as? DelimitedTextConverter {
                     let result = try delimited.convert(at: fileURL, to: format, options: delimitedOptions)
                     output = result.output
                     appliedSettings = result.appliedSettings
                     isEmpty = result.isEmpty
+                    isPartial = false
+                    extractorWarnings = []
                 } else {
-                    output = try converter.convert(at: fileURL, to: format)
+                    let result = try converter.convertDetailed(at: fileURL, to: format)
+                    output = result.output
                     appliedSettings = nil
-                    isEmpty = false
+                    isEmpty = result.quality == .empty
+                    isPartial = result.quality == .partial
+                    extractorWarnings = result.warnings
                 }
                 if Task.isCancelled || isCancelled?() == true { wasCancelled = true; break }
                 let outputExtension = format == .markdown ? "md" : "json"
@@ -169,17 +177,18 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     notes.append("Import: \(appliedSettings.encoding), delimiter \(appliedSettings.delimiter.debugDescription), header \(appliedSettings.headerMode).")
                     if !appliedSettings.diagnostics.isEmpty { notes.append("Warnings: \(appliedSettings.diagnostics.joined(separator: ", ")).") }
                 }
+                if !extractorWarnings.isEmpty { notes.append("Extraction warnings: \(extractorWarnings.joined(separator: ", ")).") }
                 let message = notes.isEmpty ? nil : notes.joined(separator: " ")
                 entries.append(
                     ConversionEntry(
                         fileName: source.reportBaseName,
                         fileExtension: source.fileExtension,
-                        status: isEmpty ? .empty : .converted,
+                        status: isPartial ? .partial : (isEmpty ? .empty : .converted),
                         message: message,
                         outputURL: outputPlan.url
                     )
                 )
-                if isEmpty { emptyCount += 1 } else { convertedCount += 1 }
+                if isPartial { partialCount += 1 } else if isEmpty { emptyCount += 1 } else { convertedCount += 1 }
             } catch OutputPublicationError.cancelled {
                 wasCancelled = true
                 break
@@ -204,6 +213,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             entries: entries,
             plannedCount: worklist.items.count,
             convertedCount: convertedCount,
+            partialCount: partialCount,
             emptyCount: emptyCount,
             skippedCount: skippedCount,
             failedCount: failedCount,
