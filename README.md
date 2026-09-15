@@ -2,7 +2,7 @@
 
 **Current Version: 1.0.0** <!-- x-release-please-version -->
 
-The 1.0.0 application is under ingestion remediation. The shared writer, lossless CSV/TSV parser, canonical table, source intake, extraction, resource bounds, and the P07 named-format readers pass focused native tests; full release gates remain open. The shared `Skald` scheme discovers `SkaldTests`, with the required work tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [named-format boundaries](docs/remediation/NAMED_FORMAT_READERS.md), and [task ledger](docs/remediation/TASK_LEDGER.md). This is not a completed release qualification.
+The 1.0.0 application has completed the documented ingestion-remediation implementation and the P08 local native and signed IDE matrix. The shared `Skald` scheme discovers 107 `SkaldTests`; signed Debug/Release, separate sanitizers, and Xcode Product Test each passed 107/107 with no skips. The required work and observed limitations are tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [named-format boundaries](docs/remediation/NAMED_FORMAT_READERS.md), [task ledger](docs/remediation/TASK_LEDGER.md), and [P08 qualification record](docs/remediation/P08_COMPLETION.md). The direct Finder-to-app drag gesture remains unobserved, and this is not a public release claim.
 
 Skald is a macOS SwiftUI app that batch-converts selected files and folders into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
 

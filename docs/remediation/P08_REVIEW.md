@@ -1,6 +1,6 @@
 # P08 review record
 
-The package's four review prompts were run as distinct direct reviews of the initial checkout through P08, including the workflow, native tests, fixtures, and current uncommitted files. The `/review` interface was unavailable in this session; this is the direct-review fallback specified by the package, not a claim of an external review service. Final run artifacts and per-file hashes are recorded in the separate gate ledger and completion report.
+The package's four review prompts were run as distinct direct reviews of the initial checkout through P08, including the workflow, native tests, fixtures, and final source changes. The `/review` interface was unavailable in this session; this is the direct-review fallback specified by the package, not a claim of an external review service. Final run artifacts and per-file hashes are recorded in the separate gate ledger and completion report.
 
 ## Behavior and architecture
 

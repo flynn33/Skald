@@ -11,6 +11,7 @@ and this project uses `release.feature.patch` versioning.
 - Deterministic actual-format fixtures for stored/deflated ZIP, SpreadsheetML/ODF, and CFB/BIFF8, plus traversal, collision, expansion, entity, encryption, and chain-loop negatives.
 - Validated per-format byte, record, column, cell, field, nesting, pixel, worklist, batch, and output ceilings with typed safe failure diagnostics and path-free native logging.
 - Pinned macOS native CI with Debug/Release builds and tests, analysis, fixture validators, required-test discovery, and retained result bundles.
+- P08 qualification record for signed Debug/Release, 107-test native and IDE matrices, separate sanitizers, signed sandbox inspection, and named manual scenarios; the direct Finder drop observation remains open.
 - Per-page PDF and per-frame image extraction provenance, status, OCR confidence, and warnings; scanned pages use bounded Vision OCR.
 - Ordered XML mixed-content schema 2.0 and resource-free offline HTML extraction on a background task, with partial-outcome reporting for attributed structures.
 - Shared Xcode scheme and native unit/integration test target for the ingestion remediation.
@@ -18,6 +19,7 @@ and this project uses `release.feature.patch` versioning.
 ### Fixed
 - Rejected BIFF8 worksheets missing their EOF before the next sheet, preventing cross-sheet record consumption; reduced repeated XML text concatenation copies.
 - Removed source-path interpolation from conversion logs after signed IDE runtime inspection exposed those paths in its privileged console.
+- Deferred picker, output-selection, Convert, and Cancel view-model mutations to the next main-actor turn, removing the observed SwiftUI state-publication warning; made long conversion reports vertically scrollable.
 - Bounded previously whole-file JSON/plist/XML/INI/text imports and PDF/image/attributed preflight; reduced CSV decode copies, added read/parse cancellation, and escaped untrusted Markdown markup.
 - Replaced the production writer's incompatible write flags with complete same-directory temporary files and exclusive, bounded publication. Existing source and target bytes remain protected under tested collision and concurrent-publisher cases.
 - Replaced the CSV/TSV parser's CRLF, whitespace, empty-record, and malformed-quote behavior with strict scalar-state parsing; added BOM-aware UTF-8/16/32 decoding and explicit Windows-1252/Latin-1 choices.
