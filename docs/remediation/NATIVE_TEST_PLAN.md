@@ -19,12 +19,12 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G02-T08 | Cancel before/after commit | `OutputWriterRegressionTests/testCancellationAfterCommitPreservesPublishedArtifact` | registered; Debug/Release P01 focused passed |
 | G02-T09 | Filesystem capability error | `OutputWriterRegressionTests/testUnsupportedExclusiveRenameReturnsCapabilityError` | registered; Debug/Release P01 focused passed |
 | G02-T10 | Bounded collision retry and cleanup | `OutputWriterRegressionTests/testCollisionLimitDoesNotRemoveCompetingDestination` | registered; Debug/Release P01 focused passed |
-| G03-T01 | All CSV oracle cases | `G03ContractTests/testAllCsvOracleCases` | planned |
-| G03-T02 | Encoding choice through UI | `G03ContractTests/testEncodingChoiceThroughUi` | planned |
-| G03-T03 | Delimiter/header settings through coordinator | `G03ContractTests/testDelimiterHeaderSettingsThroughCoordinator` | planned |
-| G03-T04 | Strict malformed quote diagnostics | `DelimitedParserRegressionTests/testUnterminatedQuoteIsRejected` | registered, not run in baseline |
-| G03-T05 | 1000 seeded round trips | `G03ContractTests/test1000SeededRoundTrips` | planned |
-| G03-T06 | Chunk sizes across CRLF, quotes and Unicode | `G03ContractTests/testChunkSizesAcrossCrlfQuotesAndUnicode` | planned |
+| G03-T01 | All CSV oracle cases | `DelimitedCorpusTests/testAllIndependentByteCases` | registered; full Debug/Release passed |
+| G03-T02 | Encoding choice through UI | `ConversionViewModelOptionsTests/testVisibleInterpretationChoicesReachProductionManagerAndOutput` | registered; ViewModel path passed; actual picker IDE check pending |
+| G03-T03 | Delimiter/header settings through coordinator | `DelimitedCorpusTests/testExplicitEncodingHeaderAndDelimiterReachRealManager` | registered; full Debug/Release passed |
+| G03-T04 | Strict malformed quote diagnostics | `DelimitedParserRegressionTests/testUnterminatedQuoteIsRejected` | registered; full Debug/Release passed |
+| G03-T05 | 1000 seeded round trips | `DelimitedCorpusTests/testOneThousandSeededRoundTripsAcrossChunkSizes` | registered; full Debug/Release passed |
+| G03-T06 | Chunk sizes across CRLF, quotes and Unicode | `DelimitedCorpusTests/testByteReadBoundariesAcrossBOMUnicodeCRLFAndQuotes` | registered; full Debug/Release passed |
 | G04-T01 | Duplicate/blank column identity | `G04ContractTests/testDuplicateBlankColumnIdentity` | planned |
 | G04-T02 | Ragged record no loss | `G04ContractTests/testRaggedRecordNoLoss` | planned |
 | G04-T03 | Missing differs from empty | `G04ContractTests/testMissingDiffersFromEmpty` | planned |

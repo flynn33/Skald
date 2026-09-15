@@ -17,13 +17,13 @@ The fixture set includes:
 - Structured text, tables, configuration, property lists, XML, and plain text.
 - Extension-only `.env` input.
 - Integers above JavaScript's exact-number range and high-precision decimals.
-- CSV cells containing pipe characters and embedded newlines.
+- CSV cells containing pipe characters and embedded newlines. The two committed CSV fixtures explicitly use the first record as a header; their expected logical data and tables were reviewed unchanged when adding import-settings metadata.
 - Verbatim source/log content containing an embedded Markdown fence and trailing newlines.
 
 ## Notes
 
 - `convertedAt` is generated at runtime, so the validator normalizes that field before comparison.
-- JSON output uses sorted keys and pretty printing.
+- JSON output uses sorted keys and pretty printing. CSV expected JSON is schema `1.2` with `source.importSettings`; other fixtures remain schema `1.1`. The application default automatic header mode keeps the first record until the user confirms a header.
 - Markdown prose is wrapped at 90 characters.
 - Markdown table cells escape pipe characters and render embedded newlines as `<br>`.
 

@@ -41,6 +41,30 @@ struct SkaldAppModuleView: View {
                 .keyboardShortcut(.defaultAction)
             }
 
+            VStack(alignment: .leading, spacing: 8) {
+                Text("CSV / TSV interpretation").font(.headline)
+                HStack(spacing: 12) {
+                    Picker("Encoding", selection: $viewModel.textEncoding) {
+                        ForEach(TextEncodingChoice.allCases) { choice in Text(choice.label).tag(choice) }
+                    }
+                    Picker("Delimiter", selection: $viewModel.delimiterChoice) {
+                        ForEach(DelimiterChoice.pickerChoices, id: \.self) { choice in Text(choice.label).tag(choice) }
+                    }
+                    Picker("Header", selection: $viewModel.headerMode) {
+                        ForEach(HeaderMode.allCases) { mode in Text(mode.label).tag(mode) }
+                    }
+                }
+                .pickerStyle(.menu)
+                HStack(spacing: 12) {
+                    Toggle("Custom delimiter", isOn: $viewModel.usesCustomDelimiter)
+                    if viewModel.usesCustomDelimiter {
+                        TextField("One character", text: $viewModel.customDelimiter)
+                            .frame(width: 100)
+                    }
+                    Toggle("Use sep= preamble", isOn: $viewModel.allowsSepPreamble)
+                }
+            }
+
             StatusMessageView(message: viewModel.statusMessage, status: viewModel.status)
 
             if let report = viewModel.report {
@@ -50,7 +74,7 @@ struct SkaldAppModuleView: View {
             }
         }
         .padding(20)
-        .frame(minWidth: 640, minHeight: 420)
+        .frame(minWidth: 780, minHeight: 500)
     }
 
     private var header: some View {

@@ -2,6 +2,7 @@ import Foundation
 
 nonisolated enum ConversionStatus: String, Sendable {
     case converted
+    case empty
     case skipped
     case failed
 
@@ -24,6 +25,7 @@ nonisolated struct ConversionReport: Sendable {
     let finishedAt: Date
     let entries: [ConversionEntry]
     let convertedCount: Int
+    let emptyCount: Int
     let skippedCount: Int
     let failedCount: Int
 
@@ -36,6 +38,6 @@ nonisolated struct ConversionReport: Sendable {
     }
 
     var summaryLine: String {
-        "Converted \(convertedCount) of \(totalCount) files (Skipped \(skippedCount), Failed \(failedCount))."
+        "Converted \(convertedCount) of \(totalCount) files (Empty \(emptyCount), Skipped \(skippedCount), Failed \(failedCount))."
     }
 }

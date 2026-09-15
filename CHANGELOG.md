@@ -11,6 +11,8 @@ and this project uses `release.feature.patch` versioning.
 - Isolated baseline writer-failure probe and parser regression corpus; the recorded failures remain open until the production path is repaired.
 ### Fixed
 - Replaced the production writer's incompatible write flags with complete same-directory temporary files and exclusive, bounded publication. Existing source and target bytes remain protected under tested collision and concurrent-publisher cases.
+- Replaced the CSV/TSV parser's CRLF, whitespace, empty-record, and malformed-quote behavior with strict scalar-state parsing; added BOM-aware UTF-8/16/32 decoding and explicit Windows-1252/Latin-1 choices.
+- Preserved the first record in automatic header mode, added explicit delimiter/header/encoding controls, and recorded applied import settings in CSV/TSV JSON schema `1.2` and the conversion report.
 
 ## [1.0.0] - 2026-06-30
 ### Added

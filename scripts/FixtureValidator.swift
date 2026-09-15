@@ -57,14 +57,14 @@ private final class FixtureValidator {
                 }
 
                 do {
-                    let markdownOutput = try converter.convert(at: fixture.inputURL, to: .markdown)
+                    let markdownOutput = try convertFixture(converter, at: fixture.inputURL, to: .markdown)
                     let markdownPath = outputURL.appendingPathComponent(fixture.expectedMarkdownURL.lastPathComponent)
                     try markdownOutput.write(to: markdownPath, atomically: true, encoding: .utf8)
                     if !compareMarkdown(markdownOutput, expectedURL: fixture.expectedMarkdownURL) {
                         failures.append(FixtureFailure(fileName: fileName, format: "markdown", message: "Output did not match expected markdown."))
                     }
 
-                    let jsonOutput = try converter.convert(at: fixture.inputURL, to: .json)
+                    let jsonOutput = try convertFixture(converter, at: fixture.inputURL, to: .json)
                     let jsonPath = outputURL.appendingPathComponent(fixture.expectedJSONURL.lastPathComponent)
                     try jsonOutput.write(to: jsonPath, atomically: true, encoding: .utf8)
                     if !compareJSON(jsonOutput, expectedURL: fixture.expectedJSONURL) {
@@ -91,6 +91,15 @@ private final class FixtureValidator {
             print("Validation failed: \(error.localizedDescription)")
             return 3
         }
+    }
+
+    private func convertFixture(_ converter: DocumentConverter, at url: URL, to format: OutputFormat) throws -> String {
+        if let delimited = converter as? DelimitedTextConverter {
+            // These two committed fixtures explicitly have a first-record header.
+            // The application default remains automatic and keeps ambiguous records.
+            return try delimited.convert(at: url, to: format, options: DelimitedOptions(header: .present)).output
+        }
+        return try converter.convert(at: url, to: format)
     }
 
     private func loadFixtures() throws -> [FixtureCase] {

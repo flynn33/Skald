@@ -63,6 +63,8 @@ private struct ConversionReportRow: View {
         switch entry.status {
         case .converted:
             return .green
+        case .empty:
+            return .orange
         case .skipped:
             return .gray
         case .failed:

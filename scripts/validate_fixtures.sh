@@ -13,12 +13,16 @@ swiftc \
   "${ROOT_DIR}/Skald/Services/Converters/DocumentConverter.swift" \
   "${ROOT_DIR}/Skald/Models/OutputFormat.swift" \
   "${ROOT_DIR}/Skald/Models/ConversionError.swift" \
+  "${ROOT_DIR}/Skald/Models/DelimitedInputError.swift" \
+  "${ROOT_DIR}/Skald/Models/DelimitedOptions.swift" \
   "${ROOT_DIR}/Skald/Models/SourceFileDescriptor.swift" \
   "${ROOT_DIR}/Skald/Models/ReadableModels.swift" \
   "${ROOT_DIR}/Skald/Support/Formatting/ReadableOutputFormatter.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/PlainTextParser.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/TextConverter.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/DelimitedTextParser.swift" \
+  "${ROOT_DIR}/Skald/Support/Parsing/DelimitedTextInterpreter.swift" \
+  "${ROOT_DIR}/Skald/Support/Parsing/TextDecoder.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/DelimitedTextConverter.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/PropertyListConverter.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/TextFileReader.swift" \

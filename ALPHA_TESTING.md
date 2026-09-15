@@ -10,7 +10,7 @@ This guide defines the release gate and manual test matrix for the first externa
 - A writable source folder containing test documents.
 - A writable target folder for generated Markdown and JSON.
 
-The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The baseline native suite still includes known failing parser cases. The writer crash was reproduced in an isolated child process and its replacement passed focused Debug/Release native tests; the remaining package gates must pass before an Alpha pass is claimed.
+The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement and the CSV/TSV parser now pass the current native Debug/Release suite. Canonical table consistency, intake, document completeness, expansion formats, and complete release gates must still pass before an Alpha pass is claimed.
 
 ## Automated Gates
 
@@ -36,11 +36,11 @@ Expected result:
 
 ## Manual Smoke Test
 
-### 1. Startup and Framework Activation
+### 1. Startup
 
 1. Launch Skald from Xcode.
 2. Confirm the Skald conversion workspace appears.
-3. Confirm no Forsetti activation error is displayed.
+3. Confirm the standalone app does not require a Forsetti package checkout or activation.
 4. If startup fails, copy the complete on-screen diagnostic into the Alpha issue.
 
 ### 2. Folder Access
@@ -102,7 +102,7 @@ An Alpha build passes when all of the following are true:
 - No source file or pre-existing target file is overwritten.
 - Every per-file failure is visible in the conversion report.
 - Core validation and output-planning validation pass.
-- The local Xcode build passes with the required Forsetti checkout.
+- The local Xcode build and native test suite pass with the current standalone project.
 - Generated data preserves the values covered by the committed integrity fixtures.
 
 ## Known Alpha Limitations
@@ -119,7 +119,7 @@ Include:
 
 - Skald commit SHA.
 - macOS and Xcode versions.
-- Forsetti Framework version or commit SHA.
+- Skald project and package-baseline commits used for comparison.
 - Input file type and a minimal reproducible sample when licensing permits.
 - Selected output format.
 - Expected and actual result.

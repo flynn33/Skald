@@ -68,7 +68,7 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 | HTML/HTM | `AttributedDocumentConverter` | NSAttributedString html |
 | WebArchive | `AttributedDocumentConverter` | NSAttributedString webArchive |
 | TXT/MD | `TextConverter` | UTF-8 plain text with Markdown-aware parsing |
-| CSV/TSV | `DelimitedTextConverter` | Parsed into Markdown tables and JSON data arrays |
+| CSV/TSV | `DelimitedTextConverter` | Strict BOM-aware decoding and lossless syntactic records; header/delimiter/encoding choices, with canonical table projection still under remediation |
 | PLIST | `PropertyListConverter` | PropertyListSerialization to JSON-safe output |
 | PNG/JPG/JPEG/HEIC/TIFF/TIF | `ImageOCRConverter` | Vision OCR |
 
@@ -108,9 +108,9 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 - **Developer**: Jim Daley
 - **Architecture**: Forsetti-guided native macOS module boundaries
-- **License**: Proprietary (see LICENSE.md)
+- **License**: Apache License 2.0 (see LICENSE)
 - **Version**: 1.0.0 <!-- x-release-please-version -->
 
 ## Native remediation checks
 
-The shared Xcode scheme includes `SkaldTests`. The production writer passed focused native Debug/Release tests after its exclusive-publication repair. Version 1.0.0 still has CSV parser defects and incomplete package gates. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, and `docs/remediation/TASK_LEDGER.md` for the exact evidence and remaining work.
+The shared Xcode scheme includes `SkaldTests`. The writer and CSV/TSV parser passed the current 45-test native Debug/Release suite. Version 1.0.0 still has canonical table, intake, extraction, format-expansion, and release gates open. CSV/TSV JSON now records import settings under schema version `1.2`. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/CSV_INTERPRETATION.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, and `docs/remediation/TASK_LEDGER.md` for evidence and limits.

@@ -1,0 +1,1040 @@
+{
+  "version": 1,
+  "description": "Independent semantic oracle; raw files are byte-exact. BOM detection precedes the listed decoder. Error code spellings may be mapped explicitly to stable production equivalents.",
+  "cases": [
+    {
+      "id": "C01",
+      "file": "fixtures/csv/lf.csv",
+      "sha256": "96681aab1daa4cbb12cac0eea45ebc9c5d79be958e9288a6d52d13e0141012b4",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "age"
+        ],
+        [
+          "Alice",
+          "30"
+        ],
+        [
+          "Bob",
+          "40"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "30"
+        ],
+        [
+          "Bob",
+          "40"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "age"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C02",
+      "file": "fixtures/csv/crlf.csv",
+      "sha256": "0f0a2931dbf9223e2260403b016aa2a31e6c84272311d0f382c696320cff8ebc",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "age"
+        ],
+        [
+          "Alice",
+          "30"
+        ],
+        [
+          "Bob",
+          "40"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "30"
+        ],
+        [
+          "Bob",
+          "40"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "age"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C03",
+      "file": "fixtures/csv/cr.csv",
+      "sha256": "af119dbad0acd7390af3a52efc42965412cbff3bd4349b2c4ccaaed729d8f041",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "age"
+        ],
+        [
+          "Alice",
+          "30"
+        ],
+        [
+          "Bob",
+          "40"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "30"
+        ],
+        [
+          "Bob",
+          "40"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "age"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C04",
+      "file": "fixtures/csv/no-final-newline.csv",
+      "sha256": "94d406872e27fa23b5a73e6561b0369bf7111eb8867e1592fc6ea5be8ef4ac45",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "age"
+        ],
+        [
+          "Alice",
+          "30"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "30"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "age"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C05",
+      "file": "fixtures/csv/bom-utf8.csv",
+      "sha256": "dededc78d2cd5bd03e766b21a86b5657a752640ea2365ac327ee8c1669c30b42",
+      "encoding": "utf-8-sig",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "city"
+        ],
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "city"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C06",
+      "file": "fixtures/csv/utf16le.csv",
+      "sha256": "4f5b2449a7bef6f4aaf0e0230eb9714fca318a5e761e89691aabc6f140e70717",
+      "encoding": "utf-16-le",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "city"
+        ],
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "city"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C07",
+      "file": "fixtures/csv/utf16be.csv",
+      "sha256": "cdb609f48f422b407f8b2483f4f64f99749eb2aad2d3db02e5df432864e2c559",
+      "encoding": "utf-16-be",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "city"
+        ],
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "city"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C08",
+      "file": "fixtures/csv/utf32le.csv",
+      "sha256": "8b1a70d578a95c979731f52eff0abf55cf6651f6249edaae3d337c0dfcb1d2c8",
+      "encoding": "utf-32-le",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "city"
+        ],
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "city"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C09",
+      "file": "fixtures/csv/utf32be.csv",
+      "sha256": "5c0284a4274532a47035615ab71d6c42ab3220e49b6b3538d510d2000be81b57",
+      "encoding": "utf-32-be",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "city"
+        ],
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Zoë",
+          "Oslo"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "city"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C10",
+      "file": "fixtures/csv/windows1252.csv",
+      "sha256": "c4a36575006d6ae72e18e241d45e69ac80dce3694e3fa1a7e4fbd8de78ce3a38",
+      "encoding": "cp1252",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "label",
+          "price"
+        ],
+        [
+          "café",
+          "€5"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "café",
+          "€5"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "label",
+        "price"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C11",
+      "file": "fixtures/csv/latin1.csv",
+      "sha256": "146829602eb42deabdc5bb6b006b9e7e14e7a8bfbecd829b8e1ee52bc9d70041",
+      "encoding": "iso8859-1",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "label",
+          "city"
+        ],
+        [
+          "café",
+          "Malmö"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "café",
+          "Malmö"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "label",
+        "city"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C12",
+      "file": "fixtures/csv/crlf.tsv",
+      "sha256": "5918ab47aa4f09756c4be4904b90a55e9b77966925b41b14fd9d9834dd17048f",
+      "encoding": "utf-8",
+      "delimiter": "\t",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "age"
+        ],
+        [
+          "Alice",
+          "30"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "30"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "age"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C13",
+      "file": "fixtures/csv/semicolon.csv",
+      "sha256": "4d38f7d5a979a4d0a18b9ceb22103d89bdb9f09f7b31d17ff5cba25583986fb5",
+      "encoding": "utf-8",
+      "delimiter": ";",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "city"
+        ],
+        [
+          "Alice",
+          "Oslo"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "Oslo"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "city"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C14",
+      "file": "fixtures/csv/headerless.csv",
+      "sha256": "44a164fddc7dbdc88a8a2c3f62c05efcfb1b621f6817f519cbd9a3e52f8f4a4e",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "absent",
+      "expectedParserRows": [
+        [
+          "Alice",
+          "London"
+        ],
+        [
+          "Bob",
+          "Paris"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "London"
+        ],
+        [
+          "Bob",
+          "Paris"
+        ]
+      ],
+      "expectedOriginalHeader": null,
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C15",
+      "file": "fixtures/csv/automatic-header.csv",
+      "sha256": "44a164fddc7dbdc88a8a2c3f62c05efcfb1b621f6817f519cbd9a3e52f8f4a4e",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "automatic",
+      "expectedParserRows": [
+        [
+          "Alice",
+          "London"
+        ],
+        [
+          "Bob",
+          "Paris"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "London"
+        ],
+        [
+          "Bob",
+          "Paris"
+        ]
+      ],
+      "expectedOriginalHeader": null,
+      "expectedError": null,
+      "expectedDiagnostics": [
+        "headerUnconfirmed"
+      ],
+      "referenceComparable": true
+    },
+    {
+      "id": "C16",
+      "file": "fixtures/csv/single-record.csv",
+      "sha256": "8c69adbd6c90e1586be016185cd906d99ae241aa57981f6b22676edcb53ac315",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "absent",
+      "expectedParserRows": [
+        [
+          "Alice",
+          "London"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Alice",
+          "London"
+        ]
+      ],
+      "expectedOriginalHeader": null,
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C17",
+      "file": "fixtures/csv/duplicate-headers.csv",
+      "sha256": "9a2503934ed1b17fb1f3da3a3c84720c13268d57d602e8c24251aee32c4e806b",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "id",
+          "id"
+        ],
+        [
+          "1",
+          "2"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "1",
+          "2"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "id",
+        "id"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [
+        "duplicateHeader"
+      ],
+      "referenceComparable": true
+    },
+    {
+      "id": "C18",
+      "file": "fixtures/csv/blank-headers.csv",
+      "sha256": "7d8dc570b6ceec1de2b0109ad5a6fe4cd6dacc360d1569bb1a21eea599df37ce",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "id",
+          "",
+          ""
+        ],
+        [
+          "1",
+          "a",
+          "b"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "1",
+          "a",
+          "b"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "id",
+        "",
+        ""
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [
+        "blankHeader"
+      ],
+      "referenceComparable": true
+    },
+    {
+      "id": "C19",
+      "file": "fixtures/csv/extra-fields.csv",
+      "sha256": "9b08e44b527295aa306aeb0564777ddb3d1664aae3fe46cfd8a95393f6f41ee0",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "x",
+          "y",
+          "z"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "x",
+          "y",
+          "z"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [
+        "rowWidthMismatch"
+      ],
+      "referenceComparable": true
+    },
+    {
+      "id": "C20",
+      "file": "fixtures/csv/missing-fields.csv",
+      "sha256": "7f7aefcd785b3b1925bdd15fab8c6c648748632f0e8396f659210cb033bf4745",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b",
+          "c"
+        ],
+        [
+          "x",
+          "y"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "x",
+          "y"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b",
+        "c"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [
+        "rowWidthMismatch"
+      ],
+      "referenceComparable": true
+    },
+    {
+      "id": "C21",
+      "file": "fixtures/csv/quoted-spaces.csv",
+      "sha256": "9c09e5154e797c3e517560d0bf67ec3d243e713fd695b4773ba58b364d6609a4",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "  padded  ",
+          " value "
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "  padded  ",
+          " value "
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C22",
+      "file": "fixtures/csv/empty-record.csv",
+      "sha256": "82eefe6dab4ac1bdba83a5d6f8899867c25be0a5025a8c463a92c0b9602a2c7a",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "",
+          ""
+        ],
+        [
+          "1",
+          "2"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "",
+          ""
+        ],
+        [
+          "1",
+          "2"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C23",
+      "file": "fixtures/csv/blank-physical-record.csv",
+      "sha256": "6b84412e1ab887498b5b060a2bf6fd6156e166cc8adeaf2c2106d9162b56c913",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a"
+        ],
+        [
+          ""
+        ],
+        [
+          "z"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          ""
+        ],
+        [
+          "z"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": false
+    },
+    {
+      "id": "C24",
+      "file": "fixtures/csv/quoted-crlf.csv",
+      "sha256": "c46ef4307d15d063e28e1dfad912b62a7e865e17720ab21dac58e262f9500091",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "1",
+          "line1\r\nline2"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "1",
+          "line1\r\nline2"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C25",
+      "file": "fixtures/csv/escaped-quotes.csv",
+      "sha256": "3ad5511badc30789168bc4a595da2a18d31c2721788cf905b3a47599ec0ab31d",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "1",
+          "He said \"Hi\""
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "1",
+          "He said \"Hi\""
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C26",
+      "file": "fixtures/csv/unicode.csv",
+      "sha256": "a50513ebbfab9d181fe30ad27b2bb83b0ea302fbf3aca5037ce84d94da7f8f04",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "name",
+          "note"
+        ],
+        [
+          "Åsa",
+          "🐺 é"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "Åsa",
+          "🐺 é"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "name",
+        "note"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C27",
+      "file": "fixtures/csv/literal-values.csv",
+      "sha256": "03a27a64cd197bb9dc4ed5773fa9dc8917ba638f43c9d98a38ef00dc7d1476d3",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "id",
+          "amount",
+          "formula"
+        ],
+        [
+          "00123",
+          "9007199254740993",
+          "=SUM(A1:A2)"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "00123",
+          "9007199254740993",
+          "=SUM(A1:A2)"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "id",
+        "amount",
+        "formula"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C28",
+      "file": "fixtures/csv/unclosed-quote.csv",
+      "sha256": "e5543fb881e2688f0739074ea19bfef25182e9ba0d473d9bccfc2715ccae1f6c",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": null,
+      "expectedDataRows": null,
+      "expectedOriginalHeader": null,
+      "expectedError": "malformedDelimitedText",
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C29",
+      "file": "fixtures/csv/quote-in-unquoted.csv",
+      "sha256": "8be157667d749ff7b274243444c4f890e788781fd564d9e5ee071b2f8560416a",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": null,
+      "expectedDataRows": null,
+      "expectedOriginalHeader": null,
+      "expectedError": "malformedDelimitedText",
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C30",
+      "file": "fixtures/csv/characters-after-quote.csv",
+      "sha256": "9f6639622a45213ab4e6ef04436e36ccaa9b496dc5d387cc9abe1c46523f7ed5",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": null,
+      "expectedDataRows": null,
+      "expectedOriginalHeader": null,
+      "expectedError": "malformedDelimitedText",
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C31",
+      "file": "fixtures/csv/invalid-utf8.csv",
+      "sha256": "cb3982d3e13229d94a13e183b60b93e7fabc655889c888fc9c45aa7f97b69c85",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": null,
+      "expectedDataRows": null,
+      "expectedOriginalHeader": null,
+      "expectedError": "invalidEncoding",
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C32",
+      "file": "fixtures/csv/zero-byte.csv",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "absent",
+      "expectedParserRows": [],
+      "expectedDataRows": [],
+      "expectedOriginalHeader": null,
+      "expectedError": null,
+      "expectedDiagnostics": [
+        "emptyInput"
+      ],
+      "referenceComparable": true
+    },
+    {
+      "id": "C33",
+      "file": "fixtures/csv/trailing-field.csv",
+      "sha256": "f9a91c0aa2caf4bac5375d2b9197d510391c34939af9ca65ad7939af513a98c2",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b",
+          "c"
+        ],
+        [
+          "x",
+          "y",
+          ""
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "x",
+          "y",
+          ""
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b",
+        "c"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    },
+    {
+      "id": "C34",
+      "file": "fixtures/csv/literal-bom.csv",
+      "sha256": "a4e7883e22d116649cbe2d027fe5baea1b8bb4b548ee3d126b6db1a9404061e6",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headerMode": "present",
+      "expectedParserRows": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "1",
+          "x﻿y"
+        ]
+      ],
+      "expectedDataRows": [
+        [
+          "1",
+          "x﻿y"
+        ]
+      ],
+      "expectedOriginalHeader": [
+        "a",
+        "b"
+      ],
+      "expectedError": null,
+      "expectedDiagnostics": [],
+      "referenceComparable": true
+    }
+  ],
+  "performanceCase": {
+    "file": "fixtures/csv/padding-amplification.csv",
+    "sha256": "68d479cda9fff67ef02dfceed68d143064592cce9b80d1cd67788c069561eede",
+    "syntacticRecordCount": 2001,
+    "dataRecordCount": 2000,
+    "headerMode": "present",
+    "maximumMarkdownBytesExclusive": 1000000
+  }
+}

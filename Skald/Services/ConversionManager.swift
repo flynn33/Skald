@@ -33,7 +33,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
         self.outputWriter = outputWriter ?? OutputWriter(planner: self.outputFilePlanner)
     }
 
-    func convertFiles(in sourceURL: URL, to targetURL: URL, format: OutputFormat) throws -> ConversionReport {
+    func convertFiles(in sourceURL: URL, to targetURL: URL, format: OutputFormat, delimitedOptions: DelimitedOptions = DelimitedOptions()) throws -> ConversionReport {
         let startedAt = Date()
 
         // Conversion runs off the main queue, so explicitly hold security-scoped
@@ -57,6 +57,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
 
         var entries: [ConversionEntry] = []
         var convertedCount = 0
+        var emptyCount = 0
         var skippedCount = 0
         var failedCount = 0
         var reservedOutputPaths = Set<String>()
@@ -111,7 +112,19 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             }
 
             do {
-                let output = try converter.convert(at: fileURL, to: format)
+                let output: String
+                let appliedSettings: AppliedDelimitedSettings?
+                let isEmpty: Bool
+                if let delimited = converter as? DelimitedTextConverter {
+                    let result = try delimited.convert(at: fileURL, to: format, options: delimitedOptions)
+                    output = result.output
+                    appliedSettings = result.appliedSettings
+                    isEmpty = result.isEmpty
+                } else {
+                    output = try converter.convert(at: fileURL, to: format)
+                    appliedSettings = nil
+                    isEmpty = false
+                }
                 let outputExtension = format == .markdown ? "md" : "json"
                 let outputPlan = try outputWriter.publish(
                     Data(output.utf8),
@@ -123,19 +136,23 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                 let outputPath = normalizedPath(for: outputPlan.url)
                 reservedOutputPaths.insert(outputPath)
 
-                let message = outputPlan.wasRenamed
-                    ? "Saved as \(outputPlan.url.lastPathComponent) to avoid overwriting another file."
-                    : nil
+                var notes: [String] = []
+                if outputPlan.wasRenamed { notes.append("Saved as \(outputPlan.url.lastPathComponent) to avoid overwriting another file.") }
+                if let appliedSettings {
+                    notes.append("Import: \(appliedSettings.encoding), delimiter \(appliedSettings.delimiter.debugDescription), header \(appliedSettings.headerMode).")
+                    if !appliedSettings.diagnostics.isEmpty { notes.append("Warnings: \(appliedSettings.diagnostics.joined(separator: ", ")).") }
+                }
+                let message = notes.isEmpty ? nil : notes.joined(separator: " ")
                 entries.append(
                     ConversionEntry(
                         fileName: source.reportBaseName,
                         fileExtension: source.fileExtension,
-                        status: .converted,
+                        status: isEmpty ? .empty : .converted,
                         message: message,
                         outputURL: outputPlan.url
                     )
                 )
-                convertedCount += 1
+                if isEmpty { emptyCount += 1 } else { convertedCount += 1 }
             } catch {
                 entries.append(
                     ConversionEntry(
@@ -155,6 +172,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             finishedAt: Date(),
             entries: entries,
             convertedCount: convertedCount,
+            emptyCount: emptyCount,
             skippedCount: skippedCount,
             failedCount: failedCount
         )

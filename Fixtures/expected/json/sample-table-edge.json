@@ -32,12 +32,20 @@
   "source": {
     "convertedAt": "REDACTED",
     "fileExtension": "csv",
-    "fileName": "sample-table-edge.csv"
+    "fileName": "sample-table-edge.csv",
+    "importSettings": {
+      "delimiter": ",",
+      "diagnostics": [],
+      "encoding": "utf-8",
+      "encodingProvenance": "automatic-utf8",
+      "headerConfirmed": true,
+      "headerMode": "present"
+    }
   },
   "summary": {
     "blockCount": 0,
     "dataPresent": true,
     "tableCount": 1
   },
-  "version": "1.1"
+  "version": "1.2"
 }

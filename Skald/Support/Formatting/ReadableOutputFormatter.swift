@@ -66,16 +66,19 @@ nonisolated enum ReadableOutputFormatter {
         sourceExtension: String,
         blocks: [ReadableBlock],
         tables: [ReadableTable] = [],
-        data: ReadableValue? = nil
+        data: ReadableValue? = nil,
+        importSettings: AppliedDelimitedSettings? = nil,
+        schemaVersion: String = "1.1"
     ) throws -> String {
         let blockCount = blocks.count
         let tableCount = tables.isEmpty ? nil : tables.count
         let payload = ReadableDocument(
-            version: "1.1",
+            version: schemaVersion,
             source: ReadableSource(
                 fileName: fileName,
                 fileExtension: sourceExtension.lowercased(),
-                convertedAt: iso8601Now()
+                convertedAt: iso8601Now(),
+                importSettings: importSettings
             ),
             summary: ReadableSummary(
                 blockCount: blockCount,

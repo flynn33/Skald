@@ -14,6 +14,12 @@ final class ConversionViewModel: ObservableObject {
     @Published private(set) var sourceFolderURL: URL?
     @Published private(set) var targetFolderURL: URL?
     @Published var outputFormat: OutputFormat = .markdown
+    @Published var textEncoding: TextEncodingChoice = .automatic
+    @Published var delimiterChoice: DelimiterChoice = .automatic
+    @Published var headerMode: HeaderMode = .automatic
+    @Published var usesCustomDelimiter = false
+    @Published var customDelimiter = ""
+    @Published var allowsSepPreamble = false
     @Published private(set) var statusMessage = "Choose source and target folders."
     @Published private(set) var status: Status = .idle
     @Published private(set) var report: ConversionReport?
@@ -59,6 +65,12 @@ final class ConversionViewModel: ObservableObject {
 
         let conversionManager = conversionManager
         let outputFormat = outputFormat
+        let delimitedOptions = DelimitedOptions(
+            encoding: textEncoding,
+            delimiter: usesCustomDelimiter ? .custom(customDelimiter) : delimiterChoice,
+            header: headerMode,
+            allowSepPreamble: allowsSepPreamble
+        )
         isConverting = true
         report = nil
         status = .converting
@@ -69,7 +81,8 @@ final class ConversionViewModel: ObservableObject {
                 let report = try conversionManager.convertFiles(
                     in: sourceFolderURL,
                     to: targetFolderURL,
-                    format: outputFormat
+                    format: outputFormat,
+                    delimitedOptions: delimitedOptions
                 )
 
                 DispatchQueue.main.async {

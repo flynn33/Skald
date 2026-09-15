@@ -11,6 +11,14 @@ nonisolated struct ReadableSource: Codable {
     let fileName: String
     let fileExtension: String
     let convertedAt: String
+    let importSettings: AppliedDelimitedSettings?
+
+    init(fileName: String, fileExtension: String, convertedAt: String, importSettings: AppliedDelimitedSettings? = nil) {
+        self.fileName = fileName
+        self.fileExtension = fileExtension
+        self.convertedAt = convertedAt
+        self.importSettings = importSettings
+    }
 }
 
 nonisolated struct ReadableSummary: Codable {
