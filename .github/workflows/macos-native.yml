@@ -1,0 +1,81 @@
+name: macOS native verification
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    runs-on: macos-26
+    timeout-minutes: 90
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify Xcode and project target
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          xcodebuild -version | tee evidence/toolchain.txt
+          xcrun --sdk macosx --show-sdk-version | tee -a evidence/toolchain.txt
+          test "$(xcodebuild -version | sed -n 's/^Xcode //p')" = '26.6'
+          xcodebuild -list -project Skald.xcodeproj > evidence/project-list.txt
+          xcodebuild -showBuildSettings -project Skald.xcodeproj -scheme Skald -configuration Debug > evidence/build-settings.txt
+          grep -F 'MACOSX_DEPLOYMENT_TARGET = 26.2' evidence/build-settings.txt
+
+      - name: Debug build and native tests
+        run: |
+          set -euo pipefail
+          xcodebuild -quiet -project Skald.xcodeproj -scheme Skald -configuration Debug \
+            -destination 'platform=macOS' -derivedDataPath evidence/derived \
+            CODE_SIGNING_ALLOWED=NO build > evidence/debug-build.log 2>&1
+          xcodebuild -quiet -project Skald.xcodeproj -scheme Skald -configuration Debug \
+            -destination 'platform=macOS' -derivedDataPath evidence/derived \
+            -resultBundlePath evidence/debug-tests.xcresult CODE_SIGNING_ALLOWED=NO \
+            test > evidence/debug-tests.log 2>&1
+          python3 scripts/check_native_test_results.py evidence/debug-tests.xcresult evidence/debug-test-manifest.json
+
+      - name: Release build and native tests
+        run: |
+          set -euo pipefail
+          xcodebuild -quiet -project Skald.xcodeproj -scheme Skald -configuration Release \
+            -destination 'platform=macOS' -derivedDataPath evidence/derived \
+            CODE_SIGNING_ALLOWED=NO build > evidence/release-build.log 2>&1
+          xcodebuild -quiet -project Skald.xcodeproj -scheme Skald -configuration Release \
+            -destination 'platform=macOS' -derivedDataPath evidence/derived \
+            -resultBundlePath evidence/release-tests.xcresult CODE_SIGNING_ALLOWED=NO \
+            test > evidence/release-tests.log 2>&1
+          python3 scripts/check_native_test_results.py evidence/release-tests.xcresult evidence/release-test-manifest.json
+
+      - name: Analyze and validate existing fixtures
+        run: |
+          set -euo pipefail
+          xcodebuild -quiet -project Skald.xcodeproj -scheme Skald -configuration Debug \
+            -destination 'platform=macOS' -derivedDataPath evidence/derived \
+            CODE_SIGNING_ALLOWED=NO analyze > evidence/analyze.log 2>&1
+          bash scripts/validate_fixtures.sh > evidence/fixtures.log 2>&1
+          bash scripts/validate_pdf_fixture.sh > evidence/pdf-fixture.log 2>&1
+          bash scripts/validate_output_file_planner.sh > evidence/output-planner.log 2>&1
+
+      - name: Retain native evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: skald-macos-native-${{ github.run_id }}
+          path: |
+            evidence/*.txt
+            evidence/*.json
+            evidence/*.log
+            evidence/*.xcresult
+          if-no-files-found: error
+          retention-days: 14
