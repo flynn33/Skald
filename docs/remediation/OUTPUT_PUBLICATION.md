@@ -1,0 +1,9 @@
+# Output publication contract
+
+The production `ConversionManager` injects `OutputWriting` and calls it after conversion/formatting. `OutputWriter` opens the selected target directory without following a symlink, creates a random same-directory temporary file with exclusive creation and mode 0600, writes all UTF-8 bytes through the file descriptor, retries interrupted/short writes, flushes file contents, and closes the temporary file before publication. It uses directory-relative `renameatx_np` with `RENAME_EXCL`. An existing destination, including a dangling symlink, produces a collision and a new planned name; it is never removed or replaced. Both writer and planner retry limits are bounded at 1,000 by default.
+
+Apple documents `volumeSupportsExclusiveRenaming` as the capability for `RENAME_EXCL` and describes `RENAME_EXCL` as returning `EEXIST` when the destination already exists. An unsupported volume produces a capability error before output is published. The selected directory's file identity is checked immediately before the rename. A successful exclusive rename is the commit point: cancellation before it cleans the owned temporary file; cancellation after it preserves and reports the complete artifact. Cleanup verifies the temporary inode before unlinking it.
+
+This guarantees atomic visibility of each complete final file and protection from replacing an existing directory entry on a supporting volume. The temporary file is `fsync`ed, but the directory entry is not separately synchronized; the app does not promise survival of a sudden power loss immediately after publication. A completed conversion is not a claim that later extractor or release gates passed.
+
+References: [Apple volume capability](https://developer.apple.com/documentation/foundation/urlresourcevalues/volumesupportsexclusiverenaming), macOS `rename(2)` and the installed SDK's `sys/stdio.h` declaration for `renameatx_np`/`RENAME_EXCL`.

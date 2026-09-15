@@ -9,6 +9,8 @@ and this project uses `release.feature.patch` versioning.
 ### Added
 - Shared Xcode scheme and native unit/integration test target for the ingestion remediation.
 - Isolated baseline writer-failure probe and parser regression corpus; the recorded failures remain open until the production path is repaired.
+### Fixed
+- Replaced the production writer's incompatible write flags with complete same-directory temporary files and exclusive, bounded publication. Existing source and target bytes remain protected under tested collision and concurrent-publisher cases.
 
 ## [1.0.0] - 2026-06-30
 ### Added

@@ -11,14 +11,16 @@ nonisolated protocol OutputFilePlanning: Sendable {
         in targetDirectoryURL: URL,
         outputExtension: String,
         reservedOutputPaths: Set<String>
-    ) -> OutputFilePlan
+    ) throws -> OutputFilePlan
 }
 
 nonisolated final class OutputFilePlanner: OutputFilePlanning, @unchecked Sendable {
     private let fileManager: FileManager
+    private let maxCollisionSequence: Int
 
-    init(fileManager: FileManager = .default) {
+    init(fileManager: FileManager = .default, maxCollisionSequence: Int = 1_000) {
         self.fileManager = fileManager
+        self.maxCollisionSequence = max(1, maxCollisionSequence)
     }
 
     func planOutput(
@@ -26,7 +28,7 @@ nonisolated final class OutputFilePlanner: OutputFilePlanning, @unchecked Sendab
         in targetDirectoryURL: URL,
         outputExtension: String,
         reservedOutputPaths: Set<String>
-    ) -> OutputFilePlan {
+    ) throws -> OutputFilePlan {
         let source = SourceFileDescriptor(url: sourceURL)
         let preferredURL = makeURL(
             baseName: source.baseName,
@@ -43,7 +45,7 @@ nonisolated final class OutputFilePlanner: OutputFilePlanning, @unchecked Sendab
             : "\(source.baseName)-\(source.fileExtension)"
         var sequence = 1
 
-        while true {
+        while sequence <= maxCollisionSequence {
             let suffix = sequence == 1 ? "" : "-\(sequence)"
             let candidateURL = makeURL(
                 baseName: qualifiedBaseName + suffix,
@@ -57,6 +59,7 @@ nonisolated final class OutputFilePlanner: OutputFilePlanning, @unchecked Sendab
 
             sequence += 1
         }
+        throw OutputPublicationError.collisionLimit
     }
 
     private func makeURL(baseName: String, outputExtension: String, targetDirectoryURL: URL) -> URL {

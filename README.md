@@ -2,7 +2,7 @@
 
 **Current Version: 1.0.0** <!-- x-release-please-version -->
 
-The 1.0.0 application is under ingestion remediation. The current production writer and CSV parser have native baseline regressions; do not use a successful build or the fixture-only validators as evidence that those paths are repaired. The shared `Skald` scheme now discovers `SkaldTests`, with the required work tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md) and [task ledger](docs/remediation/TASK_LEDGER.md).
+The 1.0.0 application is under ingestion remediation. The shared production writer has been repaired and passed focused native Debug/Release tests; the CSV parser still has native baseline regressions. The shared `Skald` scheme discovers `SkaldTests`, with the remaining work tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md) and [task ledger](docs/remediation/TASK_LEDGER.md). This focused result is not a completed release qualification.
 
 Skald is a macOS SwiftUI app that batch-converts documents from a source folder into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
 
@@ -155,7 +155,7 @@ Use [ALPHA_TESTING.md](ALPHA_TESTING.md) for the automated release gates, manual
 Behavior notes:
 
 - Unsupported file extensions are skipped with a per-file reason in the conversion report.
-- Skald never overwrites a source file or a pre-existing target file. When a name is already occupied, the source extension and, when necessary, a numeric suffix are added.
+- Skald writes a complete temporary file and publishes it only with native exclusive rename on supporting volumes. It does not replace a source file or a pre-existing target file. When a name is already occupied, the source extension and, when necessary, a numeric suffix are added. On unsupported volumes, it reports a capability error. See [output publication](docs/remediation/OUTPUT_PUBLICATION.md).
 - The preferred output filename preserves the original base name and changes only the extension:
   - `example.pdf` -> `example.md` or `example.json`
   - A collision may produce `example-pdf.md`, `example-pdf-2.md`, and so on.

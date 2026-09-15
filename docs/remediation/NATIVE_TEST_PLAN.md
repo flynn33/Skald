@@ -9,16 +9,16 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G01-T03 | Test discovery and nonzero assertions | `G01ContractTests/testTestDiscoveryAndNonzeroAssertions` | planned |
 | G01-T04 | Separate ASan/TSan and analyzer | `G01ContractTests/testSeparateAsanTsanAndAnalyzer` | planned |
 | G01-T05 | Existing fixture validators | `G01ContractTests/testExistingFixtureValidators` | planned |
-| G02-T01 | LF CSV to Markdown through manager | `ConversionPipelineIntegrationTests/testRealManagerPublishesMarkdown` | registered, not run in baseline |
-| G02-T02 | CSV to JSON through manager | `ConversionPipelineIntegrationTests/testRealManagerPublishesParseableJSON` | registered, not run in baseline |
-| G02-T03 | Existing output hash unchanged | `ConversionPipelineIntegrationTests/testExistingDestinationRemainsByteIdentical` | registered, not run in baseline |
-| G02-T04 | Same source and target | `ConversionPipelineIntegrationTests/testSourceEqualsTargetDoesNotOverwriteOrReingestOutput` | registered, not run in baseline |
-| G02-T05 | Concurrent exclusive publish | `G02ContractTests/testConcurrentExclusivePublish` | planned |
-| G02-T06 | Symlink and dangling-link destination | `G02ContractTests/testSymlinkAndDanglingLinkDestination` | planned |
-| G02-T07 | Partial write and EINTR injection | `G02ContractTests/testPartialWriteAndEintrInjection` | planned |
-| G02-T08 | Cancel before/after commit | `G02ContractTests/testCancelBeforeAfterCommit` | planned |
-| G02-T09 | Filesystem capability error | `G02ContractTests/testFilesystemCapabilityError` | planned |
-| G02-T10 | Bounded collision retry and cleanup | `G02ContractTests/testBoundedCollisionRetryAndCleanup` | planned |
+| G02-T01 | LF CSV to Markdown through manager | `ConversionPipelineIntegrationTests/testRealManagerPublishesMarkdown` | registered; Debug/Release P01 focused passed |
+| G02-T02 | CSV to JSON through manager | `ConversionPipelineIntegrationTests/testRealManagerPublishesParseableJSON` | registered; Debug/Release P01 focused passed |
+| G02-T03 | Existing output hash unchanged | `ConversionPipelineIntegrationTests/testExistingDestinationRemainsByteIdentical` | registered; Debug/Release P01 focused passed |
+| G02-T04 | Same source and target | `ConversionPipelineIntegrationTests/testSourceEqualsTargetDoesNotOverwriteOrReingestOutput` | registered; Debug/Release P01 focused passed |
+| G02-T05 | Concurrent exclusive publish | `OutputWriterRegressionTests/testConcurrentPublishersChooseDistinctFinalNames` | registered; Debug/Release P01 focused passed |
+| G02-T06 | Symlink and dangling-link destination | `OutputWriterRegressionTests/testDanglingSymlinkDestinationIsNeverReplaced` | registered; Debug/Release P01 focused passed |
+| G02-T07 | Partial write and EINTR injection | `OutputWriterRegressionTests/testInjectedShortWriteAndEINTRCompletePayload` | registered; Debug/Release P01 focused passed |
+| G02-T08 | Cancel before/after commit | `OutputWriterRegressionTests/testCancellationAfterCommitPreservesPublishedArtifact` | registered; Debug/Release P01 focused passed |
+| G02-T09 | Filesystem capability error | `OutputWriterRegressionTests/testUnsupportedExclusiveRenameReturnsCapabilityError` | registered; Debug/Release P01 focused passed |
+| G02-T10 | Bounded collision retry and cleanup | `OutputWriterRegressionTests/testCollisionLimitDoesNotRemoveCompetingDestination` | registered; Debug/Release P01 focused passed |
 | G03-T01 | All CSV oracle cases | `G03ContractTests/testAllCsvOracleCases` | planned |
 | G03-T02 | Encoding choice through UI | `G03ContractTests/testEncodingChoiceThroughUi` | planned |
 | G03-T03 | Delimiter/header settings through coordinator | `G03ContractTests/testDelimiterHeaderSettingsThroughCoordinator` | planned |

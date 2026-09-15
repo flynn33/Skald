@@ -10,7 +10,7 @@ This guide defines the release gate and manual test matrix for the first externa
 - A writable source folder containing test documents.
 - A writable target folder for generated Markdown and JSON.
 
-The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The baseline native suite includes known failing parser cases, and the writer crash is reproduced in an isolated child process; these failures must be repaired before an Alpha pass is claimed.
+The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The baseline native suite still includes known failing parser cases. The writer crash was reproduced in an isolated child process and its replacement passed focused Debug/Release native tests; the remaining package gates must pass before an Alpha pass is claimed.
 
 ## Automated Gates
 

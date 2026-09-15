@@ -12,6 +12,7 @@ swiftc \
   "${ROOT_DIR}/scripts/OutputFilePlannerValidator.swift" \
   "${ROOT_DIR}/Skald/Models/SourceFileDescriptor.swift" \
   "${ROOT_DIR}/Skald/Services/OutputFilePlanner.swift" \
+  "${ROOT_DIR}/Skald/Models/OutputPublicationError.swift" \
   -o "${BIN_PATH}"
 
 "${BIN_PATH}"

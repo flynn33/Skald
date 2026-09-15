@@ -38,7 +38,7 @@ struct OutputFilePlannerValidatorTool {
         let sourcePDFURL = sourceDirectoryURL.appendingPathComponent("report.pdf")
         try Data().write(to: sourcePDFURL)
 
-        let preferred = planner.planOutput(
+        let preferred = try planner.planOutput(
             for: sourcePDFURL,
             in: targetDirectoryURL,
             outputExtension: "md",
@@ -48,7 +48,7 @@ struct OutputFilePlannerValidatorTool {
         try require(!preferred.wasRenamed, "Preferred output should not be marked as renamed.")
 
         try Data().write(to: preferred.url)
-        let existingCollision = planner.planOutput(
+        let existingCollision = try planner.planOutput(
             for: sourcePDFURL,
             in: targetDirectoryURL,
             outputExtension: "md",
@@ -59,7 +59,7 @@ struct OutputFilePlannerValidatorTool {
 
         let sourceMarkdownURL = targetDirectoryURL.appendingPathComponent("notes.md")
         try Data("original".utf8).write(to: sourceMarkdownURL)
-        let sourceCollision = planner.planOutput(
+        let sourceCollision = try planner.planOutput(
             for: sourceMarkdownURL,
             in: targetDirectoryURL,
             outputExtension: "md",
@@ -70,7 +70,7 @@ struct OutputFilePlannerValidatorTool {
         let duplicateSourceURL = sourceDirectoryURL.appendingPathComponent("data.csv")
         try Data().write(to: duplicateSourceURL)
         let reservedPath = targetDirectoryURL.appendingPathComponent("data.md").standardizedFileURL.path.lowercased()
-        let reservedCollision = planner.planOutput(
+        let reservedCollision = try planner.planOutput(
             for: duplicateSourceURL,
             in: targetDirectoryURL,
             outputExtension: "md",

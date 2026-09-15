@@ -4,6 +4,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
     private let fileManager: FileManager
     private let converters: [DocumentConverter]
     private let outputFilePlanner: OutputFilePlanning
+    private let outputWriter: OutputWriting
 
     // Dependency injection for testing/debugging.
     // Order matters: dispatch is first-match-by-extension, so structured
@@ -23,11 +24,13 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             TextConverter(),
             SourceTextConverter()
         ],
-        outputFilePlanner: OutputFilePlanning? = nil
+        outputFilePlanner: OutputFilePlanning? = nil,
+        outputWriter: OutputWriting? = nil
     ) {
         self.fileManager = fileManager
         self.converters = converters
         self.outputFilePlanner = outputFilePlanner ?? OutputFilePlanner(fileManager: fileManager)
+        self.outputWriter = outputWriter ?? OutputWriter(planner: self.outputFilePlanner)
     }
 
     func convertFiles(in sourceURL: URL, to targetURL: URL, format: OutputFormat) throws -> ConversionReport {
@@ -110,7 +113,8 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             do {
                 let output = try converter.convert(at: fileURL, to: format)
                 let outputExtension = format == .markdown ? "md" : "json"
-                let outputPlan = outputFilePlanner.planOutput(
+                let outputPlan = try outputWriter.publish(
+                    Data(output.utf8),
                     for: fileURL,
                     in: targetURL,
                     outputExtension: outputExtension,
@@ -118,8 +122,6 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                 )
                 let outputPath = normalizedPath(for: outputPlan.url)
                 reservedOutputPaths.insert(outputPath)
-
-                try Data(output.utf8).write(to: outputPlan.url, options: [.atomic, .withoutOverwriting])
 
                 let message = outputPlan.wasRenamed
                     ? "Saved as \(outputPlan.url.lastPathComponent) to avoid overwriting another file."

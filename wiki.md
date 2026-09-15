@@ -113,4 +113,4 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 ## Native remediation checks
 
-The shared Xcode scheme includes `SkaldTests`. Version 1.0.0 currently has known writer and CSV parser failures; the baseline tests record these defects without certifying conversion safety. See `docs/remediation/NATIVE_TEST_PLAN.md` and `docs/remediation/TASK_LEDGER.md` for the phase and gate status.
+The shared Xcode scheme includes `SkaldTests`. The production writer passed focused native Debug/Release tests after its exclusive-publication repair. Version 1.0.0 still has CSV parser defects and incomplete package gates. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, and `docs/remediation/TASK_LEDGER.md` for the exact evidence and remaining work.
