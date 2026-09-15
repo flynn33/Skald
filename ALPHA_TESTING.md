@@ -6,11 +6,11 @@ This guide defines the release gate and manual test matrix for the first externa
 
 - macOS 26.2 or later.
 - Xcode 26.2 or later.
-- Forsetti Framework v0.1.0 checked out beside this repository at `../Forsetti-Framework-Mac-iOS-main/`.
+- No external Forsetti package checkout is required by the current Xcode project.
 - A writable source folder containing test documents.
 - A writable target folder for generated Markdown and JSON.
 
-The full application build is a local gate because Forsetti is a sealed sibling package and is not available to GitHub-hosted runners. The repository workflow validates the dependency-light conversion core and output safety rules.
+The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The baseline native suite includes known failing parser cases, and the writer crash is reproduced in an isolated child process; these failures must be repaired before an Alpha pass is claimed.
 
 ## Automated Gates
 
@@ -19,6 +19,7 @@ Run these commands from the repository root before every Alpha build:
 ```bash
 bash scripts/validate_fixtures.sh
 bash scripts/validate_output_file_planner.sh
+xcodebuild -project "Skald.xcodeproj" -scheme "Skald" -destination 'platform=macOS' test
 
 xcodebuild -project "Skald.xcodeproj" \
   -scheme "Skald" \

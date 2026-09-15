@@ -110,3 +110,7 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 - **Architecture**: Forsetti-guided native macOS module boundaries
 - **License**: Proprietary (see LICENSE.md)
 - **Version**: 1.0.0 <!-- x-release-please-version -->
+
+## Native remediation checks
+
+The shared Xcode scheme includes `SkaldTests`. Version 1.0.0 currently has known writer and CSV parser failures; the baseline tests record these defects without certifying conversion safety. See `docs/remediation/NATIVE_TEST_PLAN.md` and `docs/remediation/TASK_LEDGER.md` for the phase and gate status.

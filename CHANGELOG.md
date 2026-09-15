@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project uses `release.feature.patch` versioning.
 
+## [Unreleased]
+### Added
+- Shared Xcode scheme and native unit/integration test target for the ingestion remediation.
+- Isolated baseline writer-failure probe and parser regression corpus; the recorded failures remain open until the production path is repaired.
+
 ## [1.0.0] - 2026-06-30
 ### Added
 - Initial Skald macOS document conversion app.
