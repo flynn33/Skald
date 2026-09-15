@@ -11,7 +11,7 @@ and this project uses `release.feature.patch` versioning.
 - Deterministic actual-format fixtures for stored/deflated ZIP, SpreadsheetML/ODF, and CFB/BIFF8, plus traversal, collision, expansion, entity, encryption, and chain-loop negatives.
 - Validated per-format byte, record, column, cell, field, nesting, pixel, worklist, batch, and output ceilings with typed safe failure diagnostics and path-free native logging.
 - Pinned macOS native CI with Debug/Release builds and tests, analysis, fixture validators, required-test discovery, and retained result bundles.
-- P08 qualification record for signed Debug/Release, 107-test native and IDE matrices, separate sanitizers, signed sandbox inspection, and named manual scenarios; the direct Finder drop observation remains open.
+- P08 qualification record for signed Debug/Release, 107-test native and IDE matrices, separate sanitizers, signed sandbox inspection, named manual scenarios, and a separate Xcode interaction scheme that passed a direct two-file Finder drop.
 - Per-page PDF and per-frame image extraction provenance, status, OCR confidence, and warnings; scanned pages use bounded Vision OCR.
 - Ordered XML mixed-content schema 2.0 and resource-free offline HTML extraction on a background task, with partial-outcome reporting for attributed structures.
 - Shared Xcode scheme and native unit/integration test target for the ingestion remediation.

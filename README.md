@@ -2,7 +2,7 @@
 
 **Current Version: 1.0.0** <!-- x-release-please-version -->
 
-The 1.0.0 application has completed the documented ingestion-remediation implementation and the P08 local native and signed IDE matrix. The shared `Skald` scheme discovers 107 `SkaldTests`; signed Debug/Release, separate sanitizers, and Xcode Product Test each passed 107/107 with no skips. The required work and observed limitations are tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [named-format boundaries](docs/remediation/NAMED_FORMAT_READERS.md), [task ledger](docs/remediation/TASK_LEDGER.md), and [P08 qualification record](docs/remediation/P08_COMPLETION.md). The direct Finder-to-app drag gesture remains unobserved, and this is not a public release claim.
+The 1.0.0 application has completed the documented ingestion-remediation implementation and the P08 local native and signed IDE matrix. The shared `Skald` scheme discovers 107 `SkaldTests`; signed Debug/Release, separate sanitizers, and Xcode Product Test each passed 107/107 with no skips. The required work and observed limitations are tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [named-format boundaries](docs/remediation/NAMED_FORMAT_READERS.md), [task ledger](docs/remediation/TASK_LEDGER.md), and [P08 qualification record](docs/remediation/P08_COMPLETION.md). The separate Xcode `SkaldInteraction` UI-test scheme completed a direct two-file Finder-to-Skald drag, with the Sources view reporting `2 selected`. The documented qualification scope is not a public distribution claim.
 
 Skald is a macOS SwiftUI app that batch-converts selected files and folders into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
 

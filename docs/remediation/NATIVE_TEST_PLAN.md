@@ -31,7 +31,7 @@ The remediation contract has 76 required requirements. P00 reserved gate-observa
 | G04-T04 | Every Markdown cell recoverable | `CanonicalTableTests/testIndependentCorpusAgreesAcrossCanonicalJSONAndMarkdown` | registered; full Debug/Release/IDE positive corpus passed |
 | G04-T05 | Literal HTML/Markdown and fence safety | `CanonicalTableTests/testFenceExceedsSourceRunAndPreservesLiteralMarkup` | registered; full Debug/Release/IDE native rerun passed |
 | G04-T06 | Schema/timestamp normalization integrity | `scripts/validate_fixtures.sh` and `CanonicalTableTests/testDuplicateBlankAndExtraColumnsStayDistinct` | registered; 12 fixtures and schema shape passed; P08 source-bound validators and suites passed |
-| G05-T01 | Files/folders/multiple/drop selection | `IntakeTraversalTests/testDirectFileMultipleSelectionsAndDuplicateIdentity`, `ConversionViewModelOptionsTests/testDroppedMultipleFilesReachProductionManager` | registered; native paths passed; native multi-file picker observed; compiled drop path passed; direct Finder drag unobserved |
+| G05-T01 | Files/folders/multiple/drop selection | `IntakeTraversalTests/testDirectFileMultipleSelectionsAndDuplicateIdentity`, `ConversionViewModelOptionsTests/testDroppedMultipleFilesReachProductionManager`, `FinderDropTests/testFinderDropSelectsTwoFiles` | native paths passed; picker converted two files; Xcode Finder drop reported `2 selected` |
 | G05-T02 | Recursive option and nested target exclusion | `IntakeTraversalTests/testRecursiveToggleNestedTargetAndDotfile` | registered; native passed |
 | G05-T03 | RTFD package before directory skip | `IntakeTraversalTests/testPackageSymlinkAndSpecialFileDoNotDescendOrBlock` | registered; native RTFD conversion passed |
 | G05-T04 | Dotfile and extensionless text | `IntakeTraversalTests/testExtensionlessStrictTextAndBinaryClassification`, `testExplicitHiddenFileIsHonoredAndRecursiveHiddenToggleControlsDiscovery` | registered; native passed |
@@ -61,7 +61,7 @@ The remediation contract has 76 required requirements. P00 reserved gate-observa
 | G09-T01 | Actual Xcode Product Build | `P08/IDE-Product-Build` | Xcode activity reported Build Succeeded |
 | G09-T02 | Actual Xcode Product Test | `P08/IDE-Product-Test` | Xcode reported 107/107; xcresult confirmed no skips |
 | G09-T03 | Actual Xcode Product Run | `P08/IDE-Product-Run` | signed workspace launched and mixed batch completed |
-| G09-T04 | Native picker and options | `P08/IDE-native-picker`, `P08/IDE-CSV-options` | picker and controls converted selected files; direct Finder drag unobserved |
+| G09-T04 | Native picker and options | `P08/IDE-native-picker`, `P08/IDE-CSV-options`, `FinderDropTests/testFinderDropSelectsTwoFiles` | picker and controls converted selected files; Xcode Finder-drop UI test verified `2 selected` |
 | G09-T05 | Release sandbox effective entitlements | `P08/standalone-Release-entitlements` | sandbox and selected-file access verified; no network/temporary exception |
 | G09-T06 | Cancel/restart and responsive UI | `P08/Release-cancel-restart` | 6,000-file batch cancelled and restarted, leaving committed files and no owned temporary files |
 | G10-T01 | Valid XLSX semantic data both outputs | `WorkbookFormatTests/testXLSXPreservesOrderSparseTypesFormulaCacheDateAndMerge`, `testNamedWorkbooksRouteThroughRealManager` | P07 focused passed; full P08 Debug/Release/IDE rerun passed |

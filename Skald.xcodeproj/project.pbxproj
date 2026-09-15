@@ -18,6 +18,7 @@
 		A1000000000000000000000D /* Corpus */ = {isa = PBXFileReference; lastKnownFileType = folder; path = SkaldTests/Corpus; sourceTree = "<group>"; };
 		7DF043712EF5CB3E00CCDF1C /* Skald.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Skald.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000001 /* SkaldTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkaldTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000001 /* SkaldInteractionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkaldInteractionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -27,10 +28,12 @@
 			sourceTree = "<group>";
 		};
 		A10000000000000000000002 /* SkaldTests */ = {isa = PBXFileSystemSynchronizedRootGroup; path = SkaldTests; sourceTree = "<group>"; };
+		B10000000000000000000002 /* SkaldInteractionTests */ = {isa = PBXFileSystemSynchronizedRootGroup; path = SkaldInteractionTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A10000000000000000000003 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		B10000000000000000000003 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		7DF0436E2EF5CB3E00CCDF1C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,6 +49,7 @@
 			children = (
 				7DF043732EF5CB3E00CCDF1C /* Skald */,
 				A10000000000000000000002 /* SkaldTests */,
+				B10000000000000000000002 /* SkaldInteractionTests */,
 				A1000000000000000000000D /* Corpus */,
 				7DF043722EF5CB3E00CCDF1C /* Products */,
 			);
@@ -56,6 +60,7 @@
 			children = (
 				7DF043712EF5CB3E00CCDF1C /* Skald.app */,
 				A10000000000000000000001 /* SkaldTests.xctest */,
+				B10000000000000000000001 /* SkaldInteractionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -64,6 +69,7 @@
 
 /* Begin PBXNativeTarget section */
 		A10000000000000000000004 /* SkaldTests */ = {isa = PBXNativeTarget; buildConfigurationList = A10000000000000000000007 /* Build configuration list for PBXNativeTarget "SkaldTests" */; buildPhases = (A10000000000000000000005 /* Sources */, A10000000000000000000003 /* Frameworks */, A10000000000000000000006 /* Resources */); buildRules = (); dependencies = (A10000000000000000000008 /* PBXTargetDependency */); fileSystemSynchronizedGroups = (A10000000000000000000002 /* SkaldTests */); name = SkaldTests; productName = SkaldTests; productReference = A10000000000000000000001 /* SkaldTests.xctest */; productType = "com.apple.product-type.bundle.unit-test"; };
+		B10000000000000000000004 /* SkaldInteractionTests */ = {isa = PBXNativeTarget; buildConfigurationList = B10000000000000000000007 /* Build configuration list for PBXNativeTarget "SkaldInteractionTests" */; buildPhases = (B10000000000000000000005 /* Sources */, B10000000000000000000003 /* Frameworks */); buildRules = (); dependencies = (B10000000000000000000008 /* PBXTargetDependency */); fileSystemSynchronizedGroups = (B10000000000000000000002 /* SkaldInteractionTests */); name = SkaldInteractionTests; productName = SkaldInteractionTests; productReference = B10000000000000000000001 /* SkaldInteractionTests.xctest */; productType = "com.apple.product-type.bundle.ui-testing"; };
 		7DF043702EF5CB3E00CCDF1C /* Skald */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7DF043812EF5CB3E00CCDF1C /* Build configuration list for PBXNativeTarget "Skald" */;
@@ -119,6 +125,7 @@
 			targets = (
 				7DF043702EF5CB3E00CCDF1C /* Skald */,
 				A10000000000000000000004 /* SkaldTests */,
+				B10000000000000000000004 /* SkaldInteractionTests */,
 			);
 		};
 /* End PBXProject section */
@@ -136,6 +143,7 @@
 
 /* Begin PBXSourcesBuildPhase section */
 		A10000000000000000000005 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		B10000000000000000000005 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		7DF0436D2EF5CB3E00CCDF1C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -147,11 +155,14 @@
 
 /* Begin PBXTargetDependency section */
 		A10000000000000000000008 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 7DF043702EF5CB3E00CCDF1C /* Skald */; targetProxy = A1000000000000000000000B /* PBXContainerItemProxy */; };
+		B10000000000000000000008 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 7DF043702EF5CB3E00CCDF1C /* Skald */; targetProxy = A1000000000000000000000B /* PBXContainerItemProxy */; };
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A10000000000000000000009 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = 9AQ2C2838M; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 26.2; PRODUCT_BUNDLE_IDENTIFIER = com.daley.jim.SkaldTests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = macosx; SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor; SWIFT_VERSION = 5.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Skald.app/Contents/MacOS/Skald"; }; name = Debug; };
 		A1000000000000000000000A /* Release */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = 9AQ2C2838M; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 26.2; PRODUCT_BUNDLE_IDENTIFIER = com.daley.jim.SkaldTests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = macosx; SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor; SWIFT_VERSION = 5.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Skald.app/Contents/MacOS/Skald"; }; name = Release; };
+		B10000000000000000000009 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = 9AQ2C2838M; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 26.2; PRODUCT_BUNDLE_IDENTIFIER = com.daley.jim.SkaldInteractionTests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = macosx; SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor; SWIFT_VERSION = 5.0; TEST_TARGET_NAME = Skald; }; name = Debug; };
+		B1000000000000000000000A /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = 9AQ2C2838M; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 26.2; PRODUCT_BUNDLE_IDENTIFIER = com.daley.jim.SkaldInteractionTests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = macosx; SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor; SWIFT_VERSION = 5.0; TEST_TARGET_NAME = Skald; }; name = Release; };
 		7DF0437F2EF5CB3E00CCDF1C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -347,6 +358,7 @@
 
 /* Begin XCConfigurationList section */
 		A10000000000000000000007 /* Build configuration list for PBXNativeTarget "SkaldTests" */ = {isa = XCConfigurationList; buildConfigurations = (A10000000000000000000009 /* Debug */, A1000000000000000000000A /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		B10000000000000000000007 /* Build configuration list for PBXNativeTarget "SkaldInteractionTests" */ = {isa = XCConfigurationList; buildConfigurations = (B10000000000000000000009 /* Debug */, B1000000000000000000000A /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 		7DF0436C2EF5CB3D00CCDF1C /* Build configuration list for PBXProject "Skald" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
