@@ -25,12 +25,12 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G03-T04 | Strict malformed quote diagnostics | `DelimitedParserRegressionTests/testUnterminatedQuoteIsRejected` | registered; full Debug/Release passed |
 | G03-T05 | 1000 seeded round trips | `DelimitedCorpusTests/testOneThousandSeededRoundTripsAcrossChunkSizes` | registered; full Debug/Release passed |
 | G03-T06 | Chunk sizes across CRLF, quotes and Unicode | `DelimitedCorpusTests/testByteReadBoundariesAcrossBOMUnicodeCRLFAndQuotes` | registered; full Debug/Release passed |
-| G04-T01 | Duplicate/blank column identity | `G04ContractTests/testDuplicateBlankColumnIdentity` | planned |
-| G04-T02 | Ragged record no loss | `G04ContractTests/testRaggedRecordNoLoss` | planned |
-| G04-T03 | Missing differs from empty | `G04ContractTests/testMissingDiffersFromEmpty` | planned |
-| G04-T04 | Every Markdown cell recoverable | `G04ContractTests/testEveryMarkdownCellRecoverable` | planned |
-| G04-T05 | Literal HTML/Markdown and fence safety | `G04ContractTests/testLiteralHtmlMarkdownAndFenceSafety` | planned |
-| G04-T06 | Schema/timestamp normalization integrity | `G04ContractTests/testSchemaTimestampNormalizationIntegrity` | planned |
+| G04-T01 | Duplicate/blank column identity | `CanonicalTableTests/testDuplicateBlankAndExtraColumnsStayDistinct` | registered; P03 Debug passed |
+| G04-T02 | Ragged record no loss | `CanonicalTableTests/testDuplicateBlankAndExtraColumnsStayDistinct` | registered; P03 Debug passed |
+| G04-T03 | Missing differs from empty | `CanonicalTableTests/testMissingAndExplicitEmptyAreDifferent` | registered; P03 Debug passed |
+| G04-T04 | Every Markdown cell recoverable | `CanonicalTableTests/testIndependentCorpusAgreesAcrossCanonicalJSONAndMarkdown` | registered; full positive corpus comparison pending rerun |
+| G04-T05 | Literal HTML/Markdown and fence safety | `CanonicalTableTests/testFenceExceedsSourceRunAndPreservesLiteralMarkup` | registered; pending native rerun |
+| G04-T06 | Schema/timestamp normalization integrity | `scripts/validate_fixtures.sh` and `CanonicalTableTests/testDuplicateBlankAndExtraColumnsStayDistinct` | registered; 12 fixtures and schema shape passed; P08 source-bound rerun pending |
 | G05-T01 | Files/folders/multiple/drop selection | `G05ContractTests/testFilesFoldersMultipleDropSelection` | planned |
 | G05-T02 | Recursive option and nested target exclusion | `G05ContractTests/testRecursiveOptionAndNestedTargetExclusion` | planned |
 | G05-T03 | RTFD package before directory skip | `G05ContractTests/testRtfdPackageBeforeDirectorySkip` | planned |
@@ -48,7 +48,7 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G06-T07 | XML mixed/order/space/namespaces | `G06ContractTests/testXmlMixedOrderSpaceNamespaces` | planned |
 | G06-T08 | HTML background and external-resource denial | `G06ContractTests/testHtmlBackgroundAndExternalResourceDenial` | planned |
 | G06-T09 | Attributed tables/attachments and RTFD | `G06ContractTests/testAttributedTablesAttachmentsAndRtfd` | planned |
-| G07-T01 | Padding amplification upper bound | `G07ContractTests/testPaddingAmplificationUpperBound` | planned |
+| G07-T01 | Padding amplification upper bound | `CanonicalTableTests/testPaddingCorpusPreservesAllRecordsUnderOneMegabyte` | registered; P03 Debug passed |
 | G07-T02 | Documented large batch memory | `G07ContractTests/testDocumentedLargeBatchMemory` | planned |
 | G07-T03 | Limits at all stages | `G07ContractTests/testLimitsAtAllStages` | planned |
 | G07-T04 | Cancellation latency and cleanup measured | `G07ContractTests/testCancellationLatencyAndCleanupMeasured` | planned |

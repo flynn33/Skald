@@ -84,8 +84,9 @@ final class DelimitedCorpusTests: XCTestCase {
         XCTAssertEqual(settings["delimiter"] as? String, ";")
         XCTAssertEqual(settings["headerMode"] as? String, "absent")
         let content = try XCTUnwrap(object["content"] as? [String: Any])
-        let table = try XCTUnwrap((content["tables"] as? [[String: Any]])?.first)
-        let rows = try XCTUnwrap(table["rows"] as? [[String]])
+        let table = try XCTUnwrap(content["canonicalTable"] as? [String: Any])
+        let records = try XCTUnwrap(table["records"] as? [[String: Any]])
+        let rows = try records.map { try XCTUnwrap($0["cells"] as? [String]) }
         XCTAssertEqual(rows, [["a", "b"], ["1", "“x”"]])
     }
     func testByteReadBoundariesAcrossBOMUnicodeCRLFAndQuotes() throws {
@@ -116,8 +117,9 @@ final class DelimitedCorpusTests: XCTestCase {
         XCTAssertTrue(report.entries[0].message?.contains("headerUnconfirmed") == true)
         let output = try JSONSerialization.jsonObject(with: Data(contentsOf: target.appendingPathComponent("records.json"))) as? [String: Any]
         let content = try XCTUnwrap(output?["content"] as? [String: Any])
-        let table = try XCTUnwrap((content["tables"] as? [[String: Any]])?.first)
-        XCTAssertEqual(table["rows"] as? [[String]], [["name", "code"], ["Ava", "00123"]])
+        let table = try XCTUnwrap(content["canonicalTable"] as? [String: Any])
+        let records = try XCTUnwrap(table["records"] as? [[String: Any]])
+        XCTAssertEqual(records.compactMap { $0["cells"] as? [String] }, [["name", "code"], ["Ava", "00123"]])
     }
 
     func testInvalidUTF8AndMalformedQuotesPublishNoNormalOutput() throws {
@@ -156,8 +158,8 @@ final class DelimitedCorpusTests: XCTestCase {
         XCTAssertEqual(defaultReport.convertedCount, 1)
         let defaultJSON = try JSONSerialization.jsonObject(with: Data(contentsOf: target.appendingPathComponent("records.json"))) as? [String: Any]
         let defaultContent = try XCTUnwrap(defaultJSON?["content"] as? [String: Any])
-        let defaultTable = try XCTUnwrap((defaultContent["tables"] as? [[String: Any]])?.first)
-        XCTAssertEqual((defaultTable["rows"] as? [[String]])?.first, ["sep=", ""])
+        let defaultTable = try XCTUnwrap(defaultContent["canonicalTable"] as? [String: Any])
+        XCTAssertEqual((defaultTable["records"] as? [[String: Any]])?.first?["cells"] as? [String], ["sep=", ""])
 
         let explicit = DelimitedOptions(delimiter: .semicolon, header: .present, allowSepPreamble: true)
         let explicitReport = try ConversionManager().convertFiles(in: source, to: target, format: .json, delimitedOptions: explicit)
@@ -165,8 +167,8 @@ final class DelimitedCorpusTests: XCTestCase {
         let qualified = try XCTUnwrap(explicitReport.entries[0].outputURL)
         let explicitJSON = try JSONSerialization.jsonObject(with: Data(contentsOf: qualified)) as? [String: Any]
         let explicitContent = try XCTUnwrap(explicitJSON?["content"] as? [String: Any])
-        let explicitTable = try XCTUnwrap((explicitContent["tables"] as? [[String: Any]])?.first)
-        XCTAssertEqual(explicitTable["rows"] as? [[String]], [["Ava", "00123"]])
+        let explicitTable = try XCTUnwrap(explicitContent["canonicalTable"] as? [String: Any])
+        XCTAssertEqual((explicitTable["records"] as? [[String: Any]])?.compactMap { $0["cells"] as? [String] }, [["Ava", "00123"]])
     }
 
     func testCustomDelimiterMustBeOneValidScalar() throws {

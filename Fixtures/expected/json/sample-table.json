@@ -1,36 +1,54 @@
 {
   "content": {
-    "data": [
-      {
-        "Location": "Austin",
-        "Name": "Ava",
-        "Role": "Engineer"
-      },
-      {
-        "Location": "Chicago",
-        "Name": "Miles",
-        "Role": "Designer"
-      }
-    ],
-    "tables": [
-      {
-        "columns": [
-          "Name",
-          "Role",
-          "Location"
-        ],
-        "rows": [
-          [
+    "canonicalTable": {
+      "columns": [
+        {
+          "id": "c1",
+          "label": "Name",
+          "origin": "header"
+        },
+        {
+          "id": "c2",
+          "label": "Role",
+          "origin": "header"
+        },
+        {
+          "id": "c3",
+          "label": "Location",
+          "origin": "header"
+        }
+      ],
+      "records": [
+        {
+          "cells": [
             "Ava",
             "Engineer",
             "Austin"
           ],
-          [
+          "fieldCount": 3,
+          "index": 1
+        },
+        {
+          "cells": [
             "Miles",
             "Designer",
             "Chicago"
-          ]
-        ]
+          ],
+          "fieldCount": 3,
+          "index": 2
+        }
+      ]
+    },
+    "data": [
+      {
+        "c1": "Ava",
+        "c2": "Engineer",
+        "c3": "Austin"
+      },
+      {
+        "c1": "Miles",
+        "c2": "Designer",
+        "c3": "Chicago"
       }
     ]
   },
@@ -52,5 +70,5 @@
     "dataPresent": true,
     "tableCount": 1
   },
-  "version": "1.2"
+  "version": "2.0"
 }

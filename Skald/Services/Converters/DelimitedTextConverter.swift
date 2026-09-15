@@ -48,23 +48,19 @@ nonisolated final class DelimitedTextConverter: DocumentConverter {
         guard !rows.isEmpty else {
             return DelimitedConversion(output: try emptyOutput(for: url, format: format, settings: applied), appliedSettings: applied, isEmpty: true)
         }
-        let columns = interpretation.originalHeader ?? generateColumns(count: rows[0].count)
-        let dataRows = interpretation.dataRows
-        let table = ReadableTable(title: nil, columns: columns, rows: dataRows)
-        let dataValue = buildDataValue(columns: columns, rows: dataRows, hasHeader: interpretation.headerConfirmed)
+        let table = CanonicalDelimitedTable(header: interpretation.originalHeader, rows: interpretation.dataRows)
+        let dataValue = table.dataProjection()
         let output: String
         switch format {
         case .markdown:
-            let body = ReadableOutputFormatter.markdownDocument(
-                title: ReadableOutputFormatter.readableTitle(from: url), blocks: [], tables: [table]
-            )
+            let body = try CanonicalDelimitedMarkdown.render(table, settings: applied)
             output = markdownSettings(applied) + body
         case .json:
             output = try ReadableOutputFormatter.jsonDocument(
                 fileName: url.lastPathComponent,
                 sourceExtension: sourceExtension,
-                blocks: [], tables: [table], data: dataValue,
-                importSettings: applied, schemaVersion: "1.2"
+                blocks: [], data: dataValue, canonicalTable: table,
+                importSettings: applied, schemaVersion: "2.0"
             )
         }
         return DelimitedConversion(output: output, appliedSettings: applied, isEmpty: false)
@@ -75,7 +71,7 @@ nonisolated final class DelimitedTextConverter: DocumentConverter {
         case .markdown:
             return markdownSettings(settings) + ReadableOutputFormatter.markdownDocument(title: ReadableOutputFormatter.readableTitle(from: url), blocks: [])
         case .json:
-            return try ReadableOutputFormatter.jsonDocument(fileName: url.lastPathComponent, sourceExtension: SourceFileDescriptor(url: url).fileExtension, blocks: [], importSettings: settings, schemaVersion: "1.2")
+            return try ReadableOutputFormatter.jsonDocument(fileName: url.lastPathComponent, sourceExtension: SourceFileDescriptor(url: url).fileExtension, blocks: [], data: .array([]), canonicalTable: CanonicalDelimitedTable(header: nil, rows: []), importSettings: settings, schemaVersion: "2.0")
         }
     }
 
@@ -116,22 +112,4 @@ nonisolated final class DelimitedTextConverter: DocumentConverter {
         }
     }
 
-    private func generateColumns(count: Int) -> [String] {
-        (1...max(1, count)).map { "Column \($0)" }
-    }
-
-    private func buildDataValue(columns: [String], rows: [[String]], hasHeader: Bool) -> ReadableValue {
-        if hasHeader {
-            let objects: [ReadableValue] = rows.map { row in
-                var dict: [String: ReadableValue] = [:]
-                for (index, column) in columns.enumerated() {
-                    let value = index < row.count ? row[index] : ""
-                    dict[column] = .string(value)
-                }
-                return .object(dict)
-            }
-            return .array(objects)
-        }
-        return .array(rows.map { .array($0.map { .string($0) }) })
-    }
 }

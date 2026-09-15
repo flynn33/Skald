@@ -48,7 +48,7 @@ final class ConversionViewModelOptionsTests: XCTestCase {
         XCTAssertEqual(settings["delimiter"] as? String, ";")
         XCTAssertEqual(settings["headerMode"] as? String, "absent")
         let content = try XCTUnwrap(object["content"] as? [String: Any])
-        let table = try XCTUnwrap((content["tables"] as? [[String: Any]])?.first)
-        XCTAssertEqual(table["rows"] as? [[String]], [["a", "b"], ["1", "“x”"]])
+        let table = try XCTUnwrap(content["canonicalTable"] as? [String: Any])
+        XCTAssertEqual((table["records"] as? [[String: Any]])?.compactMap { $0["cells"] as? [String] }, [["a", "b"], ["1", "“x”"]])
     }
 }

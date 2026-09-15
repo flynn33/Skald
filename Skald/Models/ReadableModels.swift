@@ -33,6 +33,15 @@ nonisolated struct ReadableContent: Codable {
     let pages: [ReadablePage]?
     let tables: [ReadableTable]?
     let data: ReadableValue?
+    let canonicalTable: CanonicalDelimitedTable?
+
+    init(blocks: [ReadableBlock]?, pages: [ReadablePage]?, tables: [ReadableTable]?, data: ReadableValue?, canonicalTable: CanonicalDelimitedTable? = nil) {
+        self.blocks = blocks
+        self.pages = pages
+        self.tables = tables
+        self.data = data
+        self.canonicalTable = canonicalTable
+    }
 }
 
 nonisolated struct ReadablePage: Codable {

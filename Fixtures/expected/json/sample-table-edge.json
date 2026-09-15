@@ -1,31 +1,45 @@
 {
   "content": {
-    "data": [
-      {
-        "Name": "Alpha",
-        "Notes": "left|right"
-      },
-      {
-        "Name": "Beta",
-        "Notes": "line one\nline two"
-      }
-    ],
-    "tables": [
-      {
-        "columns": [
-          "Name",
-          "Notes"
-        ],
-        "rows": [
-          [
+    "canonicalTable": {
+      "columns": [
+        {
+          "id": "c1",
+          "label": "Name",
+          "origin": "header"
+        },
+        {
+          "id": "c2",
+          "label": "Notes",
+          "origin": "header"
+        }
+      ],
+      "records": [
+        {
+          "cells": [
             "Alpha",
             "left|right"
           ],
-          [
+          "fieldCount": 2,
+          "index": 1
+        },
+        {
+          "cells": [
             "Beta",
             "line one\nline two"
-          ]
-        ]
+          ],
+          "fieldCount": 2,
+          "index": 2
+        }
+      ]
+    },
+    "data": [
+      {
+        "c1": "Alpha",
+        "c2": "left|right"
+      },
+      {
+        "c1": "Beta",
+        "c2": "line one\nline two"
       }
     ]
   },
@@ -47,5 +61,5 @@
     "dataPresent": true,
     "tableCount": 1
   },
-  "version": "1.2"
+  "version": "2.0"
 }

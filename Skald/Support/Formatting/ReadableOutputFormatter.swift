@@ -67,11 +67,12 @@ nonisolated enum ReadableOutputFormatter {
         blocks: [ReadableBlock],
         tables: [ReadableTable] = [],
         data: ReadableValue? = nil,
+        canonicalTable: CanonicalDelimitedTable? = nil,
         importSettings: AppliedDelimitedSettings? = nil,
         schemaVersion: String = "1.1"
     ) throws -> String {
         let blockCount = blocks.count
-        let tableCount = tables.isEmpty ? nil : tables.count
+        let tableCount = canonicalTable == nil ? (tables.isEmpty ? nil : tables.count) : 1
         let payload = ReadableDocument(
             version: schemaVersion,
             source: ReadableSource(
@@ -90,7 +91,8 @@ nonisolated enum ReadableOutputFormatter {
                 blocks: blocks.isEmpty ? nil : blocks,
                 pages: nil,
                 tables: tables.isEmpty ? nil : tables,
-                data: data
+                data: data,
+                canonicalTable: canonicalTable
             )
         )
 
@@ -319,22 +321,14 @@ nonisolated enum ReadableOutputFormatter {
             return []
         }
 
-        var widths = columns.map { $0.count }
-        for row in rows {
-            for index in 0..<columnCount {
-                let cell = index < row.count ? row[index] : ""
-                widths[index] = max(widths[index], cell.count)
-            }
-        }
-
-        let header = "| " + zip(columns, widths).map { pad($0.0, width: $0.1) }.joined(separator: " | ") + " |"
-        let separator = "| " + widths.map { String(repeating: "-", count: max(3, $0)) }.joined(separator: " | ") + " |"
+        let header = "| " + columns.joined(separator: " | ") + " |"
+        let separator = "| " + columns.map { _ in "---" }.joined(separator: " | ") + " |"
 
         var lines: [String] = [header, separator]
         for row in rows {
             let rowCells = (0..<columnCount).map { index -> String in
                 let cell = index < row.count ? row[index] : ""
-                return pad(cell, width: widths[index])
+                return cell
             }
             lines.append("| " + rowCells.joined(separator: " | ") + " |")
         }
@@ -420,13 +414,6 @@ nonisolated enum ReadableOutputFormatter {
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "|", with: "\\|")
             .replacingOccurrences(of: "\n", with: "<br>")
-    }
-
-    private static func pad(_ text: String, width: Int) -> String {
-        if text.count >= width {
-            return text
-        }
-        return text + String(repeating: " ", count: width - text.count)
     }
 
     private static func iso8601Now() -> String {

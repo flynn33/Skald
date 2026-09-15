@@ -17,7 +17,9 @@ swiftc \
   "${ROOT_DIR}/Skald/Models/DelimitedOptions.swift" \
   "${ROOT_DIR}/Skald/Models/SourceFileDescriptor.swift" \
   "${ROOT_DIR}/Skald/Models/ReadableModels.swift" \
+  "${ROOT_DIR}/Skald/Models/CanonicalDelimitedTable.swift" \
   "${ROOT_DIR}/Skald/Support/Formatting/ReadableOutputFormatter.swift" \
+  "${ROOT_DIR}/Skald/Support/Formatting/CanonicalDelimitedMarkdown.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/PlainTextParser.swift" \
   "${ROOT_DIR}/Skald/Services/Converters/TextConverter.swift" \
   "${ROOT_DIR}/Skald/Support/Parsing/DelimitedTextParser.swift" \
