@@ -31,14 +31,14 @@ The remediation contract has 76 required requirements. Identifiers marked planne
 | G04-T04 | Every Markdown cell recoverable | `CanonicalTableTests/testIndependentCorpusAgreesAcrossCanonicalJSONAndMarkdown` | registered; full positive corpus comparison pending rerun |
 | G04-T05 | Literal HTML/Markdown and fence safety | `CanonicalTableTests/testFenceExceedsSourceRunAndPreservesLiteralMarkup` | registered; pending native rerun |
 | G04-T06 | Schema/timestamp normalization integrity | `scripts/validate_fixtures.sh` and `CanonicalTableTests/testDuplicateBlankAndExtraColumnsStayDistinct` | registered; 12 fixtures and schema shape passed; P08 source-bound rerun pending |
-| G05-T01 | Files/folders/multiple/drop selection | `G05ContractTests/testFilesFoldersMultipleDropSelection` | planned |
-| G05-T02 | Recursive option and nested target exclusion | `G05ContractTests/testRecursiveOptionAndNestedTargetExclusion` | planned |
-| G05-T03 | RTFD package before directory skip | `G05ContractTests/testRtfdPackageBeforeDirectorySkip` | planned |
-| G05-T04 | Dotfile and extensionless text | `G05ContractTests/testDotfileAndExtensionlessText` | planned |
-| G05-T05 | Unknown binary and special files | `G05ContractTests/testUnknownBinaryAndSpecialFiles` | planned |
-| G05-T06 | Duplicate/symlink aliases and loops | `G05ContractTests/testDuplicateSymlinkAliasesAndLoops` | planned |
-| G05-T07 | Scopes and permission denial | `G05ContractTests/testScopesAndPermissionDenial` | planned |
-| G05-T08 | Single-run guard and restart | `G05ContractTests/testSingleRunGuardAndRestart` | planned |
+| G05-T01 | Files/folders/multiple/drop selection | `IntakeTraversalTests/testDirectFileMultipleSelectionsAndDuplicateIdentity`, `ConversionViewModelOptionsTests/testDroppedMultipleFilesReachProductionManager` | registered; native paths passed; actual picker/drop IDE observation pending |
+| G05-T02 | Recursive option and nested target exclusion | `IntakeTraversalTests/testRecursiveToggleNestedTargetAndDotfile` | registered; native passed |
+| G05-T03 | RTFD package before directory skip | `IntakeTraversalTests/testPackageSymlinkAndSpecialFileDoNotDescendOrBlock` | registered; native RTFD conversion passed |
+| G05-T04 | Dotfile and extensionless text | `IntakeTraversalTests/testExtensionlessStrictTextAndBinaryClassification`, `testExplicitHiddenFileIsHonoredAndRecursiveHiddenToggleControlsDiscovery` | registered; native passed |
+| G05-T05 | Unknown binary and special files | `IntakeTraversalTests/testExtensionlessStrictTextAndBinaryClassification`, `testPackageSymlinkAndSpecialFileDoNotDescendOrBlock` | registered; native passed |
+| G05-T06 | Duplicate/symlink aliases and loops | `IntakeTraversalTests/testAppBundleIsSkippedAndHardlinkAliasDeduplicated`, `testExplicitLinkCannotEscapeSelectedRoot` | registered; native passed |
+| G05-T07 | Scopes and permission denial | `IntakeTraversalTests/testUnreadableSourceReportsFailureWithoutPublishing` | registered; denial passed; successful sandbox scope balance IDE observation pending |
+| G05-T08 | Single-run guard and restart | `IntakeTraversalTests/testServiceRejectsConcurrentStartAndAllowsSecondRun`, `testCancellationPreservesCommittedFirstOutputAndStopsNewWork` | registered; native passed; responsive IDE observation pending |
 | G06-T01 | Scanned PDF | `G06ContractTests/testScannedPdf` | planned |
 | G06-T02 | Mixed PDF | `G06ContractTests/testMixedPdf` | planned |
 | G06-T03 | Locked PDF and partial pages | `G06ContractTests/testLockedPdfAndPartialPages` | planned |

@@ -38,7 +38,7 @@ nonisolated final class OutputWriter: OutputWriting {
             }
         },
         beforeExclusiveRename: @escaping (URL) -> Void = { _ in },
-        isCancelled: @escaping () -> Bool = { false },
+        isCancelled: @escaping () -> Bool = { Task.isCancelled },
         supportsExclusiveRenaming: @escaping (URL) -> Bool = {
             (try? $0.resourceValues(forKeys: [.volumeSupportsExclusiveRenamingKey]).volumeSupportsExclusiveRenaming) == true
         }

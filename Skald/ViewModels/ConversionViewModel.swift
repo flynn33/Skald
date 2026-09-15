@@ -8,10 +8,12 @@ final class ConversionViewModel: ObservableObject {
         case idle
         case converting
         case completed(hasFailures: Bool)
+        case cancelled
         case failed
     }
 
     @Published private(set) var sourceFolderURL: URL?
+    @Published private(set) var sourceURLs: [URL] = []
     @Published private(set) var targetFolderURL: URL?
     @Published var outputFormat: OutputFormat = .markdown
     @Published var textEncoding: TextEncodingChoice = .automatic
@@ -20,13 +22,18 @@ final class ConversionViewModel: ObservableObject {
     @Published var usesCustomDelimiter = false
     @Published var customDelimiter = ""
     @Published var allowsSepPreamble = false
-    @Published private(set) var statusMessage = "Choose source and target folders."
+    @Published var recursive = false
+    @Published var includeHidden = false
+    @Published private(set) var progressCount = 0
+    @Published private(set) var progressTotal = 0
+    @Published private(set) var statusMessage = "Choose sources and a target folder."
     @Published private(set) var status: Status = .idle
     @Published private(set) var report: ConversionReport?
     @Published private(set) var isConverting = false
 
     private let conversionManager: ConversionManager
     private let folderSelectionService: FolderSelecting
+    private var conversionTask: Task<Void, Never>?
 
     convenience init() {
         self.init(
@@ -41,14 +48,22 @@ final class ConversionViewModel: ObservableObject {
     }
 
     var canConvert: Bool {
-        sourceFolderURL != nil && targetFolderURL != nil && !isConverting
+        !sourceURLs.isEmpty && targetFolderURL != nil && !isConverting
     }
 
     func selectSourceFolder() {
-        if let url = folderSelectionService.selectFolder() {
-            sourceFolderURL = url
+        let selected = folderSelectionService.selectSources()
+        if !selected.isEmpty {
+            acceptDroppedSources(selected)
             resetStatusAfterSelection()
         }
+    }
+
+    func acceptDroppedSources(_ urls: [URL]) {
+        guard !isConverting else { return }
+        sourceURLs = urls
+        sourceFolderURL = urls.first
+        resetStatusAfterSelection()
     }
 
     func selectTargetFolder() {
@@ -59,12 +74,14 @@ final class ConversionViewModel: ObservableObject {
     }
 
     func convertFiles() {
-        guard let sourceFolderURL, let targetFolderURL else {
+        guard !sourceURLs.isEmpty, let targetFolderURL, !isConverting else {
             return
         }
 
         let conversionManager = conversionManager
         let outputFormat = outputFormat
+        let selections = sourceURLs
+        let intakeOptions = IntakeOptions(recursive: recursive, includeHidden: includeHidden)
         let delimitedOptions = DelimitedOptions(
             encoding: textEncoding,
             delimiter: usesCustomDelimiter ? .custom(customDelimiter) : delimiterChoice,
@@ -74,39 +91,57 @@ final class ConversionViewModel: ObservableObject {
         isConverting = true
         report = nil
         status = .converting
-        statusMessage = "Converting..."
+        statusMessage = "Preparing input worklist..."
+        progressCount = 0
+        progressTotal = 0
 
-        DispatchQueue.global(qos: .userInitiated).async {
+        conversionTask = Task.detached(priority: .userInitiated) { [weak self] in
             do {
-                let report = try conversionManager.convertFiles(
-                    in: sourceFolderURL,
+                let report = try conversionManager.convertSelections(
+                    selections,
                     to: targetFolderURL,
                     format: outputFormat,
-                    delimitedOptions: delimitedOptions
+                    delimitedOptions: delimitedOptions,
+                    intakeOptions: intakeOptions,
+                    progress: { completed, total in
+                        Task { @MainActor [weak self] in
+                            self?.updateProgress(completed: completed, total: total)
+                        }
+                    }
                 )
-
-                DispatchQueue.main.async {
-                    self.finishConversion(with: report)
-                }
+                await self?.finishConversion(with: report)
             } catch {
-                DispatchQueue.main.async {
-                    self.failConversion(error)
-                }
+                await self?.failConversion(error)
             }
         }
     }
 
+    func cancelConversion() {
+        guard isConverting else { return }
+        conversionTask?.cancel()
+        statusMessage = "Cancelling..."
+    }
+
+    private func updateProgress(completed: Int, total: Int) {
+        guard isConverting else { return }
+        progressCount = completed
+        progressTotal = total
+        statusMessage = "Converting \(completed) of \(total) inputs..."
+    }
+
     private func finishConversion(with report: ConversionReport) {
         self.report = report
-        status = .completed(hasFailures: report.failedCount > 0)
+        status = report.wasCancelled ? .cancelled : .completed(hasFailures: report.failedCount > 0)
         statusMessage = report.summaryLine
         isConverting = false
+        conversionTask = nil
     }
 
     private func failConversion(_ error: Error) {
         status = .failed
         statusMessage = "Error: \(error.localizedDescription)"
         isConverting = false
+        conversionTask = nil
     }
 
     private func resetStatusAfterSelection() {

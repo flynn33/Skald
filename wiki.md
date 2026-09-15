@@ -2,7 +2,7 @@
 
 ## Overview
 
-Skald is a macOS document conversion utility with Forsetti-guided module boundaries. It batch-converts documents from a source folder into human-readable Markdown or structured JSON output.
+Skald is a macOS document conversion utility with Forsetti-guided module boundaries. It batch-converts selected files and folders into human-readable Markdown or structured JSON output.
 
 This wiki covers the application architecture, Forsetti reference alignment, and development guidelines.
 
@@ -79,8 +79,8 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 ### Processing Pipeline
 
-1. `ConversionManager` enumerates files in the source directory.
-2. Each file is matched to a converter by extension.
+1. `SourceWorklistBuilder` snapshots selected files and folders, with optional recursive traversal and nested-target exclusion.
+2. `ConversionManager` checks content signatures or strict text before dispatching to a converter.
 3. The converter extracts text and delegates to `ReadableOutputFormatter`.
 4. The formatter applies heuristic-based structure detection (headings, lists, paragraphs).
 5. Output is written to the target directory with the appropriate extension.
@@ -113,4 +113,4 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 ## Native remediation checks
 
-The shared Xcode scheme includes `SkaldTests`. The writer, CSV/TSV parser, and canonical table passed the current native Debug/Release suite. Version 1.0.0 still has intake, extraction, format-expansion, and release gates open. CSV/TSV JSON now uses canonical column IDs under schema version `2.0`. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/CSV_INTERPRETATION.md`, `docs/remediation/CANONICAL_TABLES.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, and `docs/remediation/TASK_LEDGER.md` for evidence and limits.
+The shared Xcode scheme includes `SkaldTests`. The writer, CSV/TSV parser, and canonical table passed the current native Debug/Release suite. Version 1.0.0 still has extraction, format-expansion, and release gates open. CSV/TSV JSON now uses canonical column IDs under schema version `2.0`. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/CSV_INTERPRETATION.md`, `docs/remediation/CANONICAL_TABLES.md`, `docs/remediation/INTAKE_AND_LIFECYCLE.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, and `docs/remediation/TASK_LEDGER.md` for evidence and limits.

@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SkaldAppModuleView: View {
     @StateObject private var viewModel = ConversionViewModel()
@@ -8,11 +9,26 @@ struct SkaldAppModuleView: View {
             header
 
             VStack(alignment: .leading, spacing: 12) {
-                FolderSelectionRow(
-                    title: "Source",
-                    url: viewModel.sourceFolderURL,
-                    action: viewModel.selectSourceFolder
-                )
+                VStack(alignment: .leading, spacing: 4) {
+                    FolderSelectionRow(
+                        title: "Sources",
+                        url: viewModel.sourceFolderURL,
+                        action: viewModel.selectSourceFolder
+                    )
+                    Text("\(viewModel.sourceURLs.count) selected. Drop source files or folders here.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
+                    for provider in providers {
+                        provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
+                            let url = (item as? URL) ?? (item as? Data).flatMap { URL(dataRepresentation: $0, relativeTo: nil) }
+                            guard let url else { return }
+                            Task { @MainActor in viewModel.acceptDroppedSources(viewModel.sourceURLs + [url]) }
+                        }
+                    }
+                    return !providers.isEmpty
+                }
 
                 FolderSelectionRow(
                     title: "Target",
@@ -39,6 +55,14 @@ struct SkaldAppModuleView: View {
                 }
                 .disabled(!viewModel.canConvert)
                 .keyboardShortcut(.defaultAction)
+                if viewModel.isConverting {
+                    Button("Cancel") { viewModel.cancelConversion() }
+                }
+            }
+
+            HStack(spacing: 14) {
+                Toggle("Include nested folders", isOn: $viewModel.recursive)
+                Toggle("Include hidden files", isOn: $viewModel.includeHidden)
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -82,7 +106,7 @@ struct SkaldAppModuleView: View {
             Text("Skald")
                 .font(.title.bold())
 
-            Text("Convert document folders into Markdown or JSON.")
+            Text("Convert selected files and folders into Markdown or JSON.")
                 .foregroundStyle(.secondary)
         }
     }

@@ -1,10 +1,15 @@
 import Foundation
 
+// Dependencies are immutable after initialization. The only mutable run state
+// is protected by runLock; conversions never overlap on one manager instance.
 nonisolated final class ConversionManager: @unchecked Sendable {
     private let fileManager: FileManager
     private let converters: [DocumentConverter]
     private let outputFilePlanner: OutputFilePlanning
     private let outputWriter: OutputWriting
+    private let worklistBuilder = SourceWorklistBuilder()
+    private let runLock = NSLock()
+    private var runActive = false
 
     // Dependency injection for testing/debugging.
     // Order matters: dispatch is first-match-by-extension, so structured
@@ -34,65 +39,86 @@ nonisolated final class ConversionManager: @unchecked Sendable {
     }
 
     func convertFiles(in sourceURL: URL, to targetURL: URL, format: OutputFormat, delimitedOptions: DelimitedOptions = DelimitedOptions()) throws -> ConversionReport {
+        try convertSelections([sourceURL], to: targetURL, format: format, delimitedOptions: delimitedOptions)
+    }
+
+    func convertSelections(_ selections: [URL], to targetURL: URL, format: OutputFormat, delimitedOptions: DelimitedOptions = DelimitedOptions(), intakeOptions: IntakeOptions = IntakeOptions(), progress: ((Int, Int) -> Void)? = nil, isCancelled: (() -> Bool)? = nil) throws -> ConversionReport {
+        runLock.lock()
+        guard !runActive else {
+            runLock.unlock()
+            throw IntakeError.alreadyRunning
+        }
+        runActive = true
+        runLock.unlock()
+        defer {
+            runLock.lock()
+            runActive = false
+            runLock.unlock()
+        }
         let startedAt = Date()
 
         // Conversion runs off the main queue, so explicitly hold security-scoped
         // access to the user-selected source and target folders for the whole
         // batch. Child URLs enumerated below inherit the folder scope.
-        let sourceScoped = sourceURL.startAccessingSecurityScopedResource()
+        let sourceScopes = selections.map { $0.startAccessingSecurityScopedResource() }
         let targetScoped = targetURL.startAccessingSecurityScopedResource()
         defer {
-            if sourceScoped { sourceURL.stopAccessingSecurityScopedResource() }
+            for (url, started) in zip(selections, sourceScopes) where started { url.stopAccessingSecurityScopedResource() }
             if targetScoped { targetURL.stopAccessingSecurityScopedResource() }
         }
 
-        let files = try fileManager.contentsOfDirectory(
-            at: sourceURL,
-            includingPropertiesForKeys: [.isDirectoryKey],
-            options: []
-        )
-        let sortedFiles = files.sorted {
-            $0.lastPathComponent.localizedCaseInsensitiveCompare($1.lastPathComponent) == .orderedAscending
-        }
+        // Freeze source identities before the first publication; generated
+        // outputs cannot enter this run even when source and target are equal.
+        let worklist = try worklistBuilder.snapshot(selections: selections, target: targetURL, options: intakeOptions)
 
         var entries: [ConversionEntry] = []
         var convertedCount = 0
         var emptyCount = 0
         var skippedCount = 0
         var failedCount = 0
+        var wasCancelled = false
         var reservedOutputPaths = Set<String>()
 
-        for fileURL in sortedFiles {
+        for (position, item) in worklist.items.enumerated() {
+            if Task.isCancelled || isCancelled?() == true { wasCancelled = true; break }
+            progress?(position, worklist.items.count)
+            let fileURL = item.url
             let source = SourceFileDescriptor(url: fileURL)
 
-            if let isDirectory = try? fileURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
-               isDirectory == true {
+            if !item.isConvertible {
+                let denied = item.message?.hasPrefix("Cannot") == true
                 entries.append(
                     ConversionEntry(
                         fileName: source.reportBaseName,
                         fileExtension: source.fileExtension,
-                        status: .skipped,
-                        message: "Directory.",
+                        status: denied ? .failed : .skipped,
+                        message: item.message,
                         outputURL: nil
                     )
                 )
-                skippedCount += 1
+                if denied { failedCount += 1 } else { skippedCount += 1 }
                 continue
             }
 
-            let converter = converters.first { $0.supportedExtensions.contains(source.fileExtension) }
-
-            if source.isHidden, converter == nil {
-                entries.append(
-                    ConversionEntry(
-                        fileName: source.reportBaseName,
-                        fileExtension: source.fileExtension,
-                        status: .skipped,
-                        message: "Hidden file.",
-                        outputURL: nil
-                    )
-                )
-                skippedCount += 1
+            var converter = converters.first { $0.supportedExtensions.contains(source.fileExtension) }
+            do {
+                let result = try ContentProbe().inspect(fileURL, fileExtension: source.fileExtension, knownExtension: converter != nil)
+                switch result {
+                case .compatible: break
+                case .strictText:
+                    converter = converters.first { $0 is TextConverter } ?? TextConverter()
+                case .binary:
+                    entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension, status: .skipped, message: "Unknown binary input.", outputURL: nil))
+                    skippedCount += 1
+                    continue
+                case .extensionConflict(let signature):
+                    entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension, status: .failed, message: "extensionContentMismatch: .\(source.fileExtension) conflicts with \(signature) content.", outputURL: nil))
+                    failedCount += 1
+                    continue
+                }
+            } catch {
+                entries.append(ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension, status: .failed, message: "Cannot probe input: \(error.localizedDescription)", outputURL: nil))
+                failedCount += 1
                 continue
             }
 
@@ -103,7 +129,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                         fileName: source.reportBaseName,
                         fileExtension: source.fileExtension,
                         status: .skipped,
-                        message: "Unsupported file type (\(detail)).",
+                        message: "Unsupported file type (\(detail)); content was not confirmed text.",
                         outputURL: nil
                     )
                 )
@@ -125,6 +151,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     appliedSettings = nil
                     isEmpty = false
                 }
+                if Task.isCancelled || isCancelled?() == true { wasCancelled = true; break }
                 let outputExtension = format == .markdown ? "md" : "json"
                 let outputPlan = try outputWriter.publish(
                     Data(output.utf8),
@@ -153,6 +180,9 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                     )
                 )
                 if isEmpty { emptyCount += 1 } else { convertedCount += 1 }
+            } catch OutputPublicationError.cancelled {
+                wasCancelled = true
+                break
             } catch {
                 entries.append(
                     ConversionEntry(
@@ -166,15 +196,18 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                 failedCount += 1
             }
         }
+        progress?(entries.count, worklist.items.count)
 
         return ConversionReport(
             startedAt: startedAt,
             finishedAt: Date(),
             entries: entries,
+            plannedCount: worklist.items.count,
             convertedCount: convertedCount,
             emptyCount: emptyCount,
             skippedCount: skippedCount,
-            failedCount: failedCount
+            failedCount: failedCount,
+            wasCancelled: wasCancelled
         )
     }
 

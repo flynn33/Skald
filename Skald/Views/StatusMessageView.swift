@@ -13,7 +13,7 @@ struct StatusMessageView: View {
 
     private var color: Color {
         switch status {
-        case .idle, .converting:
+        case .idle, .converting, .cancelled:
             return .secondary
         case let .completed(hasFailures):
             return hasFailures ? .orange : .secondary

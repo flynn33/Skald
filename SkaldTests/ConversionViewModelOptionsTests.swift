@@ -15,6 +15,32 @@ private final class FixedFolderSelector: FolderSelecting {
 
 @MainActor
 final class ConversionViewModelOptionsTests: XCTestCase {
+    func testDroppedMultipleFilesReachProductionManager() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("Skald-Multiple-View-\(UUID().uuidString)", isDirectory: true)
+        let source = root.appendingPathComponent("source", isDirectory: true)
+        let target = root.appendingPathComponent("target", isDirectory: true)
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let first = source.appendingPathComponent("one.csv")
+        let second = source.appendingPathComponent("two.csv")
+        try Data("a,b\n1,2\n".utf8).write(to: first)
+        try Data("c,d\n3,4\n".utf8).write(to: second)
+        let viewModel = ConversionViewModel(conversionManager: ConversionManager(), folderSelectionService: FixedFolderSelector([target]))
+        viewModel.acceptDroppedSources([first, second])
+        viewModel.selectTargetFolder()
+        viewModel.outputFormat = .json
+        XCTAssertEqual(viewModel.sourceURLs.count, 2)
+        XCTAssertTrue(viewModel.canConvert)
+        viewModel.convertFiles()
+        for _ in 0..<100 {
+            if viewModel.report != nil { break }
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+        XCTAssertEqual(viewModel.report?.convertedCount, 2)
+        XCTAssertEqual(viewModel.report?.plannedCount, 2)
+    }
+
     func testVisibleInterpretationChoicesReachProductionManagerAndOutput() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("Skald-View-Options-\(UUID().uuidString)", isDirectory: true)
         let source = root.appendingPathComponent("source", isDirectory: true)

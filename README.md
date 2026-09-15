@@ -2,9 +2,9 @@
 
 **Current Version: 1.0.0** <!-- x-release-please-version -->
 
-The 1.0.0 application is under ingestion remediation. The shared writer, lossless CSV/TSV parser, and canonical table passed the current native Debug/Release suite; broad intake, extraction, format expansion, and full release gates remain open. The shared `Skald` scheme discovers `SkaldTests`, with the required work tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md) and [task ledger](docs/remediation/TASK_LEDGER.md). This is not a completed release qualification.
+The 1.0.0 application is under ingestion remediation. The shared writer, lossless CSV/TSV parser, canonical table, and source intake passed the current native Debug/Release suite; extraction, format expansion, and full release gates remain open. The shared `Skald` scheme discovers `SkaldTests`, with the required work tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md) and [task ledger](docs/remediation/TASK_LEDGER.md). This is not a completed release qualification.
 
-Skald is a macOS SwiftUI app that batch-converts documents from a source folder into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
+Skald is a macOS SwiftUI app that batch-converts selected files and folders into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
 
 The app follows Forsetti Mac architecture guidance while remaining a standalone native macOS project. The Forsetti repository is used as implementation reference material only; it is not vendored, linked, or resolved as a package dependency.
 
@@ -59,7 +59,7 @@ The Forsetti repository may sit near the project as reference documentation, tem
 | `pdf` | `PDFConverter` | Text extracted page-by-page using `PDFKit`, with running header/footer stripping and wrapped-line paragraph reconstruction. |
 | `docx`, `doc`, `rtf`, `rtfd`, `odt`, `html`, `htm`, `webarchive` | `AttributedDocumentConverter` | Text extracted via `NSAttributedString` document importers; detects headings, bullet/numbered lists. |
 | `txt`, `md`, `markdown`, `mdown` | `TextConverter` | UTF-8 text input with Markdown-aware parsing. |
-| `csv`, `tsv` | `DelimitedTextConverter` | Parsed into Markdown tables and JSON data arrays. |
+| `csv`, `tsv` | `DelimitedTextConverter` | Preserved as canonical columns and records; Markdown uses recoverable JSON code blocks and JSON uses schema 2.0. |
 | `json` | `JSONConverter` | Parsed via `JSONSerialization`; structure preserved as JSON `data` / nested Markdown list. |
 | `xml` | `XMLConverter` | Parsed via `XMLParser`; elements become objects, attributes use an `@` prefix, repeated tags become arrays. |
 | `plist` | `PropertyListConverter` | Parsed via `PropertyListSerialization` into JSON-safe output. |
@@ -104,8 +104,8 @@ Skald uses a module-oriented macOS architecture:
 - **`ConversionViewModel`**:
   - Owns UI state and delegates file conversion to `ConversionManager`.
 - **`ConversionManager`**:
-  - Enumerates files in source folder.
-  - Routes each file to the first matching converter by extension.
+  - Snapshots selected files and folders, with optional recursive traversal and target exclusion.
+  - Checks signatures or strict text before routing each regular input to a converter.
   - Writes output with `.md` or `.json` extension.
 - **`DocumentConverter`** protocol:
   - Shared interface for all converters.
@@ -146,16 +146,16 @@ Use [ALPHA_TESTING.md](ALPHA_TESTING.md) for the automated release gates, manual
 ## How to Use
 
 1. Launch the app.
-2. Click **Select** next to **Source Folder** and choose input directory.
-3. Click **Select** next to **Target Folder** and choose output directory.
-4. Choose **Markdown** or **JSON**.
+2. Click **Choose** next to **Sources** and select one or more files or folders, or drop them on the source row.
+3. Click **Choose** next to **Target** and choose an output directory.
+4. Choose **Markdown** or **JSON**; enable nested folders and hidden files when needed.
 5. For CSV/TSV, select encoding, delimiter, and header interpretation. Automatic header mode keeps the first record as data until you confirm it is a header. A custom delimiter must be one valid Unicode scalar; `sep=` preamble use is explicit.
-6. Click **Convert Files**.
+6. Click **Convert**. Progress and **Cancel** are available while the batch runs.
 7. Inspect output files and per-file import warnings in the target directory and conversion report.
 
 Behavior notes:
 
-- Unsupported file extensions are skipped with a per-file reason in the conversion report.
+- Unknown regular files are probed as strict UTF-8 text before conversion; binary, special, conflicting-signature, and inaccessible inputs receive explicit per-file outcomes.
 - Skald writes a complete temporary file and publishes it only with native exclusive rename on supporting volumes. It does not replace a source file or a pre-existing target file. When a name is already occupied, the source extension and, when necessary, a numeric suffix are added. On unsupported volumes, it reports a capability error. See [output publication](docs/remediation/OUTPUT_PUBLICATION.md).
 - The preferred output filename preserves the original base name and changes only the extension:
   - `example.pdf` -> `example.md` or `example.json`
@@ -214,13 +214,13 @@ Skald/
 
 ## Known Limitations
 
-- Source-folder traversal is not recursive.
+- Nested-folder traversal is optional. Directory symlinks and application bundles are not traversed by default.
 - Formatting is heuristic-based, not layout-faithful.
 - PDF extraction requires a selectable text layer; scanned image-only PDFs need OCR, which is **not** applied to PDFs (OCR runs only on standalone image files via `ImageOCRConverter`). A paragraph that spans a page boundary is reported under the page where each part appears.
 - `yaml`/`yml`/`toml` and other source/config formats are preserved verbatim as code blocks, not parsed into structured data (no native parser; avoids adding third-party dependencies).
 - Tables, images, footnotes, and advanced styles may flatten to plain text.
 - CSV/TSV uses strict UTF-8 or a leading UTF-8/16/32 BOM by default, with explicit Windows-1252, Latin-1, and other encoding choices. Other text-based converters retain their existing fallback behavior.
-- Unsupported extensions are skipped (with a per-file reason in the on-screen conversion report).
+- Unknown extensions with confirmed strict UTF-8 text use the text converter; unknown binary content is skipped with a reason. The dispatch probe is bounded, while some converters still need P06 resource limits.
 
 ## Troubleshooting
 
@@ -233,7 +233,7 @@ Skald/
   - Confirm the PDF contains selectable text (not just images).
 - Output not appearing:
   - Verify folder permissions and chosen target directory.
-  - Check whether files in source directory use supported extensions.
+  - Check the per-file report for binary, signature-conflict, scope, or converter diagnostics.
 
 ## Contributing
 

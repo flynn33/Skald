@@ -24,10 +24,12 @@ nonisolated struct ConversionReport: Sendable {
     let startedAt: Date
     let finishedAt: Date
     let entries: [ConversionEntry]
+    let plannedCount: Int
     let convertedCount: Int
     let emptyCount: Int
     let skippedCount: Int
     let failedCount: Int
+    let wasCancelled: Bool
 
     var totalCount: Int {
         entries.count
@@ -38,6 +40,7 @@ nonisolated struct ConversionReport: Sendable {
     }
 
     var summaryLine: String {
-        "Converted \(convertedCount) of \(totalCount) files (Empty \(emptyCount), Skipped \(skippedCount), Failed \(failedCount))."
+        let prefix = wasCancelled ? "Cancelled after" : "Converted"
+        return "\(prefix) \(convertedCount) of \(plannedCount) planned inputs (Empty \(emptyCount), Skipped \(skippedCount), Failed \(failedCount))."
     }
 }

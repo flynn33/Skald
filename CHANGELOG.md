@@ -14,6 +14,7 @@ and this project uses `release.feature.patch` versioning.
 - Replaced the CSV/TSV parser's CRLF, whitespace, empty-record, and malformed-quote behavior with strict scalar-state parsing; added BOM-aware UTF-8/16/32 decoding and explicit Windows-1252/Latin-1 choices.
 - Preserved the first record in automatic header mode, added explicit delimiter/header/encoding controls, and recorded applied import settings in CSV/TSV JSON schema `1.2` and the conversion report.
 - Replaced CSV/TSV header-key records with ordered canonical columns and stable IDs, preserving duplicate/blank labels, ragged records, missing versus empty fields, and extra cells in JSON schema `2.0` and recoverable Markdown. Removed width-driven Markdown table padding.
+- Added multi-file/folder source selection, drag/drop, optional recursive and hidden discovery, identity-deduplicated worklists, RTFD package classification, strict unknown-text probing, special/symlink rejection, per-file access/conflict outcomes, service-level single-run protection, progress, cancellation, and restart.
 
 ## [1.0.0] - 2026-06-30
 ### Added

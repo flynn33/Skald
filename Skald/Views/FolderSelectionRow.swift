@@ -9,13 +9,13 @@ struct FolderSelectionRow: View {
         HStack(spacing: 12) {
             Text(title)
                 .font(.headline)
-                .frame(width: 64, alignment: .leading)
+                .frame(width: 80, alignment: .leading)
 
             Button(action: action) {
                 Label("Choose", systemImage: "folder")
             }
 
-            Text(url?.path(percentEncoded: false) ?? "No folder selected")
+            Text(url?.path(percentEncoded: false) ?? "Nothing selected")
                 .lineLimit(1)
                 .truncationMode(.middle)
                 .foregroundStyle(url == nil ? .secondary : .primary)

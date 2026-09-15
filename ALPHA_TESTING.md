@@ -10,7 +10,7 @@ This guide defines the release gate and manual test matrix for the first externa
 - A writable source folder containing test documents.
 - A writable target folder for generated Markdown and JSON.
 
-The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, and canonical table consistency now pass the current native Debug/Release suite. Intake, document completeness, expansion formats, and complete release gates must still pass before an Alpha pass is claimed.
+The full application build and native test suite are local gates. The current project has no Forsetti package dependency. The writer crash was reproduced in an isolated child process. Its replacement, the CSV/TSV parser, canonical table consistency, and source intake now pass the current native Debug/Release suite. Document completeness, expansion formats, and complete release gates must still pass before an Alpha pass is claimed.
 
 ## Automated Gates
 
@@ -45,9 +45,9 @@ Expected result:
 
 ### 2. Folder Access
 
-1. Select a source folder.
+1. Select an individual source file, multiple source files, and a source folder; test drag/drop into the source row.
 2. Select a different target folder.
-3. Confirm the status changes to **Ready to convert**.
+3. Confirm the status changes to **Ready to convert**; test nested-folder and hidden-file toggles.
 4. Repeat with the same folder selected for source and target.
 5. Confirm conversion completes without modifying any original file.
 
@@ -69,7 +69,7 @@ Verify these committed fixtures specifically:
 | --- | --- |
 | `.env` | Recognized as configuration input and emitted as `env.md` or `env.json`. |
 | `sample-numbers.json` | `9007199254740993` and the high-precision decimal remain exact. |
-| `sample-table-edge.csv` | Pipe characters are escaped and embedded newlines render as `<br>` in Markdown. |
+| `sample-table-edge.csv` | Pipe and multiline cell values recover exactly from the CSV JSON code blocks in Markdown. |
 | `sample-verbatim.log` | Indentation, embedded backtick fences, and trailing newlines remain intact. |
 
 ### 5. Collision and Overwrite Safety
@@ -107,7 +107,7 @@ An Alpha build passes when all of the following are true:
 
 ## Known Alpha Limitations
 
-- Folder traversal is not recursive.
+- Nested-folder traversal is optional and off by default.
 - PDF extraction requires a selectable text layer; scanned PDFs do not use the image OCR converter.
 - Document formatting is heuristic and is not layout-faithful.
 - YAML, TOML, source code, and log files are preserved as verbatim code blocks rather than structurally parsed.
