@@ -29,7 +29,7 @@ final class ConversionViewModelOptionsTests: XCTestCase {
         let viewModel = ConversionViewModel(conversionManager: ConversionManager(), folderSelectionService: FixedFolderSelector([target]))
         viewModel.acceptDroppedSources([first, second])
         viewModel.selectTargetFolder()
-        viewModel.outputFormat = .json
+        viewModel.outputMode = .json
         XCTAssertEqual(viewModel.sourceURLs.count, 2)
         XCTAssertTrue(viewModel.canConvert)
         viewModel.convertFiles()
@@ -54,7 +54,7 @@ final class ConversionViewModelOptionsTests: XCTestCase {
         let viewModel = ConversionViewModel(conversionManager: ConversionManager(), folderSelectionService: FixedFolderSelector([source, target]))
         viewModel.selectSourceFolder()
         viewModel.selectTargetFolder()
-        viewModel.outputFormat = .json
+        viewModel.outputMode = .json
         viewModel.textEncoding = .windows1252
         viewModel.delimiterChoice = .semicolon
         viewModel.headerMode = .absent
@@ -76,5 +76,31 @@ final class ConversionViewModelOptionsTests: XCTestCase {
         let content = try XCTUnwrap(object["content"] as? [String: Any])
         let table = try XCTUnwrap(content["canonicalTable"] as? [String: Any])
         XCTAssertEqual((table["records"] as? [[String: Any]])?.compactMap { $0["cells"] as? [String] }, [["a", "b"], ["1", "“x”"]])
+    }
+
+    func testBothAndBundleOptionsReachProductionManager() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("Skald-View-Bundle-\(UUID().uuidString)", isDirectory: true)
+        let source = root.appendingPathComponent("source", isDirectory: true)
+        let target = root.appendingPathComponent("target", isDirectory: true)
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        try Data("title,value\nExample,42\n".utf8).write(to: source.appendingPathComponent("article.csv"))
+
+        let viewModel = ConversionViewModel(conversionManager: ConversionManager(), folderSelectionService: FixedFolderSelector([source, target]))
+        viewModel.selectSourceFolder()
+        viewModel.selectTargetFolder()
+        viewModel.outputMode = .both
+        viewModel.bundleOriginal = true
+        viewModel.convertFiles()
+        for _ in 0..<100 {
+            if viewModel.report != nil { break }
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+
+        XCTAssertEqual(viewModel.report?.convertedCount, 1)
+        let bundle = target.appendingPathComponent("article-bundle", isDirectory: true)
+        XCTAssertEqual(Set(try FileManager.default.contentsOfDirectory(atPath: bundle.path)),
+                       ["article.csv", "article.md", "article.json"])
     }
 }

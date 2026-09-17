@@ -15,7 +15,8 @@ final class ConversionViewModel: ObservableObject {
     @Published private(set) var sourceFolderURL: URL?
     @Published private(set) var sourceURLs: [URL] = []
     @Published private(set) var targetFolderURL: URL?
-    @Published var outputFormat: OutputFormat = .markdown
+    @Published var outputMode: OutputMode = .markdown
+    @Published var bundleOriginal = false
     @Published var textEncoding: TextEncodingChoice = .automatic
     @Published var delimiterChoice: DelimiterChoice = .automatic
     @Published var headerMode: HeaderMode = .automatic
@@ -79,7 +80,8 @@ final class ConversionViewModel: ObservableObject {
         }
 
         let conversionManager = conversionManager
-        let outputFormat = outputFormat
+        let outputMode = outputMode
+        let bundleOriginal = bundleOriginal
         let selections = sourceURLs
         let intakeOptions = IntakeOptions(recursive: recursive, includeHidden: includeHidden)
         let delimitedOptions = DelimitedOptions(
@@ -100,7 +102,8 @@ final class ConversionViewModel: ObservableObject {
                 let report = try conversionManager.convertSelections(
                     selections,
                     to: targetFolderURL,
-                    format: outputFormat,
+                    mode: outputMode,
+                    bundleOriginal: bundleOriginal,
                     delimitedOptions: delimitedOptions,
                     intakeOptions: intakeOptions,
                     progress: { completed, total in

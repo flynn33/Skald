@@ -1,10 +1,10 @@
 # Skald
 
-**Current Version: 1.0.0** <!-- x-release-please-version -->
+**Current Version: 1.1.0** <!-- x-release-please-version -->
 
-The 1.0.0 application has completed the documented ingestion-remediation implementation and the P08 local native and signed IDE matrix. The shared `Skald` scheme discovers 107 `SkaldTests`; signed Debug/Release, separate sanitizers, and Xcode Product Test each passed 107/107 with no skips. The required work and observed limitations are tracked in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [named-format boundaries](docs/remediation/NAMED_FORMAT_READERS.md), [task ledger](docs/remediation/TASK_LEDGER.md), and [P08 qualification record](docs/remediation/P08_COMPLETION.md). The separate Xcode `SkaldInteraction` UI-test scheme completed a direct two-file Finder-to-Skald drag, with the Sources view reporting `2 selected`. The documented qualification scope is not a public distribution claim.
+Version 1.1.0 adds a single-run **Both** mode for Markdown and JSON plus optional bundled delivery. A bundle is one folder containing the original input in its source format and every requested generated output. The earlier ingestion-remediation and P08 evidence remains recorded in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [task ledger](docs/remediation/TASK_LEDGER.md), and [P08 qualification record](docs/remediation/P08_COMPLETION.md).
 
-Skald is a macOS SwiftUI app that batch-converts selected files and folders into human-readable Markdown (`.md`) or structured JSON (`.json`) in a target folder.
+Skald is a macOS SwiftUI app that batch-converts selected files and folders into human-readable Markdown (`.md`), structured JSON (`.json`), or both in a target folder.
 
 The app follows Forsetti Mac architecture guidance while remaining a standalone native macOS project. The Forsetti repository is used as implementation reference material only; it is not vendored, linked, or resolved as a package dependency.
 
@@ -32,9 +32,11 @@ The app follows Forsetti Mac architecture guidance while remaining a standalone 
 ## What It Does
 
 - Converts supported files from one folder to another in bulk.
-- Supports two output formats:
+- Supports three output modes:
   - Markdown for direct reading/editing.
   - JSON for downstream automation and data pipelines.
+  - Both for creating Markdown and JSON in one run.
+- Optionally bundles the original source with its generated output files in one delivery folder.
 - Produces readable output:
   - Paragraph normalization.
   - Heading/list detection.
@@ -104,7 +106,7 @@ Skald uses a module-oriented macOS architecture:
   - Defines app-owned module identity metadata that aligns with `SkaldAppModuleManifest.json`.
 - **`SkaldAppModuleView`** (SwiftUI):
   - Collects source/target folder paths.
-  - Selects output format.
+  - Selects Markdown, JSON, or Both output mode and optional bundled delivery.
   - Triggers conversion.
 - **`SkaldAppModuleManifest.json`**:
   - Captures the app-owned module identity and runtime expectations used for architecture review.
@@ -113,7 +115,10 @@ Skald uses a module-oriented macOS architecture:
 - **`ConversionManager`**:
   - Snapshots selected files and folders, with optional recursive traversal and target exclusion.
   - Checks signatures or strict text before routing each regular input to a converter.
-  - Writes output with `.md` or `.json` extension.
+  - Writes `.md`, `.json`, or both outputs for each input.
+- **`OutputBundleWriter`**:
+  - Stages the original and generated outputs together.
+  - Publishes the complete delivery folder with collision-safe exclusive rename.
 - **`DocumentConverter`** protocol:
   - Shared interface for all converters.
 - **`ReadableOutputFormatter`**:
@@ -130,12 +135,12 @@ Skald uses a module-oriented macOS architecture:
 Output schema migrations and extraction limits are described in [EXTRACTION_COMPLETENESS.md](docs/remediation/EXTRACTION_COMPLETENESS.md).
 
 Current project settings in `Skald.xcodeproj`:
-- `MARKETING_VERSION = 1.0.0`
-- `CURRENT_PROJECT_VERSION = 1`
+- `MARKETING_VERSION = 1.1.0`
+- `CURRENT_PROJECT_VERSION = 2`
 
 ## Versioning
 
-Skald uses `release.feature.patch` versioning. The initial public repository version is `1.0.0`.
+Skald uses `release.feature.patch` versioning. The current repository version is `1.1.0`.
 
 - `release`: major release line.
 - `feature`: feature-level increment within a release line.
@@ -157,10 +162,10 @@ Use [ALPHA_TESTING.md](ALPHA_TESTING.md) for the automated release gates, manual
 1. Launch the app.
 2. Click **Choose** next to **Sources** and select one or more files or folders, or drop them on the source row.
 3. Click **Choose** next to **Target** and choose an output directory.
-4. Choose **Markdown** or **JSON**; enable nested folders and hidden files when needed.
+4. Choose **Markdown**, **JSON**, or **Both**. Enable **Bundle original with outputs** when each input should be delivered with its generated files in one folder.
 5. For CSV/TSV, select encoding, delimiter, and header interpretation. Automatic header mode keeps the first record as data until you confirm it is a header. A custom delimiter must be one valid Unicode scalar; `sep=` preamble use is explicit.
 6. Click **Convert**. Progress and **Cancel** are available while the batch runs.
-7. Inspect output files and per-file import warnings in the target directory and conversion report.
+7. Inspect output files or bundle folders and per-file import warnings in the target directory and conversion report.
 
 Behavior notes:
 
@@ -169,6 +174,9 @@ Behavior notes:
 - The preferred output filename preserves the original base name and changes only the extension:
   - `example.pdf` -> `example.md` or `example.json`
   - A collision may produce `example-pdf.md`, `example-pdf-2.md`, and so on.
+- Both mode creates both generated files in the same run. With bundling enabled, `example.pdf` produces `example-bundle/` containing `example.pdf`, `example.md`, and `example.json`.
+- If the original already occupies a generated name, Skald retains the original name and qualifies the generated name; `article.md` becomes `article.md`, `article-converted.md`, and `article.json` inside the bundle.
+- Bundle folders use collision-safe names such as `example-bundle`, `example-pdf-bundle`, and `example-pdf-bundle-2`. Existing files, folders, and symbolic links are never replaced.
 - Extension-only dotfiles such as `.env` are recognized and use a visible output base name such as `env.md`.
 
 ## Build From Terminal
@@ -199,7 +207,8 @@ Skald/
 │   │   └── SkaldAppModuleView.swift    # Main conversion UI
 │   ├── Models/
 │   ├── Services/
-│   │   └── Converters/
+│   │   ├── Converters/
+│   │   └── OutputBundleWriter.swift
 │   ├── Support/
 │   │   ├── Formatting/
 │   │   └── Parsing/

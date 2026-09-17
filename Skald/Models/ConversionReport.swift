@@ -18,7 +18,24 @@ nonisolated struct ConversionEntry: Identifiable, Sendable {
     let fileExtension: String
     let status: ConversionStatus
     let message: String?
-    let outputURL: URL?
+    let outputURLs: [URL]
+
+    var outputURL: URL? {
+        outputURLs.first
+    }
+
+    init(fileName: String, fileExtension: String, status: ConversionStatus, message: String?, outputURLs: [URL]) {
+        self.fileName = fileName
+        self.fileExtension = fileExtension
+        self.status = status
+        self.message = message
+        self.outputURLs = outputURLs
+    }
+
+    init(fileName: String, fileExtension: String, status: ConversionStatus, message: String?, outputURL: URL?) {
+        self.init(fileName: fileName, fileExtension: fileExtension, status: status, message: message,
+                  outputURLs: outputURL.map { [$0] } ?? [])
+    }
 }
 
 nonisolated struct ConversionReport: Sendable {

@@ -11,7 +11,7 @@ final class SkaldAppModule {
     let descriptor = SkaldAppModuleDescriptor(
         moduleID: Constants.moduleID,
         displayName: "Skald",
-        moduleVersion: "1.0.0",
+        moduleVersion: "1.1.0",
         moduleType: .app,
         supportedPlatforms: [.macOS]
     )

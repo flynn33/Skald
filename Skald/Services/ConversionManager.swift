@@ -8,6 +8,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
     private let converters: [DocumentConverter]
     private let outputFilePlanner: OutputFilePlanning
     private let outputWriter: OutputWriting
+    private let outputBundleWriter: OutputBundleWriting
     private let limits: ResourceLimits
     private let logger = Logger(subsystem: "com.daley.jim.Skald", category: "conversion")
     private let worklistBuilder = SourceWorklistBuilder()
@@ -23,7 +24,8 @@ nonisolated final class ConversionManager: @unchecked Sendable {
         converters: [DocumentConverter]? = nil,
         limits: ResourceLimits = ResourceLimits(),
         outputFilePlanner: OutputFilePlanning? = nil,
-        outputWriter: OutputWriting? = nil
+        outputWriter: OutputWriting? = nil,
+        outputBundleWriter: OutputBundleWriting? = nil
     ) {
         self.fileManager = fileManager
         self.limits = limits
@@ -57,13 +59,29 @@ nonisolated final class ConversionManager: @unchecked Sendable {
         self.converters = converters ?? configuredConverters
         self.outputFilePlanner = outputFilePlanner ?? OutputFilePlanner(fileManager: fileManager)
         self.outputWriter = outputWriter ?? OutputWriter(planner: self.outputFilePlanner)
+        self.outputBundleWriter = outputBundleWriter ?? OutputBundleWriter(fileManager: fileManager)
     }
 
     func convertFiles(in sourceURL: URL, to targetURL: URL, format: OutputFormat, delimitedOptions: DelimitedOptions = DelimitedOptions()) throws -> ConversionReport {
-        try convertSelections([sourceURL], to: targetURL, format: format, delimitedOptions: delimitedOptions)
+        try convertSelections([sourceURL], to: targetURL, mode: OutputMode(format), delimitedOptions: delimitedOptions)
     }
 
     func convertSelections(_ selections: [URL], to targetURL: URL, format: OutputFormat, delimitedOptions: DelimitedOptions = DelimitedOptions(), intakeOptions: IntakeOptions = IntakeOptions(), progress: ((Int, Int) -> Void)? = nil, isCancelled: (() -> Bool)? = nil) throws -> ConversionReport {
+        try convertSelections(selections, to: targetURL, mode: OutputMode(format), bundleOriginal: false,
+                              delimitedOptions: delimitedOptions, intakeOptions: intakeOptions,
+                              progress: progress, isCancelled: isCancelled)
+    }
+
+    func convertFiles(in sourceURL: URL, to targetURL: URL, mode: OutputMode, bundleOriginal: Bool = false,
+                      delimitedOptions: DelimitedOptions = DelimitedOptions()) throws -> ConversionReport {
+        try convertSelections([sourceURL], to: targetURL, mode: mode, bundleOriginal: bundleOriginal,
+                              delimitedOptions: delimitedOptions)
+    }
+
+    func convertSelections(_ selections: [URL], to targetURL: URL, mode: OutputMode, bundleOriginal: Bool = false,
+                           delimitedOptions: DelimitedOptions = DelimitedOptions(),
+                           intakeOptions: IntakeOptions = IntakeOptions(), progress: ((Int, Int) -> Void)? = nil,
+                           isCancelled: (() -> Bool)? = nil) throws -> ConversionReport {
         runLock.lock()
         guard !runActive else {
             runLock.unlock()
@@ -128,6 +146,7 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                 continue
             }
 
+            var committedOutputURLs: [URL] = []
             do {
                 if let size = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
                     guard size >= 0, size <= limits.totalWorkBytes - inspectedInputBytes else {
@@ -183,44 +202,61 @@ nonisolated final class ConversionManager: @unchecked Sendable {
             }
 
             do {
-                let output: String
+                var generatedOutputs: [GeneratedOutput] = []
                 let appliedSettings: AppliedDelimitedSettings?
-                let isEmpty: Bool
-                let isPartial: Bool
-                let extractorWarnings: [String]
-                if let delimited = converter as? DelimitedTextConverter {
-                    let result = try delimited.convert(at: fileURL, to: format, options: delimitedOptions)
-                    output = result.output
-                    appliedSettings = result.appliedSettings
-                    isEmpty = result.isEmpty
-                    isPartial = false
-                    extractorWarnings = []
-                } else {
-                    let result = try converter.convertDetailed(at: fileURL, to: format)
-                    output = result.output
-                    appliedSettings = nil
-                    isEmpty = result.quality == .empty
-                    isPartial = result.quality == .partial
-                    extractorWarnings = result.warnings
+                var isEmpty = true
+                var isPartial = false
+                var extractorWarnings: [String] = []
+                var capturedSettings: AppliedDelimitedSettings?
+                for format in mode.formats {
+                    let output: String
+                    if let delimited = converter as? DelimitedTextConverter {
+                        let result = try delimited.convert(at: fileURL, to: format, options: delimitedOptions)
+                        output = result.output
+                        capturedSettings = result.appliedSettings
+                        isEmpty = isEmpty && result.isEmpty
+                    } else {
+                        let result = try converter.convertDetailed(at: fileURL, to: format)
+                        output = result.output
+                        isEmpty = isEmpty && result.quality == .empty
+                        isPartial = isPartial || result.quality == .partial
+                        for warning in result.warnings where !extractorWarnings.contains(warning) {
+                            extractorWarnings.append(warning)
+                        }
+                    }
+                    guard output.utf8.count <= limits.outputBytes else {
+                        throw InputDiagnostic(code: "outputLimitExceeded", stage: "render", fileName: fileURL.lastPathComponent,
+                                              summary: "Rendered output exceeds the configured byte limit.")
+                    }
+                    generatedOutputs.append(GeneratedOutput(format: format, payload: Data(output.utf8)))
                 }
+                appliedSettings = capturedSettings
                 if Task.isCancelled || isCancelled?() == true { wasCancelled = true; break }
-                guard output.utf8.count <= limits.outputBytes else {
-                    throw InputDiagnostic(code: "outputLimitExceeded", stage: "render", fileName: fileURL.lastPathComponent,
-                                          summary: "Rendered output exceeds the configured byte limit.")
-                }
-                let outputExtension = format == .markdown ? "md" : "json"
-                let outputPlan = try outputWriter.publish(
-                    Data(output.utf8),
-                    for: fileURL,
-                    in: targetURL,
-                    outputExtension: outputExtension,
-                    reservedOutputPaths: reservedOutputPaths
-                )
-                let outputPath = normalizedPath(for: outputPlan.url)
-                reservedOutputPaths.insert(outputPath)
 
                 var notes: [String] = []
-                if outputPlan.wasRenamed { notes.append("Saved as \(outputPlan.url.lastPathComponent) to avoid overwriting another file.") }
+                if bundleOriginal {
+                    let bundlePlan = try outputBundleWriter.publish(generatedOutputs, withOriginal: fileURL, in: targetURL,
+                                                                    reservedOutputPaths: reservedOutputPaths)
+                    reservedOutputPaths.insert(normalizedPath(for: bundlePlan.url))
+                    committedOutputURLs = [bundlePlan.url]
+                    notes.append("Bundle contains the original and \(generatedOutputs.count) generated output\(generatedOutputs.count == 1 ? "" : "s").")
+                    if bundlePlan.wasRenamed {
+                        notes.append("Saved as \(bundlePlan.url.lastPathComponent) to avoid overwriting another item.")
+                    }
+                } else {
+                    var plans: [OutputFilePlan] = []
+                    for generated in generatedOutputs {
+                        let plan = try outputWriter.publish(generated.payload, for: fileURL, in: targetURL,
+                                                            outputExtension: generated.format.fileExtension,
+                                                            reservedOutputPaths: reservedOutputPaths)
+                        reservedOutputPaths.insert(normalizedPath(for: plan.url))
+                        plans.append(plan)
+                        committedOutputURLs.append(plan.url)
+                    }
+                    for plan in plans where plan.wasRenamed {
+                        notes.append("Saved as \(plan.url.lastPathComponent) to avoid overwriting another file.")
+                    }
+                }
                 if let appliedSettings {
                     notes.append("Import: \(appliedSettings.encoding), delimiter \(appliedSettings.delimiter.debugDescription), header \(appliedSettings.headerMode).")
                     if !appliedSettings.diagnostics.isEmpty { notes.append("Warnings: \(appliedSettings.diagnostics.joined(separator: ", ")).") }
@@ -233,15 +269,34 @@ nonisolated final class ConversionManager: @unchecked Sendable {
                         fileExtension: source.fileExtension,
                         status: isPartial ? .partial : (isEmpty ? .empty : .converted),
                         message: message,
-                        outputURL: outputPlan.url
+                        outputURLs: committedOutputURLs
                     )
                 )
                 if isPartial { partialCount += 1 } else if isEmpty { emptyCount += 1 } else { convertedCount += 1 }
             } catch OutputPublicationError.cancelled {
+                if !committedOutputURLs.isEmpty {
+                    entries.append(
+                        ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension,
+                                        status: .partial,
+                                        message: "Conversion was cancelled after \(committedOutputURLs.count) output was published.",
+                                        outputURLs: committedOutputURLs)
+                    )
+                    partialCount += 1
+                }
                 wasCancelled = true
                 break
             } catch {
                 logFailure(error, stage: "convert")
+                if !committedOutputURLs.isEmpty {
+                    entries.append(
+                        ConversionEntry(fileName: source.reportBaseName, fileExtension: source.fileExtension,
+                                        status: .partial,
+                                        message: "Published \(committedOutputURLs.count) output before another output failed. \(safeFailureMessage(error, stage: "convert"))",
+                                        outputURLs: committedOutputURLs)
+                    )
+                    partialCount += 1
+                    continue
+                }
                 entries.append(
                     ConversionEntry(
                         fileName: source.reportBaseName,

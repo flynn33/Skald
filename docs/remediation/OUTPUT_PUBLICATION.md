@@ -6,4 +6,8 @@ Apple documents `volumeSupportsExclusiveRenaming` as the capability for `RENAME_
 
 This guarantees atomic visibility of each complete final file and protection from replacing an existing directory entry on a supporting volume. The temporary file is `fsync`ed, but the directory entry is not separately synchronized; the app does not promise survival of a sudden power loss immediately after publication. A completed conversion is not a claim that later extractor or release gates passed.
 
+Version 1.1.0 adds `OutputBundleWriter` for bundled delivery. It creates a private same-directory staging folder, copies the original input without changing its filename or format, writes and flushes every requested generated output, and then publishes the complete folder with `renameatx_np(RENAME_EXCL)`. A reader therefore sees either no bundle or the complete bundle. The same target-identity, cancellation-before-commit, bounded-collision, dangling-link, and existing-entry protections apply. When an original filename would collide with a generated filename, the original keeps its name and the generated file receives `-converted` before its extension.
+
+Both mode without bundling publishes the Markdown and JSON files individually through `OutputWriter`; each file retains the existing atomic visibility guarantee. Bundled Both mode publishes the original, Markdown, and JSON together at one folder commit point.
+
 References: [Apple volume capability](https://developer.apple.com/documentation/foundation/urlresourcevalues/volumesupportsexclusiverenaming), macOS `rename(2)` and the installed SDK's `sys/stdio.h` declaration for `renameatx_np`/`RENAME_EXCL`.

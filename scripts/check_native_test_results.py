@@ -8,6 +8,11 @@ from pathlib import Path
 
 
 REQUIRED = {
+    "ConversionPipelineIntegrationTests/testBothModePublishesMarkdownAndJSONInOneRun()",
+    "ConversionPipelineIntegrationTests/testBundledBothModePublishesOriginalMarkdownAndJSONTogether()",
+    "ConversionViewModelOptionsTests/testBothAndBundleOptionsReachProductionManager()",
+    "OutputBundleWriterTests/testConcurrentPublishersChooseDistinctCompleteBundles()",
+    "OutputBundleWriterTests/testChangedTargetDirectoryIsRejectedAndStagingIsRemoved()",
     "CanonicalTableTests/testIndependentCorpusAgreesAcrossCanonicalJSONAndMarkdown()",
     "DelimitedCorpusTests/testAllIndependentByteCases()",
     "OutputWriterRegressionTests/testConcurrentPublishersChooseDistinctFinalNames()",
@@ -64,7 +69,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("bundle", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--minimum-tests", type=int, default=107)
+    parser.add_argument("--minimum-tests", type=int, default=118)
     args = parser.parse_args()
     check(args.bundle, args.minimum_tests, args.output)
 

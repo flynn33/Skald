@@ -2,7 +2,7 @@
 
 ## Overview
 
-Skald is a macOS document conversion utility with Forsetti-guided module boundaries. It batch-converts selected files and folders into human-readable Markdown or structured JSON output.
+Skald is a macOS document conversion utility with Forsetti-guided module boundaries. It batch-converts selected files and folders into human-readable Markdown, structured JSON, or both, with optional delivery bundles that retain the original source.
 
 This wiki covers the application architecture, Forsetti reference alignment, and development guidelines.
 
@@ -51,7 +51,7 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 3. `SkaldAppModuleView` owns screen state through `ConversionViewModel`.
 4. `ConversionViewModel` delegates conversion work to `ConversionManager`.
 5. `ConversionManager` routes each supported file to a matching converter.
-6. Output is written as Markdown or JSON in the selected target folder.
+6. Output is written as Markdown, JSON, or both in the selected target folder; optional bundles include the original source.
 
 ## Conversion Pipeline
 
@@ -76,6 +76,8 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 - **Markdown**: Structural headings, list items, and normalized paragraphs with page segmentation for PDFs.
 - **JSON**: Version-tagged document model with source metadata, summary statistics, blocks/pages, and optional tables/data payloads for structured inputs.
+- **Both**: Markdown and JSON created for each input in one run.
+- **Bundled delivery**: One collision-safe folder containing the original input plus the requested generated outputs.
 
 ### Processing Pipeline
 
@@ -83,7 +85,7 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 2. `ConversionManager` checks content signatures or strict text before dispatching to a converter.
 3. The converter extracts text and delegates to `ReadableOutputFormatter`.
 4. The formatter applies heuristic-based structure detection (headings, lists, paragraphs).
-5. Output is written to the target directory with the appropriate extension.
+5. `OutputWriter` publishes loose generated files, or `OutputBundleWriter` publishes the original and generated outputs together as one complete folder.
 
 ## Development Guidelines
 
@@ -109,8 +111,8 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 - **Developer**: Jim Daley
 - **Architecture**: Forsetti-guided native macOS module boundaries
 - **License**: Apache License 2.0 (see LICENSE)
-- **Version**: 1.0.0 <!-- x-release-please-version -->
+- **Version**: 1.1.0 <!-- x-release-please-version -->
 
 ## Native remediation checks
 
-The shared Xcode scheme includes `SkaldTests`. The documented ingestion implementation passed signed Debug/Release and IDE 107-test runs, separate sanitizers, static analysis, hosted macOS CI, and the existing validators. The separate Xcode `SkaldInteraction` UI-test scheme passed a direct two-file Finder-to-Skald drop with `2 selected` in the Sources view. This remains a qualification of documented scope, without a public distribution claim. CSV/TSV uses canonical column IDs; PDF, image, ordered XML, workbook, and ZIP collection outputs use schema `2.0`, distinct from app version `1.0.0`. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/NAMED_FORMAT_READERS.md`, `docs/remediation/RESOURCE_BOUNDS_AND_PRIVACY.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, `docs/remediation/TASK_LEDGER.md`, and `docs/remediation/P08_COMPLETION.md` for evidence and limits.
+The shared Xcode scheme includes `SkaldTests`. The documented ingestion implementation passed signed Debug/Release and IDE 107-test runs, separate sanitizers, static analysis, hosted macOS CI, and the existing validators. The separate Xcode `SkaldInteraction` UI-test scheme passed a direct two-file Finder-to-Skald drop with `2 selected` in the Sources view. This remains a qualification of documented scope, without a public distribution claim. CSV/TSV uses canonical column IDs; PDF, image, ordered XML, workbook, and ZIP collection outputs use schema `2.0`, distinct from app version `1.1.0`. See `docs/remediation/NATIVE_TEST_PLAN.md`, `docs/remediation/NAMED_FORMAT_READERS.md`, `docs/remediation/RESOURCE_BOUNDS_AND_PRIVACY.md`, `docs/remediation/OUTPUT_PUBLICATION.md`, `docs/remediation/TASK_LEDGER.md`, and `docs/remediation/P08_COMPLETION.md` for evidence and limits.

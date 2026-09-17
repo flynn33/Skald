@@ -40,15 +40,15 @@ struct SkaldAppModuleView: View {
 
             HStack(spacing: 12) {
                 Picker("Output", selection: Binding(
-                    get: { viewModel.outputFormat },
-                    set: { format in Task { @MainActor in viewModel.outputFormat = format } }
+                    get: { viewModel.outputMode },
+                    set: { mode in Task { @MainActor in viewModel.outputMode = mode } }
                 )) {
-                    ForEach(OutputFormat.allCases) { format in
-                        Text(format.label).tag(format)
+                    ForEach(OutputMode.allCases) { mode in
+                        Text(mode.label).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
-                .frame(width: 220)
+                .frame(width: 300)
 
                 Spacer()
 
@@ -65,6 +65,7 @@ struct SkaldAppModuleView: View {
             }
 
             HStack(spacing: 14) {
+                Toggle("Bundle original with outputs", isOn: $viewModel.bundleOriginal)
                 Toggle("Include nested folders", isOn: $viewModel.recursive)
                 Toggle("Include hidden files", isOn: $viewModel.includeHidden)
             }
@@ -112,7 +113,7 @@ struct SkaldAppModuleView: View {
             Text("Skald")
                 .font(.title.bold())
 
-            Text("Convert selected files and folders into Markdown or JSON.")
+            Text("Convert selected files and folders into Markdown, JSON, or both.")
                 .foregroundStyle(.secondary)
         }
     }

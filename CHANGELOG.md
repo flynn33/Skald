@@ -6,7 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project uses `release.feature.patch` versioning.
 
 ## [Unreleased]
+
+## [1.1.0] - 2026-09-17
 ### Added
+- A **Both** output mode that creates Markdown and JSON for each input in one conversion run.
+- An optional bundled delivery mode that atomically publishes one folder containing the original source and all requested generated outputs.
+- Collision-safe bundle and internal filenames that retain the original name and qualify generated files when extensions overlap.
+- Production-path coverage for combined output, bundled delivery, source preservation, occupied bundle names, concurrent publishers, failed publication cleanup, and view-model option routing.
+
+- Conversion reports now retain every published output URL for multi-output runs.
 - Native ZIP32 collection and XLSX/ODS/BIFF8 XLS workbook readers with typed sparse cells, formula/cache/date/merge metadata, member provenance, and explicit unsupported-variant diagnostics.
 - Deterministic actual-format fixtures for stored/deflated ZIP, SpreadsheetML/ODF, and CFB/BIFF8, plus traversal, collision, expansion, entity, encryption, and chain-loop negatives.
 - Validated per-format byte, record, column, cell, field, nesting, pixel, worklist, batch, and output ceilings with typed safe failure diagnostics and path-free native logging.
