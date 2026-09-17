@@ -2,7 +2,7 @@
 
 **Current Version: 1.1.0** <!-- x-release-please-version -->
 
-Version 1.1.0 adds a single-run **Both** mode for Markdown and JSON plus optional bundled delivery. A bundle is one folder containing the original input in its source format and every requested generated output. The earlier ingestion-remediation and P08 evidence remains recorded in [the remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [task ledger](docs/remediation/TASK_LEDGER.md), and [P08 qualification record](docs/remediation/P08_COMPLETION.md).
+Version 1.1.0 adds a single-run **Both** mode for Markdown and JSON plus optional bundled delivery. A bundle is one folder containing the original input in its source format and every requested generated output. The complete P08 matrix now contains 118 tests and 17 required sentinel cases; current Debug, Release, AddressSanitizer, ThreadSanitizer, Xcode Product Test, and hosted Debug/Release runs pass with zero failures or skips. See the [remediation test plan](docs/remediation/NATIVE_TEST_PLAN.md), [task ledger](docs/remediation/TASK_LEDGER.md), and [P08 qualification record](docs/remediation/P08_COMPLETION.md).
 
 Skald is a macOS SwiftUI app that batch-converts selected files and folders into human-readable Markdown (`.md`), structured JSON (`.json`), or both in a target folder.
 

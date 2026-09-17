@@ -1,5 +1,15 @@
 # P08 qualification record
 
+## Version 1.1.0 extension qualification
+
+Skald 1.1.0/build 2 adds Markdown-plus-JSON conversion in one run and optional delivery of the unchanged original with generated outputs in one folder. The current matrix contains 118 native tests and 17 required sentinel identifiers. Final Debug, Release, AddressSanitizer, ThreadSanitizer, and Xcode Product Test runs each passed 118/118 with zero failures or skips. Static analysis and all three supplied validators passed; current hosted Debug and Release runs match those counts.
+
+Xcode Product Build succeeded and Product Run exposed selectable Markdown, JSON, Both, and Bundle original with outputs controls. The separately built signed Release app passed strict signature verification, retained the application sandbox and user-selected read/write entitlement, and reported version 1.1.0/build 2. Its Both-plus-bundle conversion delivered exactly `article.txt`, `article.md`, and `article.json`; the source and bundled original had identical SHA-256 values and the JSON parsed successfully.
+
+The final external ledger maps all 12 gates and all 76 required package entries to current source-bound evidence and passes `check_ledger.py`. The historical 1.0.0 qualification below remains evidence for direct Finder drag and the pre-extension manual format matrix. The current native rerun covers the unchanged intake and format paths, while the signed 1.1.0 app directly exercises the changed output controls and publication path. This remains a qualification of documented scope, without an App Store submission or public release claim.
+
+## Version 1.0.0 historical qualification
+
 Skald remains at application version **1.0.0**, Xcode build **1**. The CSV/TSV, PDF, image, XML, workbook, and ZIP output schema **2.0** is separate. The completed remediation supports the named format variants and limits in `NAMED_FORMAT_READERS.md`; this record is a qualification of that documented scope, not a claim that every historical spreadsheet, archive, or attributed-document variant is supported.
 
 The final local automated collector on macOS 26.6.2 arm64 with Xcode 26.6, Swift 6.3.3, and SDK 26.5 completed signed Debug and Release builds, **107 passed, 0 failed, 0 skipped** in each configuration, static analysis, and the conversion, digital-PDF, and output-planner fixture validators. Separate AddressSanitizer and ThreadSanitizer test runs each passed **107/107**, with no failed or skipped tests. Xcode's actual Product → Build succeeded, Product → Test passed **107/107**, and Product → Run launched the signed app. The package collector's before/after source fingerprints matched. Raw xcresults, logs, environment output, and hashed per-gate records are kept outside the checkout in the P08 evidence directory.

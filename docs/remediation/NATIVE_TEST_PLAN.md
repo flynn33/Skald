@@ -2,12 +2,14 @@
 
 The remediation contract has 76 required requirements. P00 reserved gate-observation names before native qualification. P08 replaces those placeholders with real Xcode, sanitizer, validator, CI, review, and signed-app observations; the external gate evidence binds each requirement to a file hash. Existing integration tests were intentionally excluded from the P00 baseline run because the production writer terminated on its invalid flags.
 
+Version 1.1.0 extends the matrix to 118 native tests and 17 required sentinel identifiers. New production-linked coverage includes loose Markdown-plus-JSON output, atomic original-source bundles, generated-name conflicts, occupied bundle preservation, honest partial status, view-model option routing, concurrent bundle publication, dangling links, target replacement, cancellation, unsupported exclusive rename, cleanup, and native selection of Both plus bundling. The 12 gates and 76 package requirements remain the controlling contract.
+
 | Requirement | Contract | Test or observation identifier | Registration |
 |---|---|---|---|
-| G01-T01 | Debug build and test | `P08/Debug-build`, `P08/Debug-test` | signed build and 107/107 native tests passed |
-| G01-T02 | Release build and test | `P08/Release-build`, `P08/Release-test` | signed build and 107/107 native tests passed |
-| G01-T03 | Test discovery and nonzero assertions | `scripts/check_native_test_results.py`, `P08/IDE-Product-Test` | 107 registered cases, zero failures or skips |
-| G01-T04 | Separate ASan/TSan and analyzer | `P08/ASan`, `P08/TSan`, `P08/analyze` | separate 107/107 sanitizer runs and analyzer passed |
+| G01-T01 | Debug build and test | `P08/Debug-build`, `P08/Debug-test` | signed build and 118/118 native tests passed |
+| G01-T02 | Release build and test | `P08/Release-build`, `P08/Release-test` | signed build and 118/118 native tests passed |
+| G01-T03 | Test discovery and nonzero assertions | `scripts/check_native_test_results.py`, `P08/IDE-Product-Test` | 118 registered cases, zero failures or skips; all 17 sentinel identifiers present |
+| G01-T04 | Separate ASan/TSan and analyzer | `P08/ASan`, `P08/TSan`, `P08/analyze` | separate 118/118 sanitizer runs and analyzer passed |
 | G01-T05 | Existing fixture validators | `P08/validate_fixtures`, `P08/validate_pdf_fixture`, `P08/validate_output_file_planner` | all three passed |
 | G02-T01 | LF CSV to Markdown through manager | `ConversionPipelineIntegrationTests/testRealManagerPublishesMarkdown` | registered; Debug/Release P01 focused passed |
 | G02-T02 | CSV to JSON through manager | `ConversionPipelineIntegrationTests/testRealManagerPublishesParseableJSON` | registered; Debug/Release P01 focused passed |
@@ -59,7 +61,7 @@ The remediation contract has 76 required requirements. P00 reserved gate-observa
 | G08-T05 | Private logging with synthetic secrets | `ResourceBoundsTests/testMalformedJSONPreservesCauseWithoutEchoingContent`, `ConversionManager.logFailure` source inspection | registered; P06 synthetic visible-summary test and private-path OSLog source inspection passed; signed Debug console and default Release log inspected without paths or contents |
 | G08-T06 | No executable content or external conversions | `ResourceBoundsTests/testResourceBearingHTMLAndMarkdownMarkupRemainInert`, `ZipContainerTests/testRealRegistryReportsCollectionMembersAndNestedProvenance`; production registry/source inspection | registered; P07 typed member routing and unknown-binary visibility passed; P08 source and signed-UI review passed |
 | G09-T01 | Actual Xcode Product Build | `P08/IDE-Product-Build` | Xcode activity reported Build Succeeded |
-| G09-T02 | Actual Xcode Product Test | `P08/IDE-Product-Test` | Xcode reported 107/107; xcresult confirmed no skips |
+| G09-T02 | Actual Xcode Product Test | `P08/IDE-Product-Test` | Xcode reported 118/118; xcresult confirmed no skips and all 17 sentinel identifiers |
 | G09-T03 | Actual Xcode Product Run | `P08/IDE-Product-Run` | signed workspace launched and mixed batch completed |
 | G09-T04 | Native picker and options | `P08/IDE-native-picker`, `P08/IDE-CSV-options`, `FinderDropTests/testFinderDropSelectsTwoFiles` | picker and controls converted selected files; Xcode Finder-drop UI test verified `2 selected` |
 | G09-T05 | Release sandbox effective entitlements | `P08/standalone-Release-entitlements` | sandbox and selected-file access verified; no network/temporary exception |

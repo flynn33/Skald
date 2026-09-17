@@ -1,5 +1,15 @@
 # P08 review record
 
+## Version 1.1.0 extension review
+
+The extension review traced `OutputMode` from the SwiftUI picker through `ConversionViewModel` and `ConversionManager`, confirmed one extraction feeds the selected renderers, and verified that reports retain every published URL. Loose dual output reports an honest partial result if a later publication fails. Existing single-format behavior remains available.
+
+`OutputBundleWriter` stages the unchanged original and requested generated files under the chosen target, uses private permissions, verifies target identity again, and publishes the complete folder through exclusive rename. Existing entries and dangling links are never replaced. Cleanup is file-descriptor relative, ownership checked, recursive, and does not follow links. Current tests cover concurrent publishers, target replacement, name collisions, cancellation, unsupported rename, write failure, and cleanup.
+
+The final evidence review confirms 118/118 local Debug, Release, AddressSanitizer, ThreadSanitizer, and Xcode Product Test results; matching hosted Debug and Release results; successful analysis and validators; signed Release entitlements; and an exact three-file bundle with a byte-identical original. Version 1.1.0/build 2 is aligned across release metadata, Xcode, module declarations, README, changelog, documentation, and wiki. No unresolved extension defect was found.
+
+## Version 1.0.0 historical review
+
 The package's four review prompts were run as distinct direct reviews of the initial checkout through P08, including the workflow, native tests, fixtures, and final source changes. The `/review` interface was unavailable in this session; this is the direct-review fallback specified by the package, not a claim of an external review service. Final run artifacts and per-file hashes are recorded in the separate gate ledger and completion report.
 
 ## Behavior and architecture
