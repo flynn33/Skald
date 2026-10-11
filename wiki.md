@@ -110,7 +110,7 @@ Skald keeps a JSON manifest at `Resources/ForsettiManifests/SkaldAppModuleManife
 
 - **Developer**: Jim Daley
 - **Architecture**: Forsetti-guided native macOS module boundaries
-- **License**: Apache License 2.0 (see LICENSE)
+- **License**: Dual license (see LICENSE)
 - **Version**: 1.1.0 <!-- x-release-please-version -->
 
 ## Native remediation checks
